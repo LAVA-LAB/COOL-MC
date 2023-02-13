@@ -1,4 +1,0 @@
-Project ID: 1
-Run ID: 0umoi0pmkyzvgmbea8um59q2wu80u2r4dkbmbkwn3z
-Property Query: Pmin=? [F WATER=true]
-Property Result: 0.9141708035229639
