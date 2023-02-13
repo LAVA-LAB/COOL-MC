@@ -223,10 +223,23 @@ Targeted Adversarial Attacks on Deep Reinforcement Learning Policies via Model C
 
 Turn-based Multi-Agent Reinforcement Learning Model Checking:
 `
-@inproceedings{Gross2023targeted,
+@inproceedings{Gross2023turn,
 	title = { {Turn-based Multi-Agent Reinforcement Learning Model Checking} },
 	author = {Dennis Gross},
 	booktitle = { {ICAART} },
+	year = { 2023 },
+	url = { }
+}
+`
+
+Model Checking for Adversarial Multi-Agent Reinforcement Learning
+with Reactive Defense Methods:
+`
+@inproceedings{Gross2023cmarl,
+	title = { {Model Checking for Adversarial Multi-Agent Reinforcement Learning
+with Reactive Defense Methods} },
+	author = {Dennis Gross},
+	booktitle = { {ICAPS} },
 	year = { 2023 },
 	url = { }
 }
