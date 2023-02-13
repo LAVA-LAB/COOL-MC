@@ -1,0 +1,50 @@
+name: safe_training
+entry_points:
+    main:
+        parameters:
+            # Meta
+            project_name : {type: string, default: "Taxi with Fuel"}
+            parent_run_id : {type: string, default: ""}
+            env : {type: string, default: "Taxi with Fuel" }
+            sliding_window_size : {type: float, default: 100}
+            num_episodes : {type: float, default: 50000}
+            eval_interval : {type: float, default: 100}
+            prism_dir : {type: string, default: "../prism_files"}
+            prism_file_path : {type: string, default: "transporter.prism"}
+            constant_definitions : {type: string, default: "MAX_JOBS=2,MAX_FUEL=10"}
+            disabled_features : {type: string, default: "jobs_done"}
+            training_threshold : {type: float, default: -1000000000000}
+
+
+            # Training
+            max_steps : {type: float, default: 250}
+            wrong_action_penalty : {type: float, default: 100}
+            reward_flag : {type: float, default: 0}
+            deploy : {type: float, default: 0}
+
+            # Preprocessor
+            preprocessor: {type: string, default: ""}
+            # Manipulator
+            postprocessor: {type: string, default: ""}
+
+            # Model Checking Parameters
+            prop : {type: string, default: "Pmax=? [F jobs_done=2]"}
+
+            #Agents
+            rl_algorithm : {type: string, default: "dqn_agent" }
+            alpha : {type: float, default: 0.8}
+            layers : {type: float, default: 4}
+            neurons : {type: float, default: 512}
+            replay_buffer_size : {type: float, default: 1000000}
+            epsilon : {type: float, default: 0.3}
+            epsilon_dec : {type: float, default: 0.99999}
+            epsilon_min : {type: float, default: 0.1}
+            gamma : {type: float, default: 0.99}
+            replace : {type: float, default: 1024}
+            lr : {type: float, default: 0.0001}
+            batch_size : {type: float, default: 100}
+            noise_scale : {type: float, default: 0.8}
+
+
+        command: >-
+            python run.py --training_threshold={training_threshold} --deploy={deploy} --project_name={project_name} --parent_run_id={parent_run_id} --preprocessor={preprocessor} --env={env} --sliding_window_size={sliding_window_size} --num_episodes={num_episodes} --eval_interval={eval_interval} --alpha={alpha} --rl_algorithm={rl_algorithm} --prism_dir={prism_dir} --prism_file_path={prism_file_path} --constant_definitions={constant_definitions} --prop={prop} --reward_flag={reward_flag} --max_steps={max_steps} --disabled_features={disabled_features} --wrong_action_penalty={wrong_action_penalty} --postprocessor={postprocessor} --layers={layers} --neurons={neurons} --replay_buffer_size={replay_buffer_size} --epsilon={epsilon} --epsilon_dec={epsilon_dec} --epsilon_min={epsilon_min} --gamma={gamma} --replace={replace} --lr={lr} --batch_size={batch_size} --noise_scale={noise_scale}

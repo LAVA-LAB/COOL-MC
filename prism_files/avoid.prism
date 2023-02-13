@@ -1,0 +1,277 @@
+mdp
+const int xMax;
+const int yMax;
+const double slickness;
+//At North Border
+formula NORTH_BORDER = (y=yMax);
+formula NOT_NORTH_BORDER = (NORTH_BORDER=false);
+//At East Border
+formula EAST_BORDER = (x=xMax);
+formula NOT_EAST_BORDER = (EAST_BORDER=false);
+//At South Border
+formula SOUTH_BORDER = (y=0);
+formula NOT_SOUTH_BORDER = (SOUTH_BORDER=false);
+//At West Border
+formula WEST_BORDER = (x=0);
+formula NOT_WEST_BORDER = (WEST_BORDER=false);
+
+//COLLISION
+formula COLLISION = ((obstacle1_x=x) & (obstacle1_y=y)) | ((obstacle2_x=x) & (obstacle2_y=y));
+formula NOT_COLLISION = (COLLISION = false);
+
+
+//obstacle1
+formula obstacle1_random_1 = obstacle1_x=0 & obstacle1_y=yMax;
+formula obstacle1_random_2 = obstacle1_x>0 & obstacle1_x <xMax & obstacle1_y=yMax;
+formula obstacle1_random_3 = obstacle1_x = xMax & obstacle1_y=yMax;
+formula obstacle1_random_4 = obstacle1_x=0 & obstacle1_y>0 & obstacle1_y<yMax;
+formula obstacle1_random_5 = obstacle1_x>0 & obstacle1_y>0 & obstacle1_y<yMax & obstacle1_x<xMax;
+formula obstacle1_random_6 = obstacle1_x=xMax & obstacle1_y>0 & obstacle1_y<yMax;
+formula obstacle1_random_7 = obstacle1_x=0 & obstacle1_y=0;
+formula obstacle1_random_8 = obstacle1_x>0 & obstacle1_y=0 & obstacle1_x <xMax;
+formula obstacle1_random_9 = obstacle1_x=xMax & obstacle1_y=0;
+
+
+//obstacle2
+formula obstacle2_random_1 = obstacle2_x=0 & obstacle2_y=yMax;
+formula obstacle2_random_2 = obstacle2_x>0 & obstacle2_x <xMax & obstacle2_y=yMax;
+formula obstacle2_random_3 = obstacle2_x = xMax & obstacle2_y=yMax;
+formula obstacle2_random_4 = obstacle2_x=0 & obstacle2_y>0 & obstacle2_y<yMax;
+formula obstacle2_random_5 = obstacle2_x>0 & obstacle2_y>0 & obstacle2_y<yMax & obstacle2_x<xMax;
+formula obstacle2_random_6 = obstacle2_x=xMax & obstacle2_y>0 & obstacle2_y<yMax;
+formula obstacle2_random_7 = obstacle2_x=0 & obstacle2_y=0;
+formula obstacle2_random_8 = obstacle2_x>0 & obstacle2_y=0 & obstacle2_x <xMax;
+formula obstacle2_random_9 = obstacle2_x=xMax & obstacle2_y=0;
+
+
+
+
+//Done
+formula IS_NOT_DONE = (done=false);
+formula IS_DONE = (done = true);
+
+module agent
+	//Location
+	x : [0..xMax] init 0;
+	y : [0..yMax]init 0;
+	done : bool init false;
+	//NORTH actions
+	[north] NOT_NORTH_BORDER & IS_NOT_DONE & NOT_COLLISION-> (1-slickness) : (y'=y+1) + slickness : true;
+	[north] NORTH_BORDER & IS_NOT_DONE & NOT_COLLISION -> (1-slickness) :(y'=y) + slickness : true;
+	//EAST actions
+	[east] NOT_EAST_BORDER & IS_NOT_DONE & NOT_COLLISION -> (1-slickness) :(x'=x+1) + slickness : true;
+	[east] EAST_BORDER & IS_NOT_DONE & NOT_COLLISION -> (1-slickness) :(x'=x) + slickness : true;
+	//SOUTH actions
+	[south] NOT_SOUTH_BORDER & IS_NOT_DONE & NOT_COLLISION -> (1-slickness) :(y'=y-1) + slickness : true;
+	[south] SOUTH_BORDER & IS_NOT_DONE & NOT_COLLISION -> (1-slickness) :(y'=y) + slickness : true;
+	//WEST actions
+	[west] NOT_WEST_BORDER & IS_NOT_DONE & NOT_COLLISION-> (1-slickness) :(x'=x-1) + slickness : true;
+	[west] WEST_BORDER & IS_NOT_DONE & NOT_COLLISION -> (1-slickness) :(x'=x)  + slickness : true;
+
+	[north] COLLISION  & IS_NOT_DONE -> (done'=true);
+	[east] COLLISION & IS_NOT_DONE-> (done'=true);
+	[south] COLLISION & IS_NOT_DONE -> (done'=true);
+	[west] COLLISION & IS_NOT_DONE -> (done'=true);
+
+
+	[north] COLLISION  & IS_DONE -> (done'=done);
+	[east] COLLISION & IS_DONE-> (done'=done);
+	[south] COLLISION & IS_DONE -> (done'=done);
+	[west] COLLISION & IS_DONE -> (done'=done);
+endmodule
+
+module obstacle1
+	obstacle1_x : [0..xMax] init xMax;
+	obstacle1_y : [0..yMax] init yMax;
+
+
+	//1223
+	//4556
+	//4556
+	//7889
+
+	//1
+	[north] obstacle1_random_1 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//2
+	[north] obstacle1_random_2 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//3
+	[north] obstacle1_random_3 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//4
+	[north] obstacle1_random_4 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//5
+	[north] obstacle1_random_5 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//6
+	[north] obstacle1_random_6 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//7
+	[north] obstacle1_random_7 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//8
+	[north] obstacle1_random_8 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//9
+	[north] obstacle1_random_9 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+
+
+
+	//1
+	[east] obstacle1_random_1 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//2
+	[east] obstacle1_random_2 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//3
+	[east] obstacle1_random_3 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//4
+	[east] obstacle1_random_4 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//5
+	[east] obstacle1_random_5 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//6
+	[east] obstacle1_random_6 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//7
+	[east] obstacle1_random_7 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//8
+	[east] obstacle1_random_8 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//9
+	[east] obstacle1_random_9 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+
+
+
+	//1
+	[south] obstacle1_random_1 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//2
+	[south] obstacle1_random_2 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//3
+	[south] obstacle1_random_3 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//4
+	[south] obstacle1_random_4 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//5
+	[south] obstacle1_random_5 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//6
+	[south] obstacle1_random_6 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//7
+	[south] obstacle1_random_7 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//8
+	[south] obstacle1_random_8 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//9
+	[south] obstacle1_random_9 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+
+
+	//1
+	[west] obstacle1_random_1 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//2
+	[west] obstacle1_random_2 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//3
+	[west] obstacle1_random_3 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//4
+	[west] obstacle1_random_4 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//5
+	[west] obstacle1_random_5 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//6
+	[west] obstacle1_random_6 -> 0.25: (obstacle1_y'=obstacle1_y-1) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//7
+	[west] obstacle1_random_7 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x);
+	//8
+	[west] obstacle1_random_8 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x+1) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+	//9
+	[west] obstacle1_random_9 -> 0.25: (obstacle1_y'=obstacle1_y) + 0.25 : (obstacle1_x'=obstacle1_x) + 0.25: (obstacle1_y'=obstacle1_y+1) + 0.25: (obstacle1_x'=obstacle1_x-1);
+endmodule
+
+module obstacle2
+	obstacle2_x : [0..xMax] init xMax;
+	obstacle2_y : [0..yMax] init yMax;
+
+
+	//1223
+	//4556
+	//4556
+	//7889
+
+	//1
+	[north] obstacle2_random_1 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//2
+	[north] obstacle2_random_2 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//3
+	[north] obstacle2_random_3 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//4
+	[north] obstacle2_random_4 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//5
+	[north] obstacle2_random_5 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//6
+	[north] obstacle2_random_6 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//7
+	[north] obstacle2_random_7 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//8
+	[north] obstacle2_random_8 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//9
+	[north] obstacle2_random_9 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+
+
+
+	//1
+	[east] obstacle2_random_1 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//2
+	[east] obstacle2_random_2 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//3
+	[east] obstacle2_random_3 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//4
+	[east] obstacle2_random_4 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//5
+	[east] obstacle2_random_5 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//6
+	[east] obstacle2_random_6 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//7
+	[east] obstacle2_random_7 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//8
+	[east] obstacle2_random_8 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//9
+	[east] obstacle2_random_9 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+
+
+
+	//1
+	[south] obstacle2_random_1 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//2
+	[south] obstacle2_random_2 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//3
+	[south] obstacle2_random_3 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//4
+	[south] obstacle2_random_4 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//5
+	[south] obstacle2_random_5 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//6
+	[south] obstacle2_random_6 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//7
+	[south] obstacle2_random_7 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//8
+	[south] obstacle2_random_8 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//9
+	[south] obstacle2_random_9 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+
+
+	//1
+	[west] obstacle2_random_1 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//2
+	[west] obstacle2_random_2 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//3
+	[west] obstacle2_random_3 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//4
+	[west] obstacle2_random_4 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//5
+	[west] obstacle2_random_5 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//6
+	[west] obstacle2_random_6 -> 0.25: (obstacle2_y'=obstacle2_y-1) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//7
+	[west] obstacle2_random_7 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x);
+	//8
+	[west] obstacle2_random_8 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x+1) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+	//9
+	[west] obstacle2_random_9 -> 0.25: (obstacle2_y'=obstacle2_y) + 0.25 : (obstacle2_x'=obstacle2_x) + 0.25: (obstacle2_y'=obstacle2_y+1) + 0.25: (obstacle2_x'=obstacle2_x-1);
+
+endmodule
+
+
+rewards
+	[north] NOT_COLLISION : 100;
+	[east] NOT_COLLISION : 100;
+	[south] NOT_COLLISION: 100;
+	[west] NOT_COLLISION : 100;
+endrewards
+
+
+label "collide" = COLLISION;

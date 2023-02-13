@@ -1,0 +1,114 @@
+% This file was created with tikzplotlib v0.10.1.
+\begin{tikzpicture}
+
+\definecolor{darkgray176}{RGB}{176,176,176}
+
+\begin{axis}[
+colorbar,
+colorbar style={ylabel={}},
+colormap={mymap}{[1pt]
+  rgb(0pt)=(0.0313725490196078,0.188235294117647,0.419607843137255);
+  rgb(1pt)=(0.0313725490196078,0.317647058823529,0.611764705882353);
+  rgb(2pt)=(0.129411764705882,0.443137254901961,0.709803921568627);
+  rgb(3pt)=(0.258823529411765,0.572549019607843,0.776470588235294);
+  rgb(4pt)=(0.419607843137255,0.682352941176471,0.83921568627451);
+  rgb(5pt)=(0.619607843137255,0.792156862745098,0.882352941176471);
+  rgb(6pt)=(0.776470588235294,0.858823529411765,0.937254901960784);
+  rgb(7pt)=(0.870588235294118,0.92156862745098,0.968627450980392);
+  rgb(8pt)=(0.968627450980392,0.984313725490196,1)
+},
+point meta max=1,
+point meta min=0,
+tick align=outside,
+tick pos=left,
+x grid style={darkgray176},
+xmin=0, xmax=4,
+xtick style={color=black},
+y grid style={darkgray176},
+ymin=0, ymax=4,
+ytick style={color=black}
+]
+\addplot graphics [includegraphics cmd=\pgfimage,xmin=0, xmax=4, ymin=0, ymax=4] {frozen_lake-000.png};
+\draw (axis cs:0.5,0.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{0};
+\draw (axis cs:1.5,0.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{1};
+\draw (axis cs:2.5,0.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{2};
+\draw (axis cs:3.5,0.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{3};
+\draw (axis cs:0.5,1.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{4};
+\draw (axis cs:1.5,1.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{5};
+\draw (axis cs:2.5,1.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{6};
+\draw (axis cs:3.5,1.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{7};
+\draw (axis cs:0.5,2.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{8};
+\draw (axis cs:1.5,2.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{9};
+\draw (axis cs:2.5,2.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{10};
+\draw (axis cs:3.5,2.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{11};
+\draw (axis cs:0.5,3.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{12};
+\draw (axis cs:1.5,3.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{13};
+\draw (axis cs:2.5,3.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{14};
+\draw (axis cs:3.5,3.5) node[
+  scale=0.5,
+  text=black,
+  rotate=0.0
+]{15};
+\end{axis}
+
+\end{tikzpicture}
