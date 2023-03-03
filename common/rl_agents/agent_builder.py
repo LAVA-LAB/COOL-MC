@@ -27,6 +27,7 @@ class AgentBuilder():
     def build_agent(model_root_folder_path, command_line_arguments, observation_space, action_space, all_actions):
         #print('Build model with', model_root_folder_path, command_line_arguments)
         #print('Environment', observation_space.shape, action_space.n)
+        model_root_folder_path = model_root_folder_path.replace("file://","")
         try:
             state_dimension = observation_space.shape[0]
         except:
