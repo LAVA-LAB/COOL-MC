@@ -245,6 +245,8 @@ with Reactive Defense Methods} },
 }
 `
 
+Do you have any questions or ideas for collaborative work? Contact us via \url{dgross@science.ru.nl}.
+
 
 ## Contributors
 The main developer of this repository is Dennis Gross.
