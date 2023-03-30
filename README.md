@@ -238,14 +238,14 @@ with Reactive Defense Methods:
 @inproceedings{Gross2023cmarl,
 	title = { {Model Checking for Adversarial Multi-Agent Reinforcement Learning
 with Reactive Defense Methods} },
-	author = {Dennis Gross},
+	author = {Gross, Dennis and         Christoph Schmidl and         Jansen, Nils and         P{\'e}rez, Guillermo A.      },
 	booktitle = { {ICAPS} },
 	year = { 2023 },
 	url = { }
 }
 `
 
-Do you have any questions or ideas for collaborative work? Contact us via \url{dgross@science.ru.nl}.
+Do you have any questions or ideas for collaborative work? Contact us via dgross@science.ru.nl.
 
 
 ## Contributors
