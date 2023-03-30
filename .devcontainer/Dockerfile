@@ -13,6 +13,7 @@ RUN apt-get -y install build-essential git cmake libboost-all-dev libcln-dev lib
 WORKDIR /home/vscode/
 RUN git clone https://github.com/moves-rwth/storm.git
 WORKDIR /home/vscode/storm
+RUN git checkout tags/1.7.0
 RUN mkdir build
 RUN pwd
 RUN ls
@@ -27,6 +28,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     virtualenv
 
 RUN git clone https://github.com/moves-rwth/pycarl.git
+RUN git checkout tags/2.1.0
 WORKDIR /home/vscode/pycarl
 RUN apt-get -y install python3 python3-pip python3-dev
 RUN apt-get -y install python-is-python3
@@ -35,6 +37,7 @@ RUN python setup.py build_ext develop
 WORKDIR /home/vscode/
 
 RUN git clone https://github.com/moves-rwth/stormpy.git
+RUN git checkout tags/1.7.0
 WORKDIR /home/vscode/stormpy
 RUN python setup.py build_ext --storm-dir /storm/build/ develop
 
