@@ -19,7 +19,7 @@
     "workspaceFolder": "/workspaces/coolmc",
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",
-    "postCreateCommand": "pip install -r /workspaces/COOL-MC/requirements.txt",
+    "postCreateCommand": "pip install -r /workspaces/coolmc/requirements.txt",
     "postStartCommand": "mlflow server --h 0.0.0.0 &"
 
 	// Configure tool-specific properties.

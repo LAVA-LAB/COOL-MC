@@ -145,7 +145,7 @@ Installing Visual Studio Code (VSCode) is a simple process, and can be done by f
 Open Remote Explorer, add (+), clone repository in container volume, add GITHUB-REPOSITORY URL, write coolmc volume, and coolmc target.
 Afterwards, the docker container will be created (it takes time).
 
-Next, you'll want to open the Remote Explorer in VSCode and add a new connection (+ button). You'll then want to clone your the COOL-MC repository into a container volume. To do this, you'll need to provide the GitHub repository https://github.com/DennisGross/COOL-MCv3 and specify the volume and target as "coolmc volume" and "coolmc target" respectively.
+Next, you'll want to open the Remote Explorer in VSCode and add a new connection (+ button). You'll then want to clone your the COOL-MC repository into a container volume. To do this, you'll need to provide the GitHub repository https://github.com/LAVA-LAB/COOL-MC and specify the volume and target as "coolmc volume" and "coolmc target" respectively.
 
 Verify that everything works: `python run_tests.py`
 
