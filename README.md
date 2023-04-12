@@ -145,6 +145,8 @@ Installing Visual Studio Code (VSCode) is a simple process, and can be done by f
 Open Remote Explorer, clone repository in container volume, add https://github.com/LAVA-LAB/COOL-MC, write coolmc for each of the prompts.
 Afterwards, the docker container will be created (it takes time).
 
+Inside the working directory, install all Python packages `pip install -r requirements.txt
+
 Verify that everything works: `python run_tests.py`
 
 ## Examples
