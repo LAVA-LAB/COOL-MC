@@ -10,16 +10,16 @@ RUN apt-get -y install build-essential git cmake libboost-all-dev libcln-dev lib
 #RUN apt-get update
 #RUN apt-get -y install spot libspot-dev spot-doc python3-spot
 
-WORKDIR /home/vscode/
-RUN git clone https://github.com/moves-rwth/storm.git
-WORKDIR /home/vscode/storm
-RUN git checkout tags/1.7.0
-RUN mkdir build
-RUN pwd
-RUN ls
-WORKDIR /home/vscode/storm/build
-RUN cmake ..
-RUN make
+#WORKDIR /home/vscode/
+#RUN git clone https://github.com/moves-rwth/storm.git
+#WORKDIR /home/vscode/storm
+#RUN git checkout tags/1.7.0
+#RUN mkdir build
+#RUN pwd
+#RUN ls
+#WORKDIR /home/vscode/storm/build
+#RUN cmake ..
+#RUN make
 
 WORKDIR /home/vscode
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
@@ -27,19 +27,19 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     uuid-dev \
     virtualenv
 
-RUN git clone https://github.com/moves-rwth/pycarl.git
-WORKDIR /home/vscode/pycarl
-RUN git checkout tags/2.1.0
+#RUN git clone https://github.com/moves-rwth/pycarl.git
+#WORKDIR /home/vscode/pycarl
+#RUN git checkout tags/2.1.0
 RUN apt-get -y install python3 python3-pip python3-dev
 RUN apt-get -y install python-is-python3
-RUN python setup.py build_ext develop
+#RUN python setup.py build_ext develop
 
 WORKDIR /home/vscode/
 
-RUN git clone https://github.com/moves-rwth/stormpy.git
-WORKDIR /home/vscode/stormpy
-RUN git checkout tags/1.7.0
-RUN python setup.py build_ext --storm-dir /storm/build/ develop
+#RUN git clone https://github.com/moves-rwth/stormpy.git
+#WORKDIR /home/vscode/stormpy
+#RUN git checkout tags/1.7.0
+#RUN python setup.py build_ext --storm-dir /storm/build/ develop
 
 #WORKDIR /workspaces/coolmc
 #COPY requirements.txt .
