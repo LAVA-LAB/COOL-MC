@@ -42,9 +42,9 @@ WORKDIR /home/vscode/
 #RUN python setup.py build_ext --storm-dir /storm/build/ develop
 
 #WORKDIR /workspaces/coolmc
-WORKDIR /
-COPY ../requirements.txt .
-RUN pip install -r requirements.txt
+#WORKDIR /
+#COPY ../requirements.txt .
+#RUN pip install -r requirements.txt
 
 
 #COPY common common
