@@ -1,0 +1,928 @@
+// Exported by storm
+// Original model type: MDP
+@type: MDP
+@parameters
+
+@reward_models
+
+@nr_states
+109
+@nr_choices
+349
+@model
+state 0 init
+//[!done	& !passenger	& x=2	& y=2	& fuel=5	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		1 : 1
+	action EAST
+		2 : 1
+	action SOUTH
+		3 : 1
+	action WEST
+		4 : 1
+state 1
+//[!done	& !passenger	& x=2	& y=3	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		5 : 1
+	action EAST
+		6 : 1
+	action SOUTH
+		7 : 1
+	action WEST
+		8 : 1
+state 2
+//[!done	& !passenger	& x=3	& y=2	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		6 : 1
+	action EAST
+		9 : 1
+	action SOUTH
+		10 : 1
+	action WEST
+		7 : 1
+state 3
+//[!done	& !passenger	& x=2	& y=1	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		7 : 1
+	action EAST
+		10 : 1
+	action SOUTH
+		11 : 1
+	action WEST
+		12 : 1
+state 4
+//[!done	& !passenger	& x=1	& y=2	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		13 : 1
+	action EAST
+		0 : 1
+	action SOUTH
+		14 : 1
+	action WEST
+		15 : 1
+state 5
+//[!done	& !passenger	& x=2	& y=4	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		16 : 1
+	action EAST
+		17 : 1
+	action SOUTH
+		18 : 1
+	action WEST
+		19 : 1
+state 6
+//[!done	& !passenger	& x=3	& y=3	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		17 : 1
+	action EAST
+		20 : 1
+	action SOUTH
+		21 : 1
+	action WEST
+		18 : 1
+state 7
+//[!done	& !passenger	& x=2	& y=2	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		18 : 1
+	action EAST
+		21 : 1
+	action SOUTH
+		22 : 1
+	action WEST
+		23 : 1
+state 8
+//[!done	& !passenger	& x=1	& y=3	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		19 : 1
+	action EAST
+		18 : 1
+	action SOUTH
+		23 : 1
+	action WEST
+		24 : 1
+state 9
+//[!done	& !passenger	& x=4	& y=2	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		20 : 1
+	action EAST
+		25 : 1
+	action SOUTH
+		26 : 1
+	action WEST
+		21 : 1
+state 10
+//[!done	& !passenger	& x=3	& y=1	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		21 : 1
+	action EAST
+		26 : 1
+	action SOUTH
+		27 : 1
+	action WEST
+		22 : 1
+state 11
+//[!done	& !passenger	& x=2	& y=0	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		22 : 1
+	action EAST
+		27 : 1
+	action SOUTH
+		28 : 1
+	action WEST
+		29 : 1
+state 12
+//[!done	& !passenger	& x=1	& y=1	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		23 : 1
+	action EAST
+		22 : 1
+	action SOUTH
+		29 : 1
+	action WEST
+		30 : 1
+state 13
+//[!done	& !passenger	& x=1	& y=3	& fuel=5	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		31 : 1
+	action EAST
+		1 : 1
+	action SOUTH
+		4 : 1
+	action WEST
+		32 : 1
+state 14
+//[!done	& !passenger	& x=1	& y=1	& fuel=5	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		4 : 1
+	action EAST
+		3 : 1
+	action SOUTH
+		33 : 1
+	action WEST
+		34 : 1
+state 15
+//[!done	& !passenger	& x=0	& y=2	& fuel=5	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		32 : 1
+	action EAST
+		4 : 1
+	action SOUTH
+		34 : 1
+	action WEST
+		35 : 1
+state 16
+//[!done	& !passenger	& x=2	& y=4	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		36 : 1
+	action EAST
+		37 : 1
+	action SOUTH
+		38 : 1
+	action WEST
+		39 : 1
+state 17
+//[!done	& !passenger	& x=3	& y=4	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		37 : 1
+	action EAST
+		40 : 1
+	action SOUTH
+		41 : 1
+	action WEST
+		36 : 1
+state 18
+//[!done	& !passenger	& x=2	& y=3	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		36 : 1
+	action EAST
+		41 : 1
+	action SOUTH
+		42 : 1
+	action WEST
+		43 : 1
+state 19
+//[!done	& !passenger	& x=1	& y=4	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		39 : 1
+	action EAST
+		36 : 1
+	action SOUTH
+		43 : 1
+	action WEST
+		44 : 1
+state 20
+//[!done	& !passenger	& x=4	& y=3	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		40 : 1
+	action EAST
+		45 : 1
+	action SOUTH
+		46 : 1
+	action WEST
+		41 : 1
+state 21
+//[!done	& !passenger	& x=3	& y=2	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		41 : 1
+	action EAST
+		46 : 1
+	action SOUTH
+		47 : 1
+	action WEST
+		42 : 1
+state 22
+//[!done	& !passenger	& x=2	& y=1	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		42 : 1
+	action EAST
+		47 : 1
+	action SOUTH
+		48 : 1
+	action WEST
+		49 : 1
+state 23
+//[!done	& !passenger	& x=1	& y=2	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		13 : 1
+	action EAST
+		0 : 1
+	action SOUTH
+		14 : 1
+	action WEST
+		15 : 1
+state 24
+//[!done	& !passenger	& x=0	& y=3	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		44 : 1
+	action EAST
+		43 : 1
+	action SOUTH
+		50 : 1
+	action WEST
+		51 : 1
+state 25
+//[!done	& !passenger	& x=4	& y=2	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		45 : 1
+	action EAST
+		46 : 1
+	action SOUTH
+		52 : 1
+	action WEST
+		53 : 1
+state 26
+//[!done	& !passenger	& x=4	& y=1	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		46 : 1
+	action EAST
+		52 : 1
+	action SOUTH
+		54 : 1
+	action WEST
+		47 : 1
+state 27
+//[!done	& !passenger	& x=3	& y=0	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		47 : 1
+	action EAST
+		54 : 1
+	action SOUTH
+		55 : 1
+	action WEST
+		48 : 1
+state 28
+//[!done	& !passenger	& x=2	& y=0	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		56 : 1
+	action EAST
+		55 : 1
+	action SOUTH
+		48 : 1
+	action WEST
+		57 : 1
+state 29
+//[!done	& !passenger	& x=1	& y=0	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		49 : 1
+	action EAST
+		48 : 1
+	action SOUTH
+		57 : 1
+	action WEST
+		58 : 1
+state 30
+//[!done	& !passenger	& x=0	& y=1	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		50 : 1
+	action EAST
+		49 : 1
+	action SOUTH
+		58 : 1
+	action WEST
+		59 : 1
+state 31
+//[!done	& !passenger	& x=1	& y=4	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		60 : 1
+	action EAST
+		5 : 1
+	action SOUTH
+		8 : 1
+	action WEST
+		61 : 1
+state 32
+//[!done	& !passenger	& x=0	& y=3	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		61 : 1
+	action EAST
+		8 : 1
+	action SOUTH
+		62 : 1
+	action WEST
+		63 : 1
+state 33
+//[!done	& !passenger	& x=1	& y=0	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		12 : 1
+	action EAST
+		11 : 1
+	action SOUTH
+		64 : 1
+	action WEST
+		65 : 1
+state 34
+//[!done	& !passenger	& x=0	& y=1	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		62 : 1
+	action EAST
+		12 : 1
+	action SOUTH
+		65 : 1
+	action WEST
+		66 : 1
+state 35
+//[!done	& !passenger	& x=0	& y=2	& fuel=4	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		63 : 1
+	action EAST
+		67 : 1
+	action SOUTH
+		66 : 1
+	action WEST
+		62 : 1
+state 36
+//[!done	& !passenger	& x=2	& y=4	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		68 : 1
+	action EAST
+		69 : 1
+	action SOUTH
+		70 : 1
+	action WEST
+		71 : 1
+state 37
+//[!done	& !passenger	& x=3	& y=4	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		69 : 1
+	action EAST
+		72 : 1
+	action SOUTH
+		73 : 1
+	action WEST
+		68 : 1
+state 38
+//[!done	& !passenger	& x=2	& y=3	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		68 : 1
+	action EAST
+		73 : 1
+	action SOUTH
+		74 : 1
+	action WEST
+		75 : 1
+state 39
+//[!done	& !passenger	& x=1	& y=4	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		71 : 1
+	action EAST
+		68 : 1
+	action SOUTH
+		75 : 1
+	action WEST
+		76 : 1
+state 40
+//[!done	& !passenger	& x=4	& y=4	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		72 : 1
+	action EAST
+		72 : 1
+	action SOUTH
+		77 : 1
+	action WEST
+		69 : 1
+state 41
+//[!done	& !passenger	& x=3	& y=3	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		69 : 1
+	action EAST
+		77 : 1
+	action SOUTH
+		78 : 1
+	action WEST
+		70 : 1
+state 42
+//[!done	& !passenger	& x=2	& y=2	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		70 : 1
+	action EAST
+		78 : 1
+	action SOUTH
+		79 : 1
+	action WEST
+		80 : 1
+state 43
+//[!done	& !passenger	& x=1	& y=3	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		71 : 1
+	action EAST
+		70 : 1
+	action SOUTH
+		80 : 1
+	action WEST
+		81 : 1
+state 44
+//[!done	& !passenger	& x=0	& y=4	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		76 : 1
+	action EAST
+		71 : 1
+	action SOUTH
+		81 : 1
+	action WEST
+		76 : 1
+	action PICK_UP
+		82 : 1
+state 45
+//[!done	& !passenger	& x=4	& y=3	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		72 : 1
+	action EAST
+		77 : 1
+	action SOUTH
+		83 : 1
+	action WEST
+		73 : 1
+state 46
+//[!done	& !passenger	& x=4	& y=2	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		77 : 1
+	action EAST
+		83 : 1
+	action SOUTH
+		84 : 1
+	action WEST
+		78 : 1
+state 47
+//[!done	& !passenger	& x=3	& y=1	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		78 : 1
+	action EAST
+		84 : 1
+	action SOUTH
+		85 : 1
+	action WEST
+		79 : 1
+state 48
+//[!done	& !passenger	& x=2	& y=0	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		79 : 1
+	action EAST
+		85 : 1
+	action SOUTH
+		86 : 1
+	action WEST
+		87 : 1
+state 49
+//[!done	& !passenger	& x=1	& y=1	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		80 : 1
+	action EAST
+		79 : 1
+	action SOUTH
+		87 : 1
+	action WEST
+		88 : 1
+state 50
+//[!done	& !passenger	& x=0	& y=2	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		81 : 1
+	action EAST
+		80 : 1
+	action SOUTH
+		88 : 1
+	action WEST
+		89 : 1
+state 51
+//[!done	& !passenger	& x=0	& y=3	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		76 : 1
+	action EAST
+		75 : 1
+	action SOUTH
+		89 : 1
+	action WEST
+		81 : 1
+state 52
+//[!done	& !passenger	& x=4	& y=1	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		83 : 1
+	action EAST
+		84 : 1
+	action SOUTH
+		90 : 1
+	action WEST
+		91 : 1
+state 53
+//[!done	& !passenger	& x=3	& y=2	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		73 : 1
+	action EAST
+		83 : 1
+	action SOUTH
+		91 : 1
+	action WEST
+		74 : 1
+state 54
+//[!done	& !passenger	& x=4	& y=0	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		84 : 1
+	action EAST
+		90 : 1
+	action SOUTH
+		90 : 1
+	action WEST
+		85 : 1
+state 55
+//[!done	& !passenger	& x=3	& y=0	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		91 : 1
+	action EAST
+		90 : 1
+	action SOUTH
+		85 : 1
+	action WEST
+		86 : 1
+state 56
+//[!done	& !passenger	& x=2	& y=1	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		74 : 1
+	action EAST
+		91 : 1
+	action SOUTH
+		86 : 1
+	action WEST
+		92 : 1
+state 57
+//[!done	& !passenger	& x=1	& y=0	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		92 : 1
+	action EAST
+		86 : 1
+	action SOUTH
+		87 : 1
+	action WEST
+		93 : 1
+state 58
+//[!done	& !passenger	& x=0	& y=0	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		88 : 1
+	action EAST
+		87 : 1
+	action SOUTH
+		93 : 1
+	action WEST
+		93 : 1
+state 59
+//[!done	& !passenger	& x=0	& y=1	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		89 : 1
+	action EAST
+		92 : 1
+	action SOUTH
+		93 : 1
+	action WEST
+		88 : 1
+state 60
+//[!done	& !passenger	& x=1	& y=4	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		19 : 1
+	action EAST
+		16 : 1
+	action SOUTH
+		94 : 1
+	action WEST
+		95 : 1
+state 61
+//[!done	& !passenger	& x=0	& y=4	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		95 : 1
+	action EAST
+		19 : 1
+	action SOUTH
+		24 : 1
+	action WEST
+		95 : 1
+	action PICK_UP
+		96 : 1
+state 62
+//[!done	& !passenger	& x=0	& y=2	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		24 : 1
+	action EAST
+		23 : 1
+	action SOUTH
+		30 : 1
+	action WEST
+		97 : 1
+state 63
+//[!done	& !passenger	& x=0	& y=3	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		95 : 1
+	action EAST
+		94 : 1
+	action SOUTH
+		97 : 1
+	action WEST
+		24 : 1
+state 64
+//[!done	& !passenger	& x=1	& y=0	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		98 : 1
+	action EAST
+		28 : 1
+	action SOUTH
+		29 : 1
+	action WEST
+		99 : 1
+state 65
+//[!done	& !passenger	& x=0	& y=0	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		30 : 1
+	action EAST
+		29 : 1
+	action SOUTH
+		99 : 1
+	action WEST
+		99 : 1
+state 66
+//[!done	& !passenger	& x=0	& y=1	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		97 : 1
+	action EAST
+		98 : 1
+	action SOUTH
+		99 : 1
+	action WEST
+		30 : 1
+state 67
+//[!done	& !passenger	& x=1	& y=2	& fuel=3	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		13 : 1
+	action EAST
+		0 : 1
+	action SOUTH
+		14 : 1
+	action WEST
+		15 : 1
+state 68 empty
+//[!done	& !passenger	& x=2	& y=4	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		68 : 1
+state 69 empty
+//[!done	& !passenger	& x=3	& y=4	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		69 : 1
+state 70 empty
+//[!done	& !passenger	& x=2	& y=3	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		70 : 1
+state 71 empty
+//[!done	& !passenger	& x=1	& y=4	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		71 : 1
+state 72 empty
+//[!done	& !passenger	& x=4	& y=4	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		72 : 1
+state 73 empty
+//[!done	& !passenger	& x=3	& y=3	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		73 : 1
+state 74 empty
+//[!done	& !passenger	& x=2	& y=2	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		74 : 1
+state 75 empty
+//[!done	& !passenger	& x=1	& y=3	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		75 : 1
+state 76 empty
+//[!done	& !passenger	& x=0	& y=4	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		76 : 1
+state 77 empty
+//[!done	& !passenger	& x=4	& y=3	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		77 : 1
+state 78 empty
+//[!done	& !passenger	& x=3	& y=2	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		78 : 1
+state 79 empty
+//[!done	& !passenger	& x=2	& y=1	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		79 : 1
+state 80
+//[!done	& !passenger	& x=1	& y=2	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		13 : 1
+	action EAST
+		0 : 1
+	action SOUTH
+		14 : 1
+	action WEST
+		15 : 1
+state 81 empty
+//[!done	& !passenger	& x=0	& y=3	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		81 : 1
+state 82 empty
+//[!done	& passenger	& x=0	& y=4	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		82 : 1
+state 83 empty
+//[!done	& !passenger	& x=4	& y=2	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		83 : 1
+state 84 empty
+//[!done	& !passenger	& x=4	& y=1	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		84 : 1
+state 85 empty
+//[!done	& !passenger	& x=3	& y=0	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		85 : 1
+state 86 empty
+//[!done	& !passenger	& x=2	& y=0	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		86 : 1
+state 87 empty
+//[!done	& !passenger	& x=1	& y=0	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		87 : 1
+state 88 empty
+//[!done	& !passenger	& x=0	& y=1	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		88 : 1
+state 89 empty
+//[!done	& !passenger	& x=0	& y=2	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		89 : 1
+state 90 empty
+//[!done	& !passenger	& x=4	& y=0	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		90 : 1
+state 91 empty
+//[!done	& !passenger	& x=3	& y=1	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		91 : 1
+state 92 empty
+//[!done	& !passenger	& x=1	& y=1	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		92 : 1
+state 93 empty
+//[!done	& !passenger	& x=0	& y=0	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		93 : 1
+state 94
+//[!done	& !passenger	& x=1	& y=3	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		39 : 1
+	action EAST
+		38 : 1
+	action SOUTH
+		100 : 1
+	action WEST
+		51 : 1
+state 95
+//[!done	& !passenger	& x=0	& y=4	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		44 : 1
+	action EAST
+		39 : 1
+	action SOUTH
+		51 : 1
+	action WEST
+		44 : 1
+	action PICK_UP
+		101 : 1
+state 96
+//[!done	& passenger	& x=0	& y=4	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		101 : 1
+	action EAST
+		102 : 1
+	action SOUTH
+		103 : 1
+	action WEST
+		101 : 1
+state 97
+//[!done	& !passenger	& x=0	& y=2	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		51 : 1
+	action EAST
+		100 : 1
+	action SOUTH
+		59 : 1
+	action WEST
+		50 : 1
+state 98
+//[!done	& !passenger	& x=1	& y=1	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		100 : 1
+	action EAST
+		56 : 1
+	action SOUTH
+		57 : 1
+	action WEST
+		59 : 1
+state 99
+//[!done	& !passenger	& x=0	& y=0	& fuel=2	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		59 : 1
+	action EAST
+		57 : 1
+	action SOUTH
+		58 : 1
+	action WEST
+		58 : 1
+state 100
+//[!done	& !passenger	& x=1	& y=2	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		13 : 1
+	action EAST
+		0 : 1
+	action SOUTH
+		14 : 1
+	action WEST
+		15 : 1
+state 101
+//[!done	& passenger	& x=0	& y=4	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		82 : 1
+	action EAST
+		104 : 1
+	action SOUTH
+		105 : 1
+	action WEST
+		82 : 1
+state 102
+//[!done	& passenger	& x=1	& y=4	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		104 : 1
+	action EAST
+		106 : 1
+	action SOUTH
+		107 : 1
+	action WEST
+		82 : 1
+state 103
+//[!done	& passenger	& x=0	& y=3	& fuel=1	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action NORTH
+		82 : 1
+	action EAST
+		107 : 1
+	action SOUTH
+		108 : 1
+	action WEST
+		105 : 1
+state 104 empty
+//[!done	& passenger	& x=1	& y=4	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		104 : 1
+state 105 empty
+//[!done	& passenger	& x=0	& y=3	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		105 : 1
+state 106 empty
+//[!done	& passenger	& x=2	& y=4	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		106 : 1
+state 107 empty
+//[!done	& passenger	& x=1	& y=3	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		107 : 1
+state 108 empty
+//[!done	& passenger	& x=0	& y=2	& fuel=0	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action __NOLABEL__
+		108 : 1

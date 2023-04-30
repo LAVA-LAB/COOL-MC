@@ -6,7 +6,7 @@ import torch as T
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from common.rl_agents.agent import Agent
+from common.rl_agents.agent import DeterministicAgent
 from common.utilities.helper import *
 from collections import OrderedDict
 import torch
@@ -150,7 +150,7 @@ class DeepQNetwork(nn.Module):
         self.load_state_dict(torch.load(file_name))
 
 
-class DQNAgent(Agent):
+class DQNAgent(DeterministicAgent):
 
     def __init__(self, state_dimension : int, number_of_neurons, number_of_actions : List[int], epsilon : float =1, epsilon_dec : float =0.99999, epsilon_min : float = 0.1, gamma : float = 0.99, learning_rate : float = 0.001, replace : int =100, batch_size : int =64, replay_buffer_size : int =10000):
         """Initialize Deep Q-Learning Agent

@@ -6,7 +6,7 @@ import torch as T
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from common.rl_agents.agent import Agent
+from common.rl_agents.agent import *
 from collections import OrderedDict
 import torch
 import numpy as np
@@ -69,7 +69,7 @@ class PartialObservableManager:
 
 
 
-class CooperativePOAgents(Agent):
+class CooperativePOAgents(DeterministicAgent):
 
     def __init__(self, command_line_arguments, state_dimension : int, number_of_actions : int, combined_actions, number_of_neurons : int):
         """Initialize Deep Q-Learning Agent

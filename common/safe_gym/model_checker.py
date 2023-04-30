@@ -10,6 +10,7 @@ from stormpy.utility.utility import JsonContainerRational
 from stormpy.storage.storage import SimpleValuation
 import common
 from common.safe_gym.state_mapper import StateMapper
+from common.rl_agents.agent import *
 
 
 class ModelChecker():
@@ -86,6 +87,26 @@ class ModelChecker():
         action_name = env.action_mapper.actions[action_index]
         assert isinstance(action_name, str)
         return action_name
+
+    def __get_stochastic_action_for_state(self, env, agent: common.rl_agents, state: np.array) -> str:
+        """Get the action name for the current state
+
+        Args:
+            env (SafeGym): SafeGym
+            agent (common.rl_agents): RL agents
+            state (np.array): Numpy state
+
+        Returns:
+            str: Action name
+        """
+        assert str(agent.__class__).find("common.rl_agents") != -1
+        assert isinstance(state, np.ndarray)
+        action_idizes = agent.model_checking_select_action(state)
+        all_action_names = []
+        for action_index in action_idizes:
+            action_name = env.action_mapper.actions[action_index]
+            all_action_names.append(action_name)
+        return all_action_names
 
     def induced_markov_chain(self, agent: common.rl_agents, preprocessors, env,
                              constant_definitions: str,
@@ -171,13 +192,30 @@ class ModelChecker():
                 return False
 
             cond1 = False
-            selected_action = self.__get_action_for_state(env, agent, state)
-            # Check if selected action is available
-            if (selected_action in available_actions) is not True:
-                selected_action = available_actions[0]
+            # TODO: Depending on deterministic or stochastic agent, choose actions differently
+            if isinstance(agent, DeterministicAgent):
+                # If agent == deterministic
+                selected_action = self.__get_action_for_state(env, agent, state)
 
+                # Check if selected action is available
+                if (selected_action in available_actions) is not True:
+                    selected_action = available_actions[0]
 
-            cond1 = (current_action_name == selected_action)
+                cond1 = (current_action_name == selected_action)
+            elif isinstance(agent, StochasticAgent):
+                # If agent == stochastic
+                # Get list of potential actions
+                all_action_names = self.__get_stochastic_action_for_state(env, agent, state)
+                # For each action name that is not in available action, replace with first available action
+                for i in range(len(all_action_names)):
+                    if all_action_names[i] not in available_actions:
+                        all_action_names[i] = available_actions[0]
+                # Set cond1 true, if one of the selected actions is the current action.
+                if current_action_name in all_action_names:
+                    cond1 = True
+            else:
+                raise Exception("Agent type not supported")
+
             assert isinstance(cond1, bool)
             return cond1
 

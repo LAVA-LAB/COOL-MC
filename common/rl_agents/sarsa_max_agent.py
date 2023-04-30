@@ -1,12 +1,12 @@
 import numpy as np
 import pickle
 import os
-from common.rl_agents.agent import Agent
+from common.rl_agents.agent import DeterministicAgent
 import os
 import mlflow
 import shutil
 
-class SarsaMaxAgent(Agent):
+class SarsaMaxAgent(DeterministicAgent):
 
     def __init__(self, number_of_actions=6, epsilon=0.5, epsilon_dec=0.9999, epsilon_min=0.01, alpha=0.6, gamma = 0.9):
         super().__init__()

@@ -10,8 +10,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.distributions import Categorical
-from common.rl_agents.agent import Agent
-
+from common.rl_agents.agent import StochasticAgent
+from common.utilities.helper import *
 
 class Policy(nn.Module):
     def __init__(self, s_size=4, h_size=16, a_size=2, lr=0.001):
@@ -25,13 +25,27 @@ class Policy(nn.Module):
         x = self.fc2(x)
         return F.softmax(x, dim=1)
 
+    def get_action_idizes_not_zero(self, probs):
+        action_indexes = []
+        for i, prob in enumerate(probs):
+            if prob != 0:
+                action_indexes.append(i)
+        return action_indexes
+
+
     def act(self, state):
         state = np.array(state)
-        state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        state = torch.from_numpy(state).float().unsqueeze(0).to(DEVICE)
         probs = self.forward(state).cpu()
         m = Categorical(probs)
         action = m.sample()
         return action.item(), m.log_prob(action), int(torch.argmax(probs))
+
+    def stochastic_act(self, state):
+        state = np.array(state)
+        state = torch.from_numpy(state).float().unsqueeze(0).to(DEVICE)
+        probs = self.forward(state).cpu()
+        return self.get_action_idizes_not_zero(probs.tolist()[0])
 
     def save_checkpoint(self, file_name : str):
         """Save model.
@@ -49,7 +63,7 @@ class Policy(nn.Module):
         """
         self.load_state_dict(torch.load(file_name))
 
-class ReinforceAgent(Agent):
+class ReinforceAgent(StochasticAgent):
 
     def __init__(self, state_dimension, hidden_layer_size, number_of_actions, gamma, lr):
         super().__init__()
@@ -60,13 +74,12 @@ class ReinforceAgent(Agent):
 
 
     def select_action(self, state : np.ndarray, deploy : bool =False):
-
         action_index, log_prob, max_action = self.policy.act(state)
-        if deploy:
-            return max_action
-        else:
-            self.saved_log_probs.append(log_prob)
-            return action_index
+        self.saved_log_probs.append(log_prob)
+        return action_index
+
+    def model_checking_select_action(self, state : np.ndarray):
+        return self.policy.stochastic_act(state)
 
 
     def store_experience(self, state  : np.ndarray, action : int, reward : float, next_state : np.ndarray, terminal : bool):

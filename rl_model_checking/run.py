@@ -7,6 +7,7 @@ from typing import Any, Dict
 from common.utilities.project import Project
 from common.safe_gym.safe_gym import SafeGym
 from common.interpreter.interpreter_builder import *
+from common.rl_agents.agent import *
 
 def prepare_prop(prop):
     prepared = False
@@ -77,13 +78,20 @@ if __name__ == '__main__':
     m_project.mlflow_bridge.log_result(mdp_reward_result)
 
     run_id = m_project.mlflow_bridge.get_run_id()
-    print(f'{original_prop}:\t{mdp_reward_result}')
-    print(f'Model Size:\t\t{model_checking_info["model_size"]}')
-    print(f'Number of Transitions:\t{model_checking_info["model_transitions"]}')
-    print(f'Model Building Time:\t{model_checking_info["model_building_time"]}')
-    print(f'Model Checking Time:\t{model_checking_info["model_checking_time"]}')
-    print("Constant definitions:\t" + m_project.command_line_arguments['constant_definitions'])
-    print("Run ID: " + run_id)
+    if isinstance(m_project.agent, DeterministicAgent):
+        print(f'{original_prop}:\t{mdp_reward_result}')
+        print(f'Model Size:\t\t{model_checking_info["model_size"]}')
+        print(f'Number of Transitions:\t{model_checking_info["model_transitions"]}')
+        print(f'Model Building Time:\t{model_checking_info["model_building_time"]}')
+        print(f'Model Checking Time:\t{model_checking_info["model_checking_time"]}')
+        print("Constant definitions:\t" + m_project.command_line_arguments['constant_definitions'])
+        print("Run ID: " + run_id)
+    elif isinstance(m_project.agent, StochasticAgent):
+        print("MDP")
+        print(f'Model Size:\t\t{model_checking_info["model_size"]}')
+        print(f'Number of Transitions:\t{model_checking_info["model_transitions"]}')
+
+
 
     # Interpreter
     interpreter = InterpreterBuilder.build_interpreter(m_project.command_line_arguments['interpreter'])

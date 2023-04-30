@@ -4,13 +4,12 @@ import mlflow
 import os
 import shutil
 from typing import List
-from common.rl_agents.agent import Agent
+from common.rl_agents.agent import DeterministicAgent
 import numpy as np
 import numpy as np
-from common.rl_agents.agent import Agent
 import os
 
-class HillClimbingAgent(Agent):
+class HillClimbingAgent(DeterministicAgent):
 
     def __init__(self, state_dimension, number_of_actions, gamma, noise_scale):
         super().__init__()

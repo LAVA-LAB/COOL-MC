@@ -11,14 +11,14 @@ from collections import deque
 import math
 import torch
 import numpy as np
-from common.rl_agents.agent import Agent
+from common.rl_agents.agent import DeterministicAgent
 from common.rl_agents.dqn_agent import DQNAgent
 from common.rl_agents.partial_observable_manager import *
 
 
 
 
-class TurnBasedNAgents(Agent):
+class TurnBasedNAgents(DeterministicAgent):
 
     def __init__(self, command_line_arguments, state_dimension : int, number_of_actions : int, number_of_neurons : int):
         """Initialize Deep Q-Learning Agent
