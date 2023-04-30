@@ -1,4 +1,4 @@
-# COOL-MC
+# COOL-MC (Stochastic RL Policies)
 COOL-MC is a tool that combines state-of-the-art single-agent and multi-agent reinforcement learning with model checking.
 It builds upon the OpenAI gym and the probabilistic model checker Storm.
 COOL-MC includes a simulator for training policies in Markov decision processes (MDPs) using the OpenAI gym, a model builder from Storm that allows the verification of these policies using callback functions, and algorithms for obtaining performance bounds on permissive policies.
