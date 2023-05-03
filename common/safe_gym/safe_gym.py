@@ -3,9 +3,9 @@ This module contains the Safe Gym.
 """
 import math
 from typing import Tuple, Union
-import gym
-from gym import spaces
-from gym.spaces import Discrete
+import gymnasium as gym
+from gymnasium import spaces
+from gymnasium.spaces import Discrete
 import numpy as np
 from common.safe_gym.storm_bridge import StormBridge
 from common.safe_gym.action_mapper import ActionMapper
@@ -65,12 +65,13 @@ class SafeGym(gym.Env):
         n_state, reward, self.done = self.storm_bridge.step(action_name)
         self.steps += 1
         if self.steps >= self.max_steps:
+            self.truncated = True
             self.done = True
         self.state = n_state
         assert isinstance(self.state, np.ndarray)
         assert isinstance(reward, float) or isinstance(reward, int)
         assert isinstance(self.done, bool)
-        return self.state, reward, self.done, {}
+        return self.state, reward, self.done, self.truncated, {}
 
     def reset(self) -> np.ndarray:
         """Resets the Gym
@@ -81,5 +82,6 @@ class SafeGym(gym.Env):
         self.steps = 0
         self.state = self.storm_bridge.reset()
         self.done = False
+        self.truncated = False
         assert isinstance(self.state, np.ndarray)
         return self.state
