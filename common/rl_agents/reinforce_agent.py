@@ -11,6 +11,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.distributions import Categorical
 from common.rl_agents.agent import Agent
+from common.utilities.helper import *
 
 
 class Policy(nn.Module):
@@ -27,7 +28,7 @@ class Policy(nn.Module):
 
     def act(self, state):
         state = np.array(state)
-        state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+        state = torch.from_numpy(state).float().unsqueeze(0).to(DEVICE)
         probs = self.forward(state).cpu()
         m = Categorical(probs)
         action = m.sample()
