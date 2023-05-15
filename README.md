@@ -4,6 +4,19 @@ It builds upon the OpenAI gym and the probabilistic model checker Storm.
 COOL-MC includes a simulator for training policies in Markov decision processes (MDPs) using the OpenAI gym, a model builder from Storm that allows the verification of these policies using callback functions, and algorithms for obtaining performance bounds on permissive policies.
 It also measures the impact of adversarial attacks on policies and temporal logic properties, verifies the robustness of policies against adversarial attacks, and verifies countermeasures against these attacks.
 
+In the following diagram, we see the general workflow of COOL-MC.
+First, an agent is trained in an environment concerning a objective.
+Second, the policy is verified for further safety specifications.
+Then, the user can decide to further train the policy or to deploy the agent.
+Note that retraining does not guarantee the safety specification if the
+learning objective and the safety specification are mutually disjoint.
+
+![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/workflow.png)
+
+The verification process take the environment (modeled as an MDP via PRISM), the learned RL agent's policy, and optionally an adversarial attack configuration.
+The verifier outputs than the verification result.
+
+![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/verifier.png)
 
 ## Architecture
 We will first describe the main components of COOL-MC and then delve into the details.
