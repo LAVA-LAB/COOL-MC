@@ -165,6 +165,8 @@ Verify that everything works: `python run_tests.py`
 ## Examples
 For the visualization of the training process start MLFlow server in the background: `mlflow server -h 0.0.0.0 &`.
 
+![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/web_ui.png)
+
 The taxi agent has to pick up passengers and transport them to their destination without running out of fuel. The environment terminates as soon as the taxi agent does the predefined number of jobs. After the job is done, a new guest spawns randomly at one of the predefined locations.
 
 
