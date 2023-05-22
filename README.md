@@ -158,7 +158,7 @@ Installing Visual Studio Code (VSCode) is a simple process, and can be done by f
 Open Remote Explorer, clone repository in container volume, add https://github.com/LAVA-LAB/COOL-MC, write coolmc for each of the prompts.
 Afterwards, the docker container will be created (it takes time).
 
-Inside the working directory, install all Python packages `pip install -r requirements.txt
+Inside the working directory, install all Python packages `pip install -r requirements.txt`
 
 Verify that everything works: `python run_tests.py`
 
@@ -193,7 +193,7 @@ The following list contains all the major COOL-MC command line arguments. It doe
 |----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|----------------|
 | task                 | The type of task do you want to perform.                                                                                                                                                                                                                                                    | safe_training, rl_model_checking | safe_training  |
 | project_name         | The name of your project.                                                                                                                                                                                                                                                                   |                                                   | defaultproject |
-| parent_run_id        | Reference to previous experiment for retraining or verification.                                                                                                                                                                                                                            | PROJECT_IDs                                       |                |
+| parent_run_id        | Reference to previous experiment for retraining or verification.                                                                                                                                                                                                                            | EXPERIMENT_ID                                       |                |
 | num_episodes         | The number of training episodes.                                                                                                                                                                                                                                                            | INTEGER NUMBER                                    | 1000           |
 | eval_interval        | Interval for verification while safe_training.                                                                                                                                                                                                                                              | INTEGER NUMBER                                    | 9            |
 | sliding_window_size  | Sliding window size for reward averaging over episodes.                                                                                                                                                                                                                                     | INTEGER NUMBER                                    | 100            |
@@ -209,6 +209,46 @@ The following list contains all the major COOL-MC command line arguments. It doe
 | wrong_action_penalty | If an action is not available but still chosen by the policy, return a penalty of [DEFINED HERE].                                                                                                                                                                                           |                                                   |                |
 | reward_flag          | If true (1), the agent receives rewards instead of penalties.                                                                                                                                                                                                                               |                                                   | 0              |
 | seed                 | Random seed for PyTorch, Numpy, Python.                                                                                                                                                                                                                                                     | INTEGER NUMBER                                    | None (-1)      |
+
+
+## Local Installation
+Switch to the repository folder and define environment variable `COOL_MC="$PWD"`
+
+### (1) Install Storm
+0. `cd $COOL_MC`
+1. `git clone https://github.com/moves-rwth/storm.git`
+2. `cd storm`
+3. `mkdir build`
+4. `cd build`
+5. `cmake ..`
+6. `make -j 1`
+
+For more information about building Storm, click [here](https://www.stormchecker.org/documentation/obtain-storm/build.html).
+
+For testing the installation, follow the follow steps [here](https://www.stormchecker.org/documentation/obtain-storm/build.html#test-step-optional).
+
+### (2) Install PyCarl
+0. `cd $COOL_MC`
+1. `git clone https://github.com/moves-rwth/pycarl.git`
+2. `cd pycarl`
+3. `python setup.py build_ext --jobs 1 develop`
+
+If permission problems: `sudo chmod 777 /usr/local/lib/python3.8/dist-packages/` and run third command again.
+
+
+### (3) Install Stormpy
+0. `cd $COOL_MC`
+1. `git clone https://github.com/moves-rwth/stormpy.git`
+2. `cd stormpy`
+3. `python setup.py build_ext --storm-dir "${COOL_MC}/build/" --jobs 1 develop`
+
+For more information about the Stormpy installation, click [here](https://moves-rwth.github.io/stormpy/installation.html#installation-steps).
+
+For testing the installation, follow the steps [here](https://moves-rwth.github.io/stormpy/installation.html#testing-stormpy-installation).
+
+### (4) Install remaining python packages
+0. `cd $COOL_MC`
+1. `pip install -r requirements.txt`
 
 
 ## COOL-MC Publications
