@@ -214,7 +214,9 @@ The following list contains all the major COOL-MC command line arguments. It doe
 
 
 ## Local Installation
-Switch to the repository folder and define environment variable `COOL_MC="$PWD"`
+We recommend using the docker container in combination with VSCode.
+However, if you want to use COOL-MC on your local machine, clone this repository.
+Switch subsequently to the repository folder and define environment variable `COOL_MC="$PWD"`
 
 ### (1) Install Storm
 0. `cd $COOL_MC`
