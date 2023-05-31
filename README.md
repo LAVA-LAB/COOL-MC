@@ -17,9 +17,8 @@ The verifier outputs than the verification result.
 
 ![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/verifier.png)
 
-## An In-depth, Step-by-Step Example with COOL-MC
-
-To fully comprehend the power and potential of COOL-MC, let's dive into a detailed, step-by-step example. Our main objective here is twofold. First, we aim to train an RL (Reinforcement Learning) policy tailored towards a specific objective. Following that, we endeavor to measure the reachability probability denoted as $m := P(F E)$.
+## An Step-by-Step Example with COOL-MC
+To fully understand COOL-MC, let's dive into a detailed, step-by-step example. Our main objective here is twofold. First, we aim to train an RL (Reinforcement Learning) policy tailored towards a specific objective. Following that, we endeavor to measure the reachability probability denoted as $m := P(F E)$ of the trained RL agent.
 
 ![MDP](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/example_mdp.png)
 
@@ -50,8 +49,6 @@ Ultimately, we reach 'state E' and query the policy once more. The selected acti
 ![DTMC5](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc5.png)
 
 At this juncture, with the fully constructed induced DTMC, we are equipped to compute the reachability probability measure $m = 1$.
-
-
 
 
 ## Architecture
@@ -198,7 +195,7 @@ Inside the working directory, install all Python packages `pip install -r requir
 
 Verify that everything works: `python run_tests.py`
 
-## Examples
+## Example Executions
 For the visualization of the training process start MLFlow server in the background: `mlflow server -h 0.0.0.0 &`.
 
 ![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/web_ui.png)
