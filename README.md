@@ -17,52 +17,40 @@ The verifier outputs than the verification result.
 
 ![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/verifier.png)
 
-## Step-by-Step Example
-First, we train an RL policy to learn the specified objective.
-Second, we measure the reachability probability $m \coloneqq P(\lozenge E)$.
+## An In-depth, Step-by-Step Example with COOL-MC
 
+To fully comprehend the power and potential of COOL-MC, let's dive into a detailed, step-by-step example. Our main objective here is twofold. First, we aim to train an RL (Reinforcement Learning) policy tailored towards a specific objective. Following that, we endeavor to measure the reachability probability denoted as $m := P(F E)$.
 
 ![MDP](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/example_mdp.png)
 
-Note, the previous MDP needs to described in the PRISM language (next image).
+The image above displays a Markov Decision Process (MDP) – the environment for our RL policy training. Remember, this MDP requires description in the PRISM language, as depicted in the image below.
 
 ![PRISM Code](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/prism_code.png)
 
-With the trained policy and a reachability probability measure m := P(\lozenge E).
-To compute this measure, we need to build the DTMC incrementally.
-In COOL-MC, this part is done via callback-functions.
+Armed with a well-trained policy and the reachability probability measure, $m := P(F E)$, it's time to compute this measure. This computation requires the incremental construction of the induced Discrete Time Markov Chain (DTMC). Within COOL-MC, this process is handled via callback functions the following way.
 
-We begin with the initial state A, characterized by its coordinates (x=1, y=1).
+We initiate the incremental building process from the 'state A' (the initial state), defined by its unique coordinates (x=1, y=1).
 
 ![DTMC1](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc1.png)
 
-Next, we query the trained policy with the observation of A to determine the action, which in this case is the action UP. 
-Based on this action, we add the transitions from state A to other states, including the probabilities associated with these transitions.
-In this example, there is a 0.2 probability of transitioning to state B (x=2, y=2) and a 0.8 probability of staying in state A.
-
-
+Subsequently, we probe our trained policy using the observation of 'state A' to decide on an action. In this case, the action chosen is 'UP'. This choice influences the creation of transitions from 'state A' to potential future states, encapsulating the probabilities tied to these transitions. In this scenario, there is a 0.2 probability of transition to 'state B' (x=2, y=2), and a 0.8 likelihood of staying put in 'state A'.
 
 ![DTMC2](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc2.png)
 
-We continue the process by visiting each reachable state and querying the policy.
-In this example, state B is the next reachable state.
-When we query the policy with an observation of state B, the chosen action is RIGHT, which has a 0.2 probability of transitioning to state C (x=2, y=1), a 0.1 probability of returning to state B, and a 0.7 probability of transitioning to state E (x=3, y=1).
-
-
+The procedure continues by visiting every state reachable from the current state and querying the policy. Our next stop in this example is 'state B'. After probing the policy with an observation of 'state B', the action of choice becomes 'RIGHT'. This action presents a 0.2 probability of transition to 'state C' (x=2, y=1), a 0.1 probability of returning to 'state B', and a 0.7 likelihood of moving to 'state E' (x=3, y=1).
 
 ![DTMC3](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc3.png)
 
-Next, we visit state C and query the policy again. The chosen action at state C is UP, which leads back to state B.
-
+Next on our itinerary is 'state C'. On querying the policy again, the action chosen at 'state C' is 'UP', taking us back to 'state B'.
 
 ![DTMC4](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc4.png)
 
-Finally, we visit state E and query the policy. The chosen action is LEFT, and since this action results in a loop at state E, we have now visited all reachable states and completed the building process of the induced DTMC.
+Ultimately, we reach 'state E' and query the policy once more. The selected action here is 'LEFT', and since this action creates a loop at 'state E', we have visited all reachable states. This visitation completes the building process of our induced DTMC.
 
 ![DTMC5](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc5.png)
 
-With the induced DTMC built, we can now compute the reachability probability measure m := P(F E) to analyze the system's performance.
-In this simple example, P(F E) = 1.
+At this juncture, with the fully constructed induced DTMC, we are equipped to compute the reachability probability measure $m = 1$.
+
 
 
 
