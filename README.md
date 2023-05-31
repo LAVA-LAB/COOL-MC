@@ -1,22 +1,70 @@
 # COOL-MC
-COOL-MC is a tool that combines state-of-the-art single-agent and multi-agent reinforcement learning with model checking.
-It builds upon the OpenAI gym and the probabilistic model checker Storm.
-COOL-MC includes a simulator for training policies in Markov decision processes (MDPs) using the OpenAI gym, a model builder from Storm that allows the verification of these policies using callback functions, and algorithms for obtaining performance bounds on permissive policies.
-It also measures the impact of adversarial attacks on policies and temporal logic properties, verifies the robustness of policies against adversarial attacks, and verifies countermeasures against these attacks.
+COOL-MC is a tool designed to address several challenges associated with reinforcement learning (RL) systems, including the lack of interpretability, vulnerability to adversarial attacks coupled with inefficient defense methods, and learning unsafe behavior due to the limited expressiveness of reward functions.
+COOL-MC combines the capabilities of Farama gymnasium and the probabilistic model checker Storm.
+Its primary objective is to train RL policies in their environments that are modeled as Markov Decision Processes (MDPs), leveraging the Farama gym framework for this purpose.
+These policies are subsequently validated using Storm, focusing on addressing the previously mentioned challenges.
+COOL-MC comprises a simulator for RL policy training, a Storm-based model builder for policy verification using callback functions, and algorithms for establishing performance bounds on the trained policies.
 
 In the following diagram, we see the general workflow of COOL-MC.
-First, an agent is trained in an environment concerning a objective.
+First, an agent is trained in an environment (modeled as an MDP via PRISM) concerning a objective.
 Second, the policy is verified for further safety specifications.
 Then, the user can decide to further train the policy or to deploy the agent.
-Note that retraining does not guarantee the safety specification if the
-learning objective and the safety specification are mutually disjoint.
 
 ![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/workflow.png)
 
-The verification process take the environment (modeled as an MDP via PRISM), the learned RL agent's policy, and optionally an adversarial attack configuration.
+The verification process take the environment, the learned RL agent's policy, and optionally an adversarial attack and defense configuration.
 The verifier outputs than the verification result.
 
 ![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/verifier.png)
+
+## Step-by-Step Example
+First, we train an RL policy to learn the specified objective.
+Second, we measure the reachability probability $m \coloneqq P(\lozenge E)$.
+
+
+![MDP](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/example_mdp.png)
+
+Note, the previous MDP needs to described in the PRISM language (next image).
+
+![PRISM Code](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/prism_code.png)
+
+With the trained policy and a reachability probability measure m := P(\lozenge E).
+To compute this measure, we need to build the DTMC incrementally.
+In COOL-MC, this part is done via callback-functions.
+
+We begin with the initial state A, characterized by its coordinates (x=1, y=1).
+
+![DTMC1](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc1.png)
+
+Next, we query the trained policy with the observation of A to determine the action, which in this case is the action UP. 
+Based on this action, we add the transitions from state A to other states, including the probabilities associated with these transitions.
+In this example, there is a 0.2 probability of transitioning to state B (x=2, y=2) and a 0.8 probability of staying in state A.
+
+
+
+![DTMC2](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc2.png)
+
+We continue the process by visiting each reachable state and querying the policy.
+In this example, state B is the next reachable state.
+When we query the policy with an observation of state B, the chosen action is RIGHT, which has a 0.2 probability of transitioning to state C (x=2, y=1), a 0.1 probability of returning to state B, and a 0.7 probability of transitioning to state E (x=3, y=1).
+
+
+
+![DTMC3](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc3.png)
+
+Next, we visit state C and query the policy again. The chosen action at state C is UP, which leads back to state B.
+
+
+![DTMC4](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc4.png)
+
+Finally, we visit state E and query the policy. The chosen action is LEFT, and since this action results in a loop at state E, we have now visited all reachable states and completed the building process of the induced DTMC.
+
+![DTMC5](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc5.png)
+
+With the induced DTMC built, we can now compute the reachability probability measure m := P(F E) to analyze the system's performance.
+In this simple example, P(F E) = 1.
+
+
 
 ## Architecture
 We will first describe the main components of COOL-MC and then delve into the details.
