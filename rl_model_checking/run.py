@@ -88,8 +88,23 @@ if __name__ == '__main__':
     # Interpreter
     interpreter = InterpreterBuilder.build_interpreter(m_project.command_line_arguments['interpreter'])
     if interpreter != None:
-        interpreter.interpret(env, m_project.agent, model_checking_info)
+        interpreter.interpret(env, m_project, model_checking_info)
 
 
+    # x_a = 0.8x_a + 0.2x_b
+    # x_b = 0.1x_b + 0.2x_c
+    # x_c = 1
+    # x_b = 0.1x_b + 0.2
+    # 0.9x_b = 0.2
+    # x_b = 0.22
+    # x_a = 0.8x_a + 0.2 * 0.22
+    # x_a = 0.8x_a + 0.044
+    # 0.2x_a = 0.044
+    # x_a = 0.22
+
+
+
+
+    # Save project
     m_project.save()
     m_project.close()

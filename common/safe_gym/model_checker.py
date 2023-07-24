@@ -197,7 +197,7 @@ class ModelChecker():
 
         properties = stormpy.parse_properties(formula_str, prism_program)
 
-        result = stormpy.model_checking(model, properties[0])
+        result = stormpy.model_checking(model, properties[0], only_initial_states=False)
 
         model_checking_time = time.time() - model_checking_start_time
 
@@ -206,6 +206,17 @@ class ModelChecker():
         #print('Result for initial state', result.at(initial_state))
         mdp_result = result.at(initial_state)
 
-        info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
-        print(self.counter)
+
+        info = {"mdp_result": mdp_result, "property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
+        '''
+        print(result.__dir__())
+        print(result.get_values())
+        print(model.states.__len__())
+        info["state_results"] = []
+        for i in range(model.states.__len__()):
+            c_state = model.states[i]
+            #print(f"State {i}", result.at(c_state))
+            info["state_results"].append(result.at(c_state))
+        '''
+
         return mdp_result, info

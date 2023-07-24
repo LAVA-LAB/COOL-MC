@@ -140,6 +140,7 @@ def set_random_seed(seed: int):
         torch.backends.cudnn.benchmark = False
 
 
+
 class LastRunManager:
 
     @staticmethod

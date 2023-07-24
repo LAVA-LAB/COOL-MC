@@ -10,6 +10,8 @@ from common.preprocessors.single_agent_ffgsm import *
 from common.preprocessors.rounder import *
 # Robustness
 from common.preprocessors.integer_l1_robustness import *
+# Change action of state
+from common.preprocessors.change_action_of_state import *
 
 '''
 HOW TO ADD MORE AGENTS?
@@ -66,6 +68,10 @@ class PreprocessorBuilder():
                 preprocessors.append(preprocessor)
             elif preprocessor_name == "integer_l1_robustness":
                 preprocessor = IntegerL1Robustness(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "change_action_of_state":
+                preprocessor = ChangeActionOfState(state_mapper, preprocessor_str, command_line_arguments['task'])
                 preprocessor.load(preprocessor_path)
                 preprocessors.append(preprocessor)
         return preprocessors

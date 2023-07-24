@@ -152,3 +152,4 @@ yarl==1.8.2
 zipp==1.0.0
 zope.event==4.6
 zope.interface==5.5.2
+networkx==3.1

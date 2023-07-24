@@ -106,6 +106,9 @@ class DeepQNetwork(nn.Module):
         self.to(self.DEVICE)
 
 
+
+
+
     def forward(self, state : np.array) -> int:
         """[summary]
 

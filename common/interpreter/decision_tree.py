@@ -4,14 +4,13 @@ from sklearn import tree
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import numpy as np
-class DecisionTreeInterpreter:
+from common.interpreter.interpreter import *
+class DecisionTreeInterpreter(Interpreter):
 
     def __init__(self, config):
         self.config = config
 
-    def interpret(self, env, rl_agent, model_checking_info):
-        # Load the iris dataset
-        iris = load_iris()
+    def interpret(self, env, m_project, model_checking_info):
         X = np.array(model_checking_info['collected_states'])
         y = np.array(model_checking_info['collected_action_idizes'])
 
