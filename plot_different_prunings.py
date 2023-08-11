@@ -36,11 +36,11 @@ for label in labels:
             plt.plot(subset['percentage'], subset['safety_measure'],  '-o', label=label)
     elif label.find("empty") != -1:
         if label.find("random") != -1:
-            label = "random (empty)"
-            plt.plot(subset['percentage'], subset['safety_measure'],  '-x', label=label)
+            label = "random (not_empty)"
+            plt.plot(subset['percentage'], 1-subset['safety_measure'],  '-x', label=label)
         else:
-            label = "L1 (empty)"
-            plt.plot(subset['percentage'], subset['safety_measure'],  '-o', label=label)
+            label = "L1 (not_empty)"
+            plt.plot(subset['percentage'], 1-subset['safety_measure'],  '-o', label=label)
 
 
 

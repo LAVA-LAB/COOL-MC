@@ -1,0 +1,5 @@
+#python cool_mc.py --project_name="stock_market_experiments" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="stock_market.prism" --seed=128 --layers=4 --neurons=312 --lr=0.0001 --batch_size=32 --num_episodes=1000 --eval_interval=100 --epsilon_dec=0.99999 --epsilon_min=0.1 --gamma=0.99 --epsilon=1 --replace=301 --reward_flag=1 --wrong_action_penalty=0 --max_steps=100 --replay_buffer_size=300000 --replace=304
+#python cool_mc.py --parent_run_id="ceb5fbbbf7914a34960c72a890fb7d8f" --project_name="stock_market_experiments" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="stock_market.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ \"bankruptcy\" ]" --interpreter=""
+
+
+python cool_mc.py --parent_run_id="ceb5fbbbf7914a34960c72a890fb7d8f" --project_name="stock_market_experiments" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="stock_market.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ \"bankruptcy\" ]" --interpreter="feature_pruner;1;capital"
