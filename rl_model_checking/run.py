@@ -1,5 +1,6 @@
 import os
 import sys
+import stormpy
 sys.path.insert(0, '../')
 from common.utilities.helper import *
 from common.utilities.training import *
@@ -8,6 +9,8 @@ from common.utilities.project import Project
 from common.safe_gym.safe_gym import SafeGym
 from common.interpreter.interpreter_builder import *
 from common.rl_agents.agent import *
+from common.safe_gym.stochastic_policy_checker import *
+
 
 def prepare_prop(prop):
     prepared = False
@@ -74,22 +77,36 @@ if __name__ == '__main__':
     m_project.mlflow_bridge.set_property_query_as_run_name(original_prop + " for " + command_line_arguments['constant_definitions'])
 
     # Model checking
+    env.storm_bridge.model_checker.prob_threshold = m_project.command_line_arguments['prob_threshold']
     mdp_reward_result, model_checking_info = env.storm_bridge.model_checker.induced_markov_chain(m_project.agent, m_project.preprocessors, env, m_project.command_line_arguments['constant_definitions'], m_project.command_line_arguments['prop'], collect_label_and_states)
     m_project.mlflow_bridge.log_result(mdp_reward_result)
 
     run_id = m_project.mlflow_bridge.get_run_id()
-    if isinstance(m_project.agent, DeterministicAgent):
-        print(f'{original_prop}:\t{mdp_reward_result}')
-        print(f'Model Size:\t\t{model_checking_info["model_size"]}')
-        print(f'Number of Transitions:\t{model_checking_info["model_transitions"]}')
-        print(f'Model Building Time:\t{model_checking_info["model_building_time"]}')
-        print(f'Model Checking Time:\t{model_checking_info["model_checking_time"]}')
-        print("Constant definitions:\t" + m_project.command_line_arguments['constant_definitions'])
-        print("Run ID: " + run_id)
-    elif isinstance(m_project.agent, StochasticAgent):
-        print("MDP")
-        print(f'Model Size:\t\t{model_checking_info["model_size"]}')
-        print(f'Number of Transitions:\t{model_checking_info["model_transitions"]}')
+    print(f'{original_prop}:\t{mdp_reward_result}')
+    print(f'Model Size:\t\t{model_checking_info["model_size"]}')
+    print(f'Number of Transitions:\t{model_checking_info["model_transitions"]}')
+    print(f'Model Building Time:\t{model_checking_info["model_building_time"]}')
+    print(f'Model Checking Time:\t{model_checking_info["model_checking_time"]}')
+    print("Constant definitions:\t" + m_project.command_line_arguments['constant_definitions'])
+    print("Run ID: " + run_id)
+
+    """
+    if isinstance(m_project.agent, StochasticAgent):
+        #Model Checking
+        model = stormpy.build_model_from_drn("test.drn")
+        print("Number of States:", model.nr_states)
+        print("Number of Transitions:", model.nr_transitions)
+        prop = 'Pmin=? [F "goal"]'
+        program = stormpy.parse_prism_program("../prism_files/freeway.prism")
+        properties = stormpy.parse_properties_for_prism_program(prop, program, None)
+        result = stormpy.model_checking(model, properties[0])
+        #print(result.__dir__())
+        initial_state = model.initial_states[0]
+        #print('Result for initial state', result.at(initial_state))
+        mdp_result = result.at(initial_state)
+        print("Result: " + str(mdp_result))
+    """
+
 
 
 

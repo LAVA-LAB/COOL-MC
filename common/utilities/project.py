@@ -37,6 +37,10 @@ class Project():
             except:
                 pass
             try:
+                del saved_command_line_arguments['prob_threshold']
+            except:
+                pass
+            try:
                 del saved_command_line_arguments['constant_definitions']
             except:
                 pass
@@ -114,6 +118,7 @@ class Project():
             agent = AgentBuilder.build_agent(model_folder_path, command_line_arguments, observation_space, number_of_actions, all_actions)
             print("Agent loaded.")
         except Exception as msg:
+            print(msg)
             # If Model was not saved
             agent = AgentBuilder.build_agent(None, command_line_arguments, observation_space, number_of_actions, all_actions)
         self.agent = agent

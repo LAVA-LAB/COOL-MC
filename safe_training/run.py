@@ -47,6 +47,7 @@ if __name__ == '__main__':
     m_project.mlflow_bridge.set_property_query_as_run_name(
         command_line_arguments['prop'] + " for " + command_line_arguments['constant_definitions'])
 
+    env.storm_bridge.model_checker.prob_threshold = m_project.command_line_arguments['prob_threshold']
     # Train
     train(m_project, env, prop_type=command_line_arguments['prop_type'])
     run_id = m_project.mlflow_bridge.get_run_id()

@@ -17,9 +17,10 @@ entry_points:
 
             # Model Checking Parameters
             prop : {type: string, default: "Pmax=? [F jobs_done=2]"}
+            prob_threshold: {type: float, default: 0}
 
 
 
 
         command: >-
-            python run.py --project_name={project_name} --parent_run_id={parent_run_id} --preprocessor={preprocessor} --prism_dir={prism_dir} --prism_file_path={prism_file_path} --constant_definitions={constant_definitions} --prop={prop} --interpreter={interpreter}
+            python run.py --project_name={project_name} --parent_run_id={parent_run_id} --preprocessor={preprocessor} --prism_dir={prism_dir} --prism_file_path={prism_file_path} --constant_definitions={constant_definitions} --prop={prop} --interpreter={interpreter} --prob_threshold={prob_threshold}

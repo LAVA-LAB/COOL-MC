@@ -1,0 +1,1 @@
+python cool_mc.py --task=safe_training --project_name="pokemon" --rl_algorithm=turnbased_n_reinforce_agents --prism_file_path="pokemon.prism" --constant_definitions="" --prop="" --reward_flag=1 --seed=128 --epsilon=0.5 --layers=2 --neurons=128 --epsilon_min=0.01  --num_episodes=101 --eval_interval=100

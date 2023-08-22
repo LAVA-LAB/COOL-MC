@@ -12,6 +12,65 @@ import common
 from common.safe_gym.state_mapper import StateMapper
 from common.rl_agents.agent import *
 
+class State:
+
+    def __init__(self, id, json_str) -> None:
+        self.id = id
+        self.json_str = str(json_str)
+        self.actions = {}
+
+    def add_action(self, action_name):
+        self.last_action = action_name
+        self.actions[self.last_action] = {}
+
+
+    def add_action_probability(self, action, probability, next_state_id):
+        self.actions[self.last_action][next_state_id] = probability
+
+    def get_all_next_states(self):
+        for action in self.actions:
+            for next_state_id in self.actions[action]:
+                yield next_state_id
+
+    def get_prob_for_next_state_of_action(self, action, next_state_id):
+        try:
+            return self.actions[action][next_state_id]
+        except:
+            return 0
+
+
+    def get_state_update(self, env, agent):
+        all_next_state_ids = list(self.get_all_next_states())
+        all_next_state_ids = list(set(all_next_state_ids))
+        n_state = State(self.id, self.json_str)
+        n_state.actions['meta_action'] = {}
+        total_sum = 0
+        #print("=========")
+        #print("State:",self.id)
+        # Iterate over all state ids
+        for next_state_id in all_next_state_ids:
+            # For each action
+            next_state_prob = 0
+            for action in self.actions:
+                # if next state id is in the actions
+                if next_state_id in self.actions[action]:
+                    #print("Transition Prob", self.actions[action][next_state_id])
+                    #print("Action Prob", agent.get_action_name_probability(env, action, env.storm_bridge.parse_state(self.json_str)))
+                    next_state_prob += self.actions[action][next_state_id] * agent.get_action_name_probability(env, action, env.storm_bridge.parse_state(self.json_str))
+            n_state.actions['meta_action'][next_state_id] = next_state_prob
+        total_sum = 0
+        for next_state_id in n_state.actions['meta_action']:
+            total_sum += n_state.actions['meta_action'][next_state_id]
+        #print(total_sum)
+        if total_sum < 0.9:
+            #print("State:",self.id)
+            #print(total_sum)
+            for next_state_id in n_state.actions['meta_action']:
+                n_state.actions['meta_action'][next_state_id]= 1
+
+
+        #exit(0)
+        return n_state
 
 class ModelChecker():
     """
@@ -26,6 +85,8 @@ class ModelChecker():
             mapper (StateMapper): State Variable mapper
         """
         self.counter = 0
+        self.state_id_counter = 0
+        self.old_state = None
         assert isinstance(mapper, StateMapper)
 
 
@@ -101,12 +162,73 @@ class ModelChecker():
         """
         assert str(agent.__class__).find("common.rl_agents") != -1
         assert isinstance(state, np.ndarray)
-        action_idizes = agent.model_checking_select_action(state)
+        action_idizes, _ = agent.model_checking_select_action(state, self.prob_threshold)
         all_action_names = []
         for action_index in action_idizes:
             action_name = env.action_mapper.actions[action_index]
             all_action_names.append(action_name)
         return all_action_names
+
+
+    def modify_model(self, model, env, agent):
+        builder = stormpy.SparseMatrixBuilder(rows = 0, columns = 0, entries = 0, force_dimensions = False, has_custom_row_grouping = False)
+        state_labeling = stormpy.storage.StateLabeling(model.nr_states)
+        idx = 0
+        max_idx = model.nr_states
+        for state in model.states:
+            #print("=========")
+            #print(idx, "/", max_idx)
+            n_state = State(state.id, json_str=model.state_valuations.get_json(state.id))
+            #print("State:",state.id)
+            start_time = time.time()
+            for action in state.actions:
+                action_name = str(list(model.choice_labeling.get_labels_of_choice(action.id))[0])
+                n_state.add_action(action_name)
+                for transition in action.transitions:
+                    # Create State
+                    action_probability = transition.value()
+                    next_state = transition.column
+                    n_state.add_action_probability(action_name, action_probability, next_state)
+
+            #print("Update State", time.time() - start_time)
+            n_state = n_state.get_state_update(env, agent)
+            #start_time = time.time()
+
+            visited_ids = []
+            for action in state.actions:
+                #action_name = str(list(model.choice_labeling.get_labels_of_choice(action.id))[0])
+                # We just need to pass one time over the row, because we build an DTMC
+                for transition in action.transitions:
+                    # Get the transitions for next state id
+                    if transition.column in visited_ids:
+                        continue
+                    prob = n_state.get_prob_for_next_state_of_action("meta_action", transition.column)
+                    #if next_state_id == transition.column:
+                    builder.add_next_value(row = int(state), column = int(transition.column), value = prob)
+                    visited_ids.append(transition.column)
+                #print(len(action.transitions),action.transitions)
+
+            #print("Add row to matrix", time.time() - start_time)
+            #start_time = time.time()
+
+            for label in state.labels:
+                if state_labeling.contains_label(label) == False:
+                    state_labeling.add_label(label)
+                state_labeling.add_label_to_state(label, state)
+            #print("Add label to state", time.time() - start_time)
+            #idx += 1
+
+
+
+
+        transition_matrix = builder.build()
+        #print(transition_matrix)
+
+        components = stormpy.SparseModelComponents(transition_matrix=transition_matrix, state_labeling=state_labeling)
+        dtmc = stormpy.storage.SparseDtmc(components)
+        #print(dtmc)
+        return dtmc
+
 
     def induced_markov_chain(self, agent: common.rl_agents, preprocessors, env,
                              constant_definitions: str,
@@ -130,6 +252,9 @@ class ModelChecker():
         env.reset()
         start_time = time.time()
         prism_program = stormpy.parse_prism_program(env.storm_bridge.path)
+
+
+
         suggestions = dict()
         i = 0
         for module in prism_program.modules:
@@ -154,6 +279,9 @@ class ModelChecker():
         collected_action_idizes = []
         collected_action_names = []
 
+        #self.file = open("tmp_state_id_state_pair.csv","w")
+
+
 
         def incremental_building(state_valuation: SimpleValuation, action_index: int) -> bool:
             """Whether for the given state and action, the action should be allowed in the model.
@@ -175,6 +303,9 @@ class ModelChecker():
                 state_valuation.to_json(), env.storm_bridge.state_json_example)
             state = self.__get_numpy_state(env, state)
 
+
+
+
             # Preprocess state
             if preprocessors!=None:
                 for preprocessor in preprocessors:
@@ -192,8 +323,12 @@ class ModelChecker():
                 return False
 
             cond1 = False
-            # TODO: Depending on deterministic or stochastic agent, choose actions differently
-            if isinstance(agent, DeterministicAgent):
+            # Depending on deterministic or stochastic agent, choose actions differently
+            try:
+                old = agent.old
+            except:
+                old = False
+            if isinstance(agent, DeterministicAgent) or (isinstance(agent, StochasticAgent) and old):
                 # If agent == deterministic
                 selected_action = self.__get_action_for_state(env, agent, state)
 
@@ -216,6 +351,16 @@ class ModelChecker():
             else:
                 raise Exception("Agent type not supported")
 
+
+            ############# This is needed to collect all the state_id-states pairs during the incremental building
+            '''
+            if self.old_state is None or np.array_equal(self.old_state, state) == False:
+                self.old_state = state.copy()
+                self.file.write(str(self.state_id_counter) + ";" + ','.join(map(str, self.old_state)) + "\n")
+                self.state_id_counter+=1
+            '''
+            #############
+
             assert isinstance(cond1, bool)
             return cond1
 
@@ -229,9 +374,23 @@ class ModelChecker():
                                                         stormpy.StateValuationFunctionActionMaskDouble(
                                                             incremental_building))
         model = constructor.build()
+
+        try:
+            old = agent.old
+        except:
+            old = False
+        if isinstance(agent, StochasticAgent) and old == False:
+            formula_str = formula_str.replace("Pmin", "Pmax").replace("Pmax", "P")
+            model = self.modify_model(model, env, agent)
+            stormpy.export_to_drn(model,"test.drn")
+
+
+
+
         model_size = len(model.states)
         model_transitions = model.nr_transitions
         model_checking_start_time = time.time()
+
 
         properties = stormpy.parse_properties(formula_str, prism_program)
 
@@ -239,11 +398,13 @@ class ModelChecker():
 
         model_checking_time = time.time() - model_checking_start_time
 
-        stormpy.export_to_drn(model,"test.drn")
+
         initial_state = model.initial_states[0]
         #print('Result for initial state', result.at(initial_state))
         mdp_result = result.at(initial_state)
-
+        #self.file.close()
         info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
-        print(self.counter)
+
+
+        stormpy.export_to_drn(model,"test.drn")
         return mdp_result, info

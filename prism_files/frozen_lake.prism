@@ -162,6 +162,7 @@ rewards
 	[a1_down] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
 	[a0_left] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
 
+
 	[a3_up] AT_FRISBEE & NOT_DONE : 1;
 	[a2_right] AT_FRISBEE & NOT_DONE : 1;
 	[a1_down] AT_FRISBEE & NOT_DONE : 1;

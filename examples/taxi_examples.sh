@@ -1,5 +1,6 @@
 #mlflow run safe_training/ --env-manager=local -P num_episodes=102
-python cool_mc.py --num_episodes 102 --project_name="taxi_examples" --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128
-python cool_mc.py --parent_run_id="last" --num_episodes 102 --project_name="taxi_examples" --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F \"empty\" ]"
+#python cool_mc.py --num_episodes 102 --project_name="taxi_examples" --constant_definitions="MAX_JOBS=1,MAX_FUEL=5" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128 --rl_algorithm="stochastic_dqn_agent"
+python cool_mc.py --parent_run_id="last" --num_episodes 102 --project_name="taxi_examples" --constant_definitions="MAX_JOBS=1,MAX_FUEL=5" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F \"empty\" ]"
+#python cool_mc.py --parent_run_id="last" --num_episodes 102 --project_name="taxi_examples" --constant_definitions="MAX_JOBS=1,MAX_FUEL=5" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ true U jobs_done=2 ]"
 #python cool_mc.py --parent_run_id="last" --num_episodes 102 --project_name="taxi_examples" --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128
 #python cool_mc.py --parent_run_id="last" --num_episodes 102 --project_name="taxi_examples" --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128

@@ -17,18 +17,20 @@ class Policy(nn.Module):
     def __init__(self, s_size=4, h_size=16, a_size=2, lr=0.001):
         super(Policy, self).__init__()
         self.fc1 = nn.Linear(s_size, h_size)
-        self.fc2 = nn.Linear(h_size, a_size)
+        self.fc2 = nn.Linear(h_size, h_size)
+        self.fc3 = nn.Linear(h_size, a_size)
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
+        x = self.fc3(x)
         return F.softmax(x, dim=1)
 
-    def get_action_idizes_not_zero(self, probs):
+    def get_action_idizes_not_zero(self, probs, prob_threshold):
         action_indexes = []
         for i, prob in enumerate(probs):
-            if prob != 0:
+            if prob > prob_threshold:
                 action_indexes.append(i)
         return action_indexes
 
@@ -41,11 +43,11 @@ class Policy(nn.Module):
         action = m.sample()
         return action.item(), m.log_prob(action), int(torch.argmax(probs))
 
-    def stochastic_act(self, state):
+    def stochastic_act(self, state, prob_threshold):
         state = np.array(state)
         state = torch.from_numpy(state).float().unsqueeze(0).to(DEVICE)
         probs = self.forward(state).cpu()
-        return self.get_action_idizes_not_zero(probs.tolist()[0])
+        return self.get_action_idizes_not_zero(probs.tolist()[0], prob_threshold), probs[0]
 
     def save_checkpoint(self, file_name : str):
         """Save model.
@@ -78,8 +80,31 @@ class ReinforceAgent(StochasticAgent):
         self.saved_log_probs.append(log_prob)
         return action_index
 
-    def model_checking_select_action(self, state : np.ndarray):
-        return self.policy.stochastic_act(state)
+
+
+    def model_checking_select_action(self, state : np.ndarray, prob_threshold):
+        return self.policy.stochastic_act(state, prob_threshold)
+
+    def get_action_name_probability(self, env, action, state):
+        # Action idx
+        action_idx = env.action_mapper.action_name_to_action_index(action)
+        # Action probability
+        state = torch.from_numpy(np.array([state])).float().unsqueeze(0).to(DEVICE)
+        probs = self.policy.forward(state).cpu()
+        # probs to float
+        print(probs.tolist())
+        try:
+            probs = probs.tolist()[0][0]
+            return probs[action_idx]
+        except:
+            probs = self.policy.forward(state).cpu()
+            robs = probs.tolist()[0]
+            return probs[action_idx]
+
+
+
+
+
 
 
     def store_experience(self, state  : np.ndarray, action : int, reward : float, next_state : np.ndarray, terminal : bool):
@@ -104,7 +129,7 @@ class ReinforceAgent(StochasticAgent):
 
 
 
-    def save(self):
+    def save(self, artifact_path='model'):
         """
         Saves the agent onto the MLFLow Server.
         """
@@ -113,7 +138,7 @@ class ReinforceAgent(StochasticAgent):
         except Exception as msg:
             pass
         self.policy.save_checkpoint('tmp_model/policy.chkpt')
-        mlflow.log_artifacts("tmp_model", artifact_path="model")
+        mlflow.log_artifacts("tmp_model", artifact_path=artifact_path)
         shutil.rmtree('tmp_model')
 
     def load(self, model_root_folder_path :str):

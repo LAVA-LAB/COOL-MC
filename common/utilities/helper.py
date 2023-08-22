@@ -99,6 +99,7 @@ def get_arguments() -> Dict[str, Any]:
                             default=304)
     arg_parser.add_argument('--lr', help='Learning Rate', type=float,
                             default=0.0001)
+    arg_parser.add_argument('--prob_threshold', help='Probability Threshold', type=float, default=0)
     arg_parser.add_argument('--batch_size', help='Batch Size', type=int,
                             default=32)
 

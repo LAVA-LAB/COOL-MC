@@ -1,0 +1,77 @@
+mdp
+const int NUMBER_OF_PLAYERS = 1;
+const double NOP_PROP = 0.0;
+formula CELL00_BLOCKED = (cell00 != 0);
+formula CELL00_NOT_BLOCKED = !CELL00_BLOCKED;
+formula CELL01_BLOCKED = (cell01 != 0);
+formula CELL01_NOT_BLOCKED = !CELL01_BLOCKED;
+formula CELL02_BLOCKED = (cell02 != 0);
+formula CELL02_NOT_BLOCKED = !CELL02_BLOCKED;
+formula CELL10_BLOCKED = (cell10 != 0);
+formula CELL10_NOT_BLOCKED = !CELL10_BLOCKED;
+formula CELL11_BLOCKED = (cell11 != 0);
+formula CELL11_NOT_BLOCKED = !CELL11_BLOCKED;
+formula CELL12_BLOCKED = (cell12 != 0);
+formula CELL12_NOT_BLOCKED = !CELL12_BLOCKED;
+formula CELL20_BLOCKED = (cell20 != 0);
+formula CELL20_NOT_BLOCKED = !CELL20_BLOCKED;
+formula CELL21_BLOCKED = (cell21 != 0);
+formula CELL21_NOT_BLOCKED = !CELL21_BLOCKED;
+formula CELL22_BLOCKED = (cell22 != 0);
+formula CELL22_NOT_BLOCKED = !CELL22_BLOCKED;
+formula EMPTY_GRID = (cell00=0) & (cell01=0) & (cell02=0) & (cell10=0) & (cell11=0) & (cell12=0) & (cell20=0) & (cell21=0) & (cell22=0);
+formula ALL_BLOCKED = (CELL00_BLOCKED & CELL01_BLOCKED & CELL02_BLOCKED & CELL10_BLOCKED & CELL11_BLOCKED & CELL12_BLOCKED & CELL20_BLOCKED & CELL21_BLOCKED & CELL22_BLOCKED);
+formula NOT_ALL_BLOCKED = (ALL_BLOCKED=false);
+formula PLAYER1_WON = ((cell00 = 1) & (cell01 = 1) & (cell02 = 1)) | ((cell10 = 1) & (cell11 = 1) & (cell12 = 1)) | ((cell20 = 1) & (cell21 = 1) & (cell22 = 1)) | ((cell00 = 1) & (cell10 = 1) & (cell20 = 1)) | ((cell01 = 1) & (cell11 = 1) & (cell21 = 1)) | ((cell02 = 1) & (cell12 = 1) & (cell22 = 1)) | ((cell00 = 1) & (cell11 = 1) & (cell22 = 1)) | ((cell02 = 1) & (cell11 = 1) & (cell20 = 1));
+formula PLAYER2_WON = ((cell00 = 2) & (cell01 = 2) & (cell02 = 2)) | ((cell10 = 2) & (cell11 = 2) & (cell12 = 2)) | ((cell20 = 2) & (cell21 = 2) & (cell22 = 2)) | ((cell00 = 2) & (cell10 = 2) & (cell20 = 2)) | ((cell01 = 2) & (cell11 = 2) & (cell21 = 2)) | ((cell02 = 2) & (cell12 = 2) & (cell22 = 2)) | ((cell00 = 2) & (cell11 = 2) & (cell22 = 2)) | ((cell02 = 2) & (cell11 = 2) & (cell20 = 2));
+formula A_PLAYER_ONE = PLAYER1_WON | PLAYER2_WON;
+formula GAME_OVER = ALL_BLOCKED | A_PLAYER_ONE;
+formula NOT_GAME_OVER = (GAME_OVER = false);
+formula DRAW = ALL_BLOCKED & A_PLAYER_ONE=false;
+module tictactoe
+cell00 : [0..2];
+cell01 : [0..2];
+cell02 : [0..2];
+cell10 : [0..2];
+cell11 : [0..2];
+cell12 : [0..2];
+cell20 : [0..2];
+cell21 : [0..2];
+cell22 : [0..2];
+turn : [0..1];
+done : bool init false;
+[cell00] NOT_GAME_OVER & CELL00_NOT_BLOCKED -> (1-NOP_PROP) : (cell00'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell01] NOT_GAME_OVER & CELL01_NOT_BLOCKED -> (1-NOP_PROP) : (cell01'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell02] NOT_GAME_OVER & CELL02_NOT_BLOCKED -> (1-NOP_PROP) : (cell02'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell10] NOT_GAME_OVER & CELL10_NOT_BLOCKED -> (1-NOP_PROP) : (cell10'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell11] NOT_GAME_OVER & CELL11_NOT_BLOCKED -> (1-NOP_PROP) : (cell11'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell12] NOT_GAME_OVER & CELL12_NOT_BLOCKED -> (1-NOP_PROP) : (cell12'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell20] NOT_GAME_OVER & CELL20_NOT_BLOCKED -> (1-NOP_PROP) : (cell20'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell21] NOT_GAME_OVER & CELL21_NOT_BLOCKED -> (1-NOP_PROP) : (cell21'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell22] NOT_GAME_OVER & CELL22_NOT_BLOCKED -> (1-NOP_PROP) : (cell22'=(turn=0) ? 1 : 2) & (turn' = (turn = 0) ? 1 : 0) + NOP_PROP : (turn' = (turn = 0) ? 1 : 0);
+[cell00] NOT_GAME_OVER & CELL00_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell01] NOT_GAME_OVER & CELL01_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell02] NOT_GAME_OVER & CELL02_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell10] NOT_GAME_OVER & CELL10_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell11] NOT_GAME_OVER & CELL11_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell12] NOT_GAME_OVER & CELL12_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell20] NOT_GAME_OVER & CELL20_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell21] NOT_GAME_OVER & CELL21_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell22] NOT_GAME_OVER & CELL22_BLOCKED -> (turn' = (turn = 0) ? 1 : 0);
+[cell00] GAME_OVER -> (done'=true);
+[cell01] GAME_OVER -> (done'=true);
+[cell02] GAME_OVER -> (done'=true);
+[cell10] GAME_OVER -> (done'=true);
+[cell11] GAME_OVER -> (done'=true);
+[cell12] GAME_OVER -> (done'=true);
+[cell20] GAME_OVER -> (done'=true);
+[cell21] GAME_OVER -> (done'=true);
+[cell22] GAME_OVER -> (done'=true);
+endmodule
+rewards
+//Reward for winning
+A_PLAYER_ONE & done=true: 500;
+endrewards
+label "player1_won" = PLAYER1_WON;
+label "player2_won" = PLAYER2_WON;
+label "draw" = ALL_BLOCKED & A_PLAYER_ONE=false & cell00!=3;

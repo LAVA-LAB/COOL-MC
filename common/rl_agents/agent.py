@@ -200,6 +200,12 @@ class StochasticAgent(Agent):
         """
         pass
 
+    def get_action_name_probability(self, env, action, state):
+        """
+        Returns the probability of the action in the environment.
+        """
+        pass
+
     def get_hyperparameters(self):
         """
         Get the RL agent hyperparameters

@@ -1,0 +1,83 @@
+// Exported by storm
+// Original model type: DTMC
+@type: DTMC
+@parameters
+
+@reward_models
+
+@nr_states
+17
+@nr_choices
+17
+@model
+state 0 init
+	action 0
+		0 : 0.6762389895
+		1 : 0.1431638338
+state 1
+	action 0
+		0 : 0.385323584
+		1 : 0.1647890112
+		3 : 0.2062321045
+state 2
+	action 0
+		0 : 0.1466659046
+		2 : 0.2140968607
+		4 : 0.2822062814
+state 3
+	action 0
+		1 : 0.2814430054
+		3 : 0.1518922816
+		6 : 0.2515060552
+state 4
+	action 0
+		8 : 0.9999999851
+state 5
+	action 0
+		2 : 0.1458295149
+		5 : 0.18677274
+		9 : 0.300291962
+state 6
+	action 0
+		3 : 0.2350483867
+		6 : 0.4195637126
+state 7
+	action 0
+		3 : 0.1455919701
+		4 : 0.1954660396
+		11 : 0.2937863432
+state 8
+	action 0
+		8 : 0.9999999255
+state 9
+	action 0
+		4 : 0.1462186726
+		5 : 0.1838590758
+		12 : 0.3026149864
+state 10
+	action 0
+		8 : 0.9999999255
+state 11
+	action 0
+		8 : 1
+state 12
+	action 0
+		7 : 0.1466861547
+		9 : 0.1814635916
+		14 : 0.3045480779
+state 13
+	action 0
+		9 : 0.1481609186
+		10 : 0.1760443383
+		15 : 0.3089247535
+state 14
+	action 0
+		8 : 0.9999999851
+state 15
+	action 0
+		12 : 0.1486164754
+		13 : 0.1746023496
+		16 : 0.3100941018
+state 16 at_frisbee
+	action 0
+		16 : 0.1481046975
