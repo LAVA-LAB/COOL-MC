@@ -51,3 +51,6 @@ class Preprocessor:
             return True
         return False
 
+    def force_true(self):
+        return False
+

@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 sys.path.insert(0, '../')
 from common.utilities.helper import *
 from common.utilities.training import *
@@ -75,6 +76,7 @@ if __name__ == '__main__':
     # Model checking
     mdp_reward_result, model_checking_info = env.storm_bridge.model_checker.induced_markov_chain(m_project.agent, m_project.preprocessors, env, m_project.command_line_arguments['constant_definitions'], m_project.command_line_arguments['prop'], collect_label_and_states)
     m_project.mlflow_bridge.log_result(mdp_reward_result)
+    model_checking_info['mdp_reward_result'] = mdp_reward_result
 
     run_id = m_project.mlflow_bridge.get_run_id()
     print(f'{original_prop}:\t{mdp_reward_result}')
@@ -86,10 +88,13 @@ if __name__ == '__main__':
     print("Run ID: " + run_id)
 
     # Interpreter
+    interpretation_time = time.time()
     interpreter = InterpreterBuilder.build_interpreter(m_project.command_line_arguments['interpreter'])
     if interpreter != None:
-        interpreter.interpret(env, m_project.agent, model_checking_info)
-
+        interpreter.interpret(env, m_project, model_checking_info)
+        interpretation_time = time.time() - interpretation_time
+        print(f'Interpretation Time:\t{interpretation_time}')
+        
 
     m_project.save()
     m_project.close()

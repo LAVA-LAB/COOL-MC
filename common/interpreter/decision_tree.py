@@ -9,7 +9,7 @@ class DecisionTreeInterpreter:
     def __init__(self, config):
         self.config = config
 
-    def interpret(self, env, rl_agent, model_checking_info):
+    def interpret(self, env, m_project, model_checking_info):
         # Load the iris dataset
         iris = load_iris()
         X = np.array(model_checking_info['collected_states'])

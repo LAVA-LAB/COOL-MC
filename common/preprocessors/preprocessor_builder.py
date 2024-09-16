@@ -10,7 +10,9 @@ from common.preprocessors.single_agent_ffgsm import *
 from common.preprocessors.rounder import *
 # Robustness
 from common.preprocessors.integer_l1_robustness import *
-
+# Explainability
+from common.preprocessors.critical_state_collector import *
+from common.preprocessors.action_robustness import *
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class
@@ -66,6 +68,14 @@ class PreprocessorBuilder():
                 preprocessors.append(preprocessor)
             elif preprocessor_name == "integer_l1_robustness":
                 preprocessor = IntegerL1Robustness(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "critical_state_collector":
+                preprocessor = CriticalStateCollector(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "action_robustness":
+                preprocessor = ActionRobustness(state_mapper, preprocessor_str, command_line_arguments['task'])
                 preprocessor.load(preprocessor_path)
                 preprocessors.append(preprocessor)
         return preprocessors

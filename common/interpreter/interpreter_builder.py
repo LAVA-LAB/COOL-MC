@@ -1,5 +1,16 @@
 import os
 from common.interpreter.decision_tree import *
+from common.interpreter.critical_state_evaluator import *
+from common.interpreter.nth_action_interpreter import *
+from common.interpreter.action_name_ignorer_interpreter import *
+from common.interpreter.temporal_critical_state_interpreter import *
+from common.interpreter.what_went_wrong_interpreter import *
+from common.interpreter.what_went_wrong_interpreter_prism import *
+from common.interpreter.what_went_wrong_interpreter_alternative import *
+from common.interpreter.temporal_feature_rank import *
+from common.interpreter.temporal_feature_2d import *
+from common.interpreter.temporal_action_analysis import *
+from common.interpreter.temporal_adv_attacks import *
 
 '''
 HOW TO ADD MORE INTERPRETERS?
@@ -25,4 +36,26 @@ class InterpreterBuilder():
         interpreter = None
         if interpreter_name == "decision_tree":
             interpreter = DecisionTreeInterpreter(interpreter_string)
+        elif interpreter_name == "critical_state_interpreter":
+            interpreter = CriticalStateEvaluator(interpreter_string)
+        elif interpreter_name == "nth_action_interpreter":
+            interpreter = NthActionInterpreter(interpreter_string)
+        elif interpreter_name == "action_name_ignorer_interpreter":
+            interpreter = ActionNameIgnorerInterpreter(interpreter_string)
+        elif interpreter_name == "temporal_critical_state_interpreter":
+            interpreter = TemporalCriticalStateInterpreter(interpreter_string)
+        elif interpreter_name == "temporal_feature_rank":
+            interpreter = TemporalFeatureRank(interpreter_string)
+        elif interpreter_name == "temporal_feature_2d":
+            interpreter = TemporalFeature2D(interpreter_string)
+        elif interpreter_name == "what_went_wrong_interpreter":
+            interpreter = WhatWentWrongInterpreter(interpreter_string)
+        elif interpreter_name == "what_went_wrong_interpreter_prism":
+            interpreter = WhatWentWrongInterpreterPRISM(interpreter_string)
+        elif interpreter_name == "what_went_wrong_interpreter_alternative":
+            interpreter = WhatWentWrongInterpreterAlternative(interpreter_string)
+        elif interpreter_name == "temporal_action_analysis":
+            interpreter = TemporalActionAnalysis(interpreter_string)
+        elif interpreter_name == "temporal_adv_attacks":
+            interpreter = TemporalAdvAttacks(interpreter_string)
         return interpreter

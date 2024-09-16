@@ -1,0 +1,1776 @@
+// Exported by storm
+// Original model type: MDP
+@type: MDP
+@parameters
+
+@reward_models
+
+@nr_states
+333
+@nr_choices
+333
+@model
+state 0 init
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=10	& slippery_level=0]
+	action CLEAN21
+		1 : 1
+state 1
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=9	& slippery_level=0]
+	action CLEAN22
+		2 : 1
+state 2
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=7	& slippery_level=0]
+	action CLEAN11
+		3 : 1
+state 3
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=6	& slippery_level=0]
+	action NEXT
+		4 : 0.03125
+		5 : 0.03125
+		6 : 0.03125
+		7 : 0.03125
+		8 : 0.03125
+		9 : 0.03125
+		10 : 0.03125
+		11 : 0.03125
+		12 : 0.03125
+		13 : 0.03125
+		14 : 0.03125
+		15 : 0.03125
+		16 : 0.03125
+		17 : 0.03125
+		18 : 0.03125
+		19 : 0.03125
+		20 : 0.03125
+		21 : 0.03125
+		22 : 0.03125
+		23 : 0.03125
+		24 : 0.03125
+		25 : 0.03125
+		26 : 0.03125
+		27 : 0.03125
+		28 : 0.03125
+		29 : 0.03125
+		30 : 0.03125
+		31 : 0.03125
+		32 : 0.03125
+		33 : 0.03125
+		34 : 0.03125
+		35 : 0.03125
+state 4
+//[room_blocked	& dirt1=0	& dirt2=0	& energy=5	& slippery_level=0]
+	action NEXT
+		36 : 0.03125
+		37 : 0.03125
+		38 : 0.03125
+		39 : 0.03125
+		40 : 0.03125
+		41 : 0.03125
+		42 : 0.03125
+		43 : 0.03125
+		44 : 0.03125
+		45 : 0.03125
+		46 : 0.03125
+		47 : 0.03125
+		48 : 0.03125
+		49 : 0.03125
+		50 : 0.03125
+		51 : 0.03125
+		52 : 0.03125
+		53 : 0.03125
+		54 : 0.03125
+		55 : 0.03125
+		56 : 0.03125
+		57 : 0.03125
+		58 : 0.03125
+		59 : 0.03125
+		60 : 0.03125
+		61 : 0.03125
+		62 : 0.03125
+		63 : 0.03125
+		64 : 0.03125
+		65 : 0.03125
+		66 : 0.03125
+		67 : 0.03125
+state 5
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=5	& slippery_level=0]
+	action NEXT
+		36 : 0.03125
+		37 : 0.03125
+		38 : 0.03125
+		39 : 0.03125
+		40 : 0.03125
+		41 : 0.03125
+		42 : 0.03125
+		43 : 0.03125
+		44 : 0.03125
+		45 : 0.03125
+		46 : 0.03125
+		47 : 0.03125
+		48 : 0.03125
+		49 : 0.03125
+		50 : 0.03125
+		51 : 0.03125
+		52 : 0.03125
+		53 : 0.03125
+		54 : 0.03125
+		55 : 0.03125
+		56 : 0.03125
+		57 : 0.03125
+		58 : 0.03125
+		59 : 0.03125
+		60 : 0.03125
+		61 : 0.03125
+		62 : 0.03125
+		63 : 0.03125
+		64 : 0.03125
+		65 : 0.03125
+		66 : 0.03125
+		67 : 0.03125
+state 6
+//[room_blocked	& dirt1=0	& dirt2=1	& energy=5	& slippery_level=0]
+	action CLEAN22
+		68 : 1
+state 7
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=5	& slippery_level=0]
+	action CLEAN22
+		69 : 1
+state 8
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=5	& slippery_level=0]
+	action CHARGE2
+		70 : 0.9
+		71 : 0.1
+state 9
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=5	& slippery_level=0]
+	action CLEAN21
+		39 : 1
+state 10
+//[room_blocked	& dirt1=0	& dirt2=3	& energy=5	& slippery_level=0]
+	action CLEAN22
+		72 : 1
+state 11
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=5	& slippery_level=0]
+	action CLEAN21
+		41 : 1
+state 12
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=5	& slippery_level=0]
+	action CHARGE2
+		73 : 0.9
+		74 : 0.1
+state 13
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=5	& slippery_level=0]
+	action CLEAN11
+		37 : 1
+state 14
+//[room_blocked	& dirt1=1	& dirt2=1	& energy=5	& slippery_level=0]
+	action CLEAN22
+		68 : 1
+state 15
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=5	& slippery_level=0]
+	action CLEAN22
+		75 : 1
+state 16
+//[room_blocked	& dirt1=1	& dirt2=2	& energy=5	& slippery_level=0]
+	action CLEAN22
+		76 : 1
+state 17
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=5	& slippery_level=0]
+	action CLEAN21
+		47 : 1
+state 18
+//[room_blocked	& dirt1=1	& dirt2=3	& energy=5	& slippery_level=0]
+	action CLEAN22
+		72 : 1
+state 19
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=5	& slippery_level=0]
+	action CLEAN21
+		49 : 1
+state 20
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=5	& slippery_level=0]
+	action CHARGE2
+		73 : 0.9
+		77 : 0.1
+state 21
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=5	& slippery_level=0]
+	action CLEAN11
+		45 : 1
+state 22
+//[room_blocked	& dirt1=2	& dirt2=1	& energy=5	& slippery_level=0]
+	action CLEAN22
+		68 : 1
+state 23
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=5	& slippery_level=0]
+	action CLEAN11
+		47 : 1
+state 24
+//[room_blocked	& dirt1=2	& dirt2=2	& energy=5	& slippery_level=0]
+	action CLEAN22
+		76 : 1
+state 25
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=5	& slippery_level=0]
+	action CLEAN11
+		49 : 1
+state 26
+//[room_blocked	& dirt1=2	& dirt2=3	& energy=5	& slippery_level=0]
+	action CLEAN22
+		72 : 1
+state 27
+//[!room_blocked	& dirt1=2	& dirt2=3	& energy=5	& slippery_level=0]
+	action CLEAN21
+		57 : 1
+state 28
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=5	& slippery_level=0]
+	action CHARGE2
+		73 : 0.9
+		78 : 0.1
+state 29
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=5	& slippery_level=0]
+	action CLEAN11
+		53 : 1
+state 30
+//[room_blocked	& dirt1=3	& dirt2=1	& energy=5	& slippery_level=0]
+	action CLEAN22
+		68 : 1
+state 31
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=5	& slippery_level=0]
+	action CLEAN11
+		55 : 1
+state 32
+//[room_blocked	& dirt1=3	& dirt2=2	& energy=5	& slippery_level=0]
+	action CLEAN22
+		76 : 1
+state 33
+//[!room_blocked	& dirt1=3	& dirt2=2	& energy=5	& slippery_level=0]
+	action CLEAN11
+		57 : 1
+state 34
+//[room_blocked	& dirt1=3	& dirt2=3	& energy=5	& slippery_level=0]
+	action CLEAN22
+		72 : 1
+state 35
+//[!room_blocked	& dirt1=3	& dirt2=3	& energy=5	& slippery_level=0]
+	action CLEAN11
+		59 : 1
+state 36
+//[room_blocked	& dirt1=0	& dirt2=0	& energy=4	& slippery_level=0]
+	action NEXT
+		69 : 0.03125
+		75 : 0.03125
+		79 : 0.03125
+		80 : 0.03125
+		81 : 0.03125
+		82 : 0.03125
+		83 : 0.03125
+		84 : 0.03125
+		85 : 0.03125
+		86 : 0.03125
+		87 : 0.03125
+		88 : 0.03125
+		89 : 0.03125
+		90 : 0.03125
+		91 : 0.03125
+		92 : 0.03125
+		93 : 0.03125
+		94 : 0.03125
+		95 : 0.03125
+		96 : 0.03125
+		97 : 0.03125
+		98 : 0.03125
+		99 : 0.03125
+		100 : 0.03125
+		101 : 0.03125
+		102 : 0.03125
+		103 : 0.03125
+		104 : 0.03125
+		105 : 0.03125
+		106 : 0.03125
+		107 : 0.03125
+		108 : 0.03125
+state 37
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=4	& slippery_level=0]
+	action NEXT
+		69 : 0.03125
+		75 : 0.03125
+		79 : 0.03125
+		80 : 0.03125
+		81 : 0.03125
+		82 : 0.03125
+		83 : 0.03125
+		84 : 0.03125
+		85 : 0.03125
+		86 : 0.03125
+		87 : 0.03125
+		88 : 0.03125
+		89 : 0.03125
+		90 : 0.03125
+		91 : 0.03125
+		92 : 0.03125
+		93 : 0.03125
+		94 : 0.03125
+		95 : 0.03125
+		96 : 0.03125
+		97 : 0.03125
+		98 : 0.03125
+		99 : 0.03125
+		100 : 0.03125
+		101 : 0.03125
+		102 : 0.03125
+		103 : 0.03125
+		104 : 0.03125
+		105 : 0.03125
+		106 : 0.03125
+		107 : 0.03125
+		108 : 0.03125
+state 38
+//[room_blocked	& dirt1=0	& dirt2=1	& energy=4	& slippery_level=0]
+	action CLEAN22
+		109 : 1
+state 39
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=4	& slippery_level=0]
+	action CLEAN22
+		110 : 1
+state 40
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=4	& slippery_level=0]
+	action CHARGE2
+		111 : 0.9
+		112 : 0.1
+state 41
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=4	& slippery_level=0]
+	action CLEAN21
+		81 : 1
+state 42
+//[room_blocked	& dirt1=0	& dirt2=3	& energy=4	& slippery_level=0]
+	action CLEAN22
+		113 : 1
+state 43
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=4	& slippery_level=0]
+	action CLEAN21
+		83 : 1
+state 44
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=4	& slippery_level=0]
+	action CLEAN22
+		114 : 1
+state 45
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=4	& slippery_level=0]
+	action CLEAN11
+		69 : 1
+state 46
+//[room_blocked	& dirt1=1	& dirt2=1	& energy=4	& slippery_level=0]
+	action CLEAN21
+		109 : 1
+state 47
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=4	& slippery_level=0]
+	action CLEAN22
+		115 : 1
+state 48
+//[room_blocked	& dirt1=1	& dirt2=2	& energy=4	& slippery_level=0]
+	action CLEAN22
+		116 : 1
+state 49
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=4	& slippery_level=0]
+	action CLEAN21
+		88 : 1
+state 50
+//[room_blocked	& dirt1=1	& dirt2=3	& energy=4	& slippery_level=0]
+	action CLEAN22
+		113 : 1
+state 51
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=4	& slippery_level=0]
+	action CLEAN21
+		90 : 1
+state 52
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=4	& slippery_level=0]
+	action CHARGE2
+		117 : 0.9
+		118 : 0.1
+state 53
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=4	& slippery_level=0]
+	action CLEAN11
+		75 : 1
+state 54
+//[room_blocked	& dirt1=2	& dirt2=1	& energy=4	& slippery_level=0]
+	action CLEAN22
+		109 : 1
+state 55
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=4	& slippery_level=0]
+	action CLEAN22
+		119 : 1
+state 56
+//[room_blocked	& dirt1=2	& dirt2=2	& energy=4	& slippery_level=0]
+	action CLEAN22
+		116 : 1
+state 57
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=4	& slippery_level=0]
+	action CLEAN11
+		90 : 1
+state 58
+//[room_blocked	& dirt1=2	& dirt2=3	& energy=4	& slippery_level=0]
+	action CLEAN22
+		113 : 1
+state 59
+//[!room_blocked	& dirt1=2	& dirt2=3	& energy=4	& slippery_level=0]
+	action CLEAN21
+		98 : 1
+state 60
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=4	& slippery_level=0]
+	action CHARGE2
+		117 : 0.9
+		120 : 0.1
+state 61
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=4	& slippery_level=0]
+	action CLEAN11
+		94 : 1
+state 62
+//[room_blocked	& dirt1=3	& dirt2=1	& energy=4	& slippery_level=0]
+	action CLEAN22
+		109 : 1
+state 63
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=4	& slippery_level=0]
+	action CLEAN22
+		121 : 1
+state 64
+//[room_blocked	& dirt1=3	& dirt2=2	& energy=4	& slippery_level=0]
+	action CLEAN22
+		116 : 1
+state 65
+//[!room_blocked	& dirt1=3	& dirt2=2	& energy=4	& slippery_level=0]
+	action CLEAN11
+		98 : 1
+state 66
+//[room_blocked	& dirt1=3	& dirt2=3	& energy=4	& slippery_level=0]
+	action CLEAN22
+		113 : 1
+state 67
+//[!room_blocked	& dirt1=3	& dirt2=3	& energy=4	& slippery_level=0]
+	action CLEAN11
+		100 : 1
+state 68 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=1	& energy=5	& slippery_level=0]
+	action __NOLABEL__
+		68 : 1
+state 69
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=3	& slippery_level=0]
+	action NEXT
+		110 : 0.03125
+		115 : 0.03125
+		119 : 0.03125
+		121 : 0.03125
+		122 : 0.03125
+		123 : 0.03125
+		124 : 0.03125
+		125 : 0.03125
+		126 : 0.03125
+		127 : 0.03125
+		128 : 0.03125
+		129 : 0.03125
+		130 : 0.03125
+		131 : 0.03125
+		132 : 0.03125
+		133 : 0.03125
+		134 : 0.03125
+		135 : 0.03125
+		136 : 0.03125
+		137 : 0.03125
+		138 : 0.03125
+		139 : 0.03125
+		140 : 0.03125
+		141 : 0.03125
+		142 : 0.03125
+		143 : 0.03125
+		144 : 0.03125
+		145 : 0.03125
+		146 : 0.03125
+		147 : 0.03125
+		148 : 0.03125
+		149 : 0.03125
+state 70 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=2	& energy=5	& slippery_level=0]
+	action __NOLABEL__
+		70 : 1
+state 71
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=8	& slippery_level=0]
+	action NEXT
+		150 : 1
+state 72 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=3	& energy=5	& slippery_level=0]
+	action __NOLABEL__
+		72 : 1
+state 73 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=0	& energy=5	& slippery_level=0]
+	action __NOLABEL__
+		73 : 1
+state 74
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=8	& slippery_level=0]
+	action CHARGE2
+		151 : 0.9
+		152 : 0.1
+state 75
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=3	& slippery_level=0]
+	action CLEAN11
+		110 : 1
+state 76 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=2	& energy=5	& slippery_level=0]
+	action __NOLABEL__
+		76 : 1
+state 77
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=8	& slippery_level=0]
+	action NEXT
+		153 : 1
+state 78
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=8	& slippery_level=0]
+	action CHARGE2
+		151 : 0.9
+		154 : 0.1
+state 79
+//[room_blocked	& dirt1=0	& dirt2=0	& energy=3	& slippery_level=0]
+	action NEXT
+		110 : 0.03125
+		115 : 0.03125
+		119 : 0.03125
+		121 : 0.03125
+		122 : 0.03125
+		123 : 0.03125
+		124 : 0.03125
+		125 : 0.03125
+		126 : 0.03125
+		127 : 0.03125
+		128 : 0.03125
+		129 : 0.03125
+		130 : 0.03125
+		131 : 0.03125
+		132 : 0.03125
+		133 : 0.03125
+		134 : 0.03125
+		135 : 0.03125
+		136 : 0.03125
+		137 : 0.03125
+		138 : 0.03125
+		139 : 0.03125
+		140 : 0.03125
+		141 : 0.03125
+		142 : 0.03125
+		143 : 0.03125
+		144 : 0.03125
+		145 : 0.03125
+		146 : 0.03125
+		147 : 0.03125
+		148 : 0.03125
+		149 : 0.03125
+state 80
+//[room_blocked	& dirt1=0	& dirt2=1	& energy=3	& slippery_level=0]
+	action CLEAN22
+		155 : 1
+state 81
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=3	& slippery_level=0]
+	action CLEAN21
+		110 : 1
+state 82
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=3	& slippery_level=0]
+	action CHARGE2
+		156 : 0.9
+		157 : 0.1
+state 83
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=3	& slippery_level=0]
+	action CLEAN21
+		124 : 1
+state 84
+//[room_blocked	& dirt1=0	& dirt2=3	& energy=3	& slippery_level=0]
+	action CLEAN22
+		158 : 1
+state 85
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=3	& slippery_level=0]
+	action CLEAN21
+		126 : 1
+state 86
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=3	& slippery_level=0]
+	action CHARGE2
+		159 : 0.9
+		160 : 0.1
+state 87
+//[room_blocked	& dirt1=1	& dirt2=1	& energy=3	& slippery_level=0]
+	action CLEAN21
+		155 : 1
+state 88
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=3	& slippery_level=0]
+	action CLEAN11
+		124 : 1
+state 89
+//[room_blocked	& dirt1=1	& dirt2=2	& energy=3	& slippery_level=0]
+	action CLEAN22
+		161 : 1
+state 90
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=3	& slippery_level=0]
+	action CLEAN21
+		131 : 1
+state 91
+//[room_blocked	& dirt1=1	& dirt2=3	& energy=3	& slippery_level=0]
+	action CLEAN22
+		158 : 1
+state 92
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=3	& slippery_level=0]
+	action CLEAN21
+		133 : 1
+state 93
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=3	& slippery_level=0]
+	action CLEAN22
+		162 : 1
+state 94
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=3	& slippery_level=0]
+	action CLEAN11
+		115 : 1
+state 95
+//[room_blocked	& dirt1=2	& dirt2=1	& energy=3	& slippery_level=0]
+	action CLEAN22
+		155 : 1
+state 96
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=3	& slippery_level=0]
+	action CLEAN11
+		131 : 1
+state 97
+//[room_blocked	& dirt1=2	& dirt2=2	& energy=3	& slippery_level=0]
+	action CLEAN22
+		161 : 1
+state 98
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=3	& slippery_level=0]
+	action CLEAN11
+		133 : 1
+state 99
+//[room_blocked	& dirt1=2	& dirt2=3	& energy=3	& slippery_level=0]
+	action CLEAN22
+		158 : 1
+state 100
+//[!room_blocked	& dirt1=2	& dirt2=3	& energy=3	& slippery_level=0]
+	action CLEAN11
+		135 : 1
+state 101
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=3	& slippery_level=0]
+	action CHARGE2
+		159 : 0.9
+		163 : 0.1
+state 102
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=3	& slippery_level=0]
+	action CLEAN11
+		119 : 1
+state 103
+//[room_blocked	& dirt1=3	& dirt2=1	& energy=3	& slippery_level=0]
+	action CHARGE2
+		164 : 0.9
+		165 : 0.1
+state 104
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=3	& slippery_level=0]
+	action CLEAN11
+		138 : 1
+state 105
+//[room_blocked	& dirt1=3	& dirt2=2	& energy=3	& slippery_level=0]
+	action CLEAN22
+		161 : 1
+state 106
+//[!room_blocked	& dirt1=3	& dirt2=2	& energy=3	& slippery_level=0]
+	action CLEAN21
+		145 : 1
+state 107
+//[room_blocked	& dirt1=3	& dirt2=3	& energy=3	& slippery_level=0]
+	action CLEAN22
+		158 : 1
+state 108
+//[!room_blocked	& dirt1=3	& dirt2=3	& energy=3	& slippery_level=0]
+	action CLEAN21
+		147 : 1
+state 109 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=1	& energy=4	& slippery_level=0]
+	action __NOLABEL__
+		109 : 1
+state 110
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=2	& slippery_level=0]
+	action CHARGE2
+		5 : 0.9
+		166 : 0.1
+state 111 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=2	& energy=4	& slippery_level=0]
+	action __NOLABEL__
+		111 : 1
+state 112
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=7	& slippery_level=0]
+	action CHARGE2
+		167 : 0.9
+		168 : 0.1
+state 113 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=3	& energy=4	& slippery_level=0]
+	action __NOLABEL__
+		113 : 1
+state 114 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=0	& energy=4	& slippery_level=0]
+	action __NOLABEL__
+		114 : 1
+state 115
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=2	& slippery_level=0]
+	action CHARGE1
+		115 : 0.45
+		169 : 0.5
+		170 : 0.05
+state 116 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=2	& energy=4	& slippery_level=0]
+	action __NOLABEL__
+		116 : 1
+state 117 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=0	& energy=4	& slippery_level=0]
+	action __NOLABEL__
+		117 : 1
+state 118
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=7	& slippery_level=0]
+	action CHARGE2
+		171 : 0.9
+		172 : 0.1
+state 119
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=2	& slippery_level=0]
+	action CHARGE1
+		119 : 0.45
+		173 : 0.5
+		174 : 0.05
+state 120
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=7	& slippery_level=0]
+	action CHARGE2
+		154 : 0.1
+		171 : 0.9
+state 121
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=2	& slippery_level=0]
+	action CHARGE1
+		121 : 0.45
+		175 : 0.5
+		176 : 0.05
+state 122
+//[room_blocked	& dirt1=0	& dirt2=0	& energy=2	& slippery_level=0]
+	action CHARGE2
+		4 : 0.9
+		177 : 0.1
+state 123
+//[room_blocked	& dirt1=0	& dirt2=1	& energy=2	& slippery_level=0]
+	action CHARGE2
+		6 : 0.9
+		178 : 0.1
+state 124
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=2	& slippery_level=0]
+	action CHARGE1
+		124 : 0.45
+		179 : 0.5
+		180 : 0.05
+state 125
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=2	& slippery_level=0]
+	action CHARGE2
+		8 : 0.9
+		181 : 0.1
+state 126
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=2	& slippery_level=0]
+	action CHARGE1
+		126 : 0.45
+		182 : 0.5
+		183 : 0.05
+state 127
+//[room_blocked	& dirt1=0	& dirt2=3	& energy=2	& slippery_level=0]
+	action CLEAN22
+		184 : 1
+state 128
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=2	& slippery_level=0]
+	action CHARGE1
+		128 : 0.45
+		185 : 0.5
+		186 : 0.05
+state 129
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=2	& slippery_level=0]
+	action CHARGE2
+		12 : 0.9
+		187 : 0.1
+state 130
+//[room_blocked	& dirt1=1	& dirt2=1	& energy=2	& slippery_level=0]
+	action CHARGE2
+		14 : 0.9
+		188 : 0.1
+state 131
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=2	& slippery_level=0]
+	action CHARGE1
+		1 : 0.5
+		131 : 0.45
+		189 : 0.05
+state 132
+//[room_blocked	& dirt1=1	& dirt2=2	& energy=2	& slippery_level=0]
+	action CLEAN22
+		190 : 1
+state 133
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=2	& slippery_level=0]
+	action CHARGE1
+		133 : 0.45
+		191 : 0.5
+		192 : 0.05
+state 134
+//[room_blocked	& dirt1=1	& dirt2=3	& energy=2	& slippery_level=0]
+	action CLEAN22
+		184 : 1
+state 135
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=2	& slippery_level=0]
+	action CHARGE1
+		135 : 0.45
+		193 : 0.5
+		194 : 0.05
+state 136
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=2	& slippery_level=0]
+	action CHARGE2
+		20 : 0.9
+		195 : 0.1
+state 137
+//[room_blocked	& dirt1=2	& dirt2=1	& energy=2	& slippery_level=0]
+	action CHARGE2
+		22 : 0.9
+		196 : 0.1
+state 138
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=2	& slippery_level=0]
+	action CHARGE1
+		138 : 0.45
+		197 : 0.5
+		198 : 0.05
+state 139
+//[room_blocked	& dirt1=2	& dirt2=2	& energy=2	& slippery_level=0]
+	action CLEAN22
+		190 : 1
+state 140
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=2	& slippery_level=0]
+	action CHARGE1
+		140 : 0.45
+		199 : 0.5
+		200 : 0.05
+state 141
+//[room_blocked	& dirt1=2	& dirt2=3	& energy=2	& slippery_level=0]
+	action CLEAN22
+		184 : 1
+state 142
+//[!room_blocked	& dirt1=2	& dirt2=3	& energy=2	& slippery_level=0]
+	action CLEAN11
+		194 : 1
+state 143
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=2	& slippery_level=0]
+	action CHARGE2
+		28 : 0.9
+		201 : 0.1
+state 144
+//[room_blocked	& dirt1=3	& dirt2=1	& energy=2	& slippery_level=0]
+	action CHARGE2
+		30 : 0.9
+		202 : 0.1
+state 145
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=2	& slippery_level=0]
+	action CHARGE1
+		145 : 0.45
+		203 : 0.5
+		204 : 0.05
+state 146
+//[room_blocked	& dirt1=3	& dirt2=2	& energy=2	& slippery_level=0]
+	action CHARGE2
+		32 : 0.9
+		205 : 0.1
+state 147
+//[!room_blocked	& dirt1=3	& dirt2=2	& energy=2	& slippery_level=0]
+	action CLEAN11
+		200 : 1
+state 148
+//[room_blocked	& dirt1=3	& dirt2=3	& energy=2	& slippery_level=0]
+	action CHARGE2
+		34 : 0.9
+		206 : 0.1
+state 149
+//[!room_blocked	& dirt1=3	& dirt2=3	& energy=2	& slippery_level=0]
+	action CLEAN11
+		207 : 1
+state 150 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-9	& dirt2=2	& energy=8	& slippery_level=0]
+	action __NOLABEL__
+		150 : 1
+state 151 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=0	& energy=8	& slippery_level=0]
+	action __NOLABEL__
+		151 : 1
+state 152
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=10	& slippery_level=0]
+	action NEXT
+		208 : 1
+state 153 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-9	& dirt2=0	& energy=8	& slippery_level=0]
+	action __NOLABEL__
+		153 : 1
+state 154
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=10	& slippery_level=0]
+	action CHARGE2
+		154 : 0.1
+		209 : 0.9
+state 155 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=1	& energy=3	& slippery_level=0]
+	action __NOLABEL__
+		155 : 1
+state 156 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=2	& energy=3	& slippery_level=0]
+	action __NOLABEL__
+		156 : 1
+state 157
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=6	& slippery_level=0]
+	action CHARGE2
+		210 : 0.9
+		211 : 0.1
+state 158 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=3	& energy=3	& slippery_level=0]
+	action __NOLABEL__
+		158 : 1
+state 159 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=0	& energy=3	& slippery_level=0]
+	action __NOLABEL__
+		159 : 1
+state 160
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=6	& slippery_level=0]
+	action CHARGE2
+		212 : 0.9
+		213 : 0.1
+state 161 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=2	& energy=3	& slippery_level=0]
+	action __NOLABEL__
+		161 : 1
+state 162 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=0	& energy=3	& slippery_level=0]
+	action __NOLABEL__
+		162 : 1
+state 163
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=6	& slippery_level=0]
+	action CHARGE2
+		212 : 0.9
+		214 : 0.1
+state 164 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=1	& energy=3	& slippery_level=0]
+	action __NOLABEL__
+		164 : 1
+state 165
+//[room_blocked	& dirt1=3	& dirt2=1	& energy=6	& slippery_level=0]
+	action CLEAN22
+		215 : 1
+state 166
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=1	& slippery_level=0]
+	action CHARGE1
+		166 : 0.45
+		216 : 0.5
+		217 : 0.05
+state 167 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=2	& energy=7	& slippery_level=0]
+	action __NOLABEL__
+		167 : 1
+state 168
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=10	& slippery_level=0]
+	action NEXT
+		218 : 1
+state 169
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=9	& slippery_level=0]
+	action CLEAN12
+		219 : 1
+state 170
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=1	& slippery_level=0]
+	action CHARGE2
+		45 : 0.9
+		220 : 0.1
+state 171 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=0	& energy=7	& slippery_level=0]
+	action __NOLABEL__
+		171 : 1
+state 172
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=10	& slippery_level=0]
+	action NEXT
+		208 : 1
+state 173
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=9	& slippery_level=0]
+	action CLEAN11
+		221 : 1
+state 174
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=1	& slippery_level=0]
+	action CHARGE2
+		53 : 0.9
+		222 : 0.1
+state 175
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=9	& slippery_level=0]
+	action CLEAN11
+		223 : 1
+state 176
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=1	& slippery_level=0]
+	action CHARGE1
+		176 : 0.45
+		224 : 0.5
+		225 : 0.05
+state 177
+//[room_blocked	& dirt1=0	& dirt2=0	& energy=1	& slippery_level=0]
+	action CHARGE2
+		36 : 0.9
+		226 : 0.1
+state 178
+//[room_blocked	& dirt1=0	& dirt2=1	& energy=1	& slippery_level=0]
+	action CLEAN21
+		227 : 1
+state 179
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=9	& slippery_level=0]
+	action CLEAN22
+		219 : 1
+state 180
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=1	& slippery_level=0]
+	action CHARGE1
+		180 : 0.45
+		228 : 0.5
+		229 : 0.05
+state 181
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=1	& slippery_level=0]
+	action CHARGE2
+		40 : 0.9
+		230 : 0.1
+state 182
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=9	& slippery_level=0]
+	action CLEAN21
+		228 : 1
+state 183
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=1	& slippery_level=0]
+	action CHARGE1
+		183 : 0.45
+		231 : 0.5
+		232 : 0.05
+state 184 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=3	& energy=2	& slippery_level=0]
+	action __NOLABEL__
+		184 : 1
+state 185
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=9	& slippery_level=0]
+	action CLEAN21
+		231 : 1
+state 186
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=1	& slippery_level=0]
+	action CHARGE1
+		186 : 0.45
+		233 : 0.5
+		234 : 0.05
+state 187
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=1	& slippery_level=0]
+	action CLEAN22
+		235 : 1
+state 188
+//[room_blocked	& dirt1=1	& dirt2=1	& energy=1	& slippery_level=0]
+	action CHARGE2
+		46 : 0.9
+		236 : 0.1
+state 189
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=1	& slippery_level=0]
+	action CHARGE2
+		47 : 0.9
+		237 : 0.1
+state 190 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=2	& energy=2	& slippery_level=0]
+	action __NOLABEL__
+		190 : 1
+state 191
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=9	& slippery_level=0]
+	action CLEAN21
+		238 : 1
+state 192
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=1	& slippery_level=0]
+	action CHARGE1
+		192 : 0.45
+		239 : 0.5
+		240 : 0.05
+state 193
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=9	& slippery_level=0]
+	action CLEAN21
+		239 : 1
+state 194
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=1	& slippery_level=0]
+	action CHARGE1
+		194 : 0.45
+		241 : 0.5
+		242 : 0.05
+state 195
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=1	& slippery_level=0]
+	action CHARGE2
+		52 : 0.9
+		243 : 0.1
+state 196
+//[room_blocked	& dirt1=2	& dirt2=1	& energy=1	& slippery_level=0]
+	action CHARGE2
+		54 : 0.9
+		244 : 0.1
+state 197
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=9	& slippery_level=0]
+	action CLEAN11
+		238 : 1
+state 198
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=1	& slippery_level=0]
+	action CHARGE2
+		55 : 0.9
+		245 : 0.1
+state 199
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=9	& slippery_level=0]
+	action CLEAN11
+		239 : 1
+state 200
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=1	& slippery_level=0]
+	action CHARGE2
+		57 : 0.9
+		246 : 0.1
+state 201
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=1	& slippery_level=0]
+	action CHARGE2
+		60 : 0.9
+		247 : 0.1
+state 202
+//[room_blocked	& dirt1=3	& dirt2=1	& energy=1	& slippery_level=0]
+	action CHARGE2
+		62 : 0.9
+		248 : 0.1
+state 203
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=9	& slippery_level=0]
+	action CLEAN11
+		249 : 1
+state 204
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=1	& slippery_level=0]
+	action CHARGE2
+		63 : 0.9
+		250 : 0.1
+state 205
+//[room_blocked	& dirt1=3	& dirt2=2	& energy=1	& slippery_level=0]
+	action CHARGE2
+		64 : 0.9
+		251 : 0.1
+state 206
+//[room_blocked	& dirt1=3	& dirt2=3	& energy=1	& slippery_level=0]
+	action CHARGE2
+		66 : 0.9
+		252 : 0.1
+state 207
+//[!room_blocked	& dirt1=2	& dirt2=3	& energy=1	& slippery_level=0]
+	action CHARGE2
+		59 : 0.9
+		253 : 0.1
+state 208 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-9	& dirt2=0	& energy=10	& slippery_level=0]
+	action __NOLABEL__
+		208 : 1
+state 209 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=0	& energy=10	& slippery_level=0]
+	action __NOLABEL__
+		209 : 1
+state 210 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=2	& energy=6	& slippery_level=0]
+	action __NOLABEL__
+		210 : 1
+state 211
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=9	& slippery_level=0]
+	action CLEAN21
+		254 : 1
+state 212 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=0	& energy=6	& slippery_level=0]
+	action __NOLABEL__
+		212 : 1
+state 213
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=9	& slippery_level=0]
+	action CHARGE2
+		152 : 0.1
+		255 : 0.9
+state 214
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=9	& slippery_level=0]
+	action CHARGE2
+		154 : 0.1
+		255 : 0.9
+state 215 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=1	& energy=6	& slippery_level=0]
+	action __NOLABEL__
+		215 : 1
+state 216
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=8	& slippery_level=0]
+	action NEXT
+		2 : 0.03125
+		112 : 0.03125
+		118 : 0.03125
+		120 : 0.03125
+		219 : 0.03125
+		256 : 0.03125
+		257 : 0.03125
+		258 : 0.03125
+		259 : 0.03125
+		260 : 0.03125
+		261 : 0.03125
+		262 : 0.03125
+		263 : 0.03125
+		264 : 0.03125
+		265 : 0.03125
+		266 : 0.03125
+		267 : 0.03125
+		268 : 0.03125
+		269 : 0.03125
+		270 : 0.03125
+		271 : 0.03125
+		272 : 0.03125
+		273 : 0.03125
+		274 : 0.03125
+		275 : 0.03125
+		276 : 0.03125
+		277 : 0.03125
+		278 : 0.03125
+		279 : 0.03125
+		280 : 0.03125
+		281 : 0.03125
+		282 : 0.03125
+state 217
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=0	& slippery_level=0]
+	action CLEAN22
+		283 : 1
+state 218 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-9	& dirt2=2	& energy=10	& slippery_level=0]
+	action __NOLABEL__
+		218 : 1
+state 219
+//[!room_blocked	& dirt1=0	& dirt2=0	& energy=7	& slippery_level=0]
+	action NEXT
+		3 : 0.03125
+		157 : 0.03125
+		160 : 0.03125
+		163 : 0.03125
+		165 : 0.03125
+		284 : 0.03125
+		285 : 0.03125
+		286 : 0.03125
+		287 : 0.03125
+		288 : 0.03125
+		289 : 0.03125
+		290 : 0.03125
+		291 : 0.03125
+		292 : 0.03125
+		293 : 0.03125
+		294 : 0.03125
+		295 : 0.03125
+		296 : 0.03125
+		297 : 0.03125
+		298 : 0.03125
+		299 : 0.03125
+		300 : 0.03125
+		301 : 0.03125
+		302 : 0.03125
+		303 : 0.03125
+		304 : 0.03125
+		305 : 0.03125
+		306 : 0.03125
+		307 : 0.03125
+		308 : 0.03125
+		309 : 0.03125
+		310 : 0.03125
+state 220
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=0	& slippery_level=0]
+	action CLEAN22
+		283 : 1
+state 221
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=8	& slippery_level=0]
+	action CLEAN11
+		219 : 1
+state 222
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=0	& slippery_level=0]
+	action CLEAN22
+		283 : 1
+state 223
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=8	& slippery_level=0]
+	action CLEAN11
+		2 : 1
+state 224
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=8	& slippery_level=0]
+	action CLEAN11
+		269 : 1
+state 225
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=0	& slippery_level=0]
+	action NEXT
+		283 : 1
+state 226
+//[room_blocked	& dirt1=0	& dirt2=0	& energy=0	& slippery_level=0]
+	action NEXT
+		311 : 1
+state 227 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=1	& energy=1	& slippery_level=0]
+	action __NOLABEL__
+		227 : 1
+state 228
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=8	& slippery_level=0]
+	action CLEAN22
+		3 : 1
+state 229
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=0	& slippery_level=0]
+	action CLEAN22
+		312 : 1
+state 230
+//[room_blocked	& dirt1=0	& dirt2=2	& energy=0	& slippery_level=0]
+	action CLEAN21
+		313 : 1
+state 231
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=8	& slippery_level=0]
+	action CLEAN21
+		258 : 1
+state 232
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=0	& slippery_level=0]
+	action CLEAN22
+		314 : 1
+state 233
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=8	& slippery_level=0]
+	action CLEAN21
+		259 : 1
+state 234
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=0	& slippery_level=0]
+	action NEXT
+		315 : 1
+state 235 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=0	& energy=1	& slippery_level=0]
+	action __NOLABEL__
+		235 : 1
+state 236
+//[room_blocked	& dirt1=1	& dirt2=1	& energy=0	& slippery_level=0]
+	action CLEAN21
+		316 : 1
+state 237
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=0	& slippery_level=0]
+	action CHARGE2
+		317 : 1
+state 238
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=8	& slippery_level=0]
+	action CLEAN11
+		258 : 1
+state 239
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=8	& slippery_level=0]
+	action CLEAN21
+		264 : 1
+state 240
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=0	& slippery_level=0]
+	action CHARGE2
+		318 : 1
+state 241
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=8	& slippery_level=0]
+	action CLEAN21
+		266 : 1
+state 242
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=0	& slippery_level=0]
+	action CHARGE2
+		319 : 1
+state 243
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=0	& slippery_level=0]
+	action CLEAN21
+		320 : 1
+state 244
+//[room_blocked	& dirt1=2	& dirt2=1	& energy=0	& slippery_level=0]
+	action CLEAN21
+		316 : 1
+state 245
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=0	& slippery_level=0]
+	action CHARGE2
+		317 : 1
+state 246
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=0	& slippery_level=0]
+	action CHARGE2
+		318 : 1
+state 247
+//[room_blocked	& dirt1=3	& dirt2=0	& energy=0	& slippery_level=0]
+	action NEXT
+		311 : 1
+state 248
+//[room_blocked	& dirt1=3	& dirt2=1	& energy=0	& slippery_level=0]
+	action CLEAN21
+		316 : 1
+state 249
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=8	& slippery_level=0]
+	action CLEAN11
+		264 : 1
+state 250
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=0	& slippery_level=0]
+	action CLEAN21
+		312 : 1
+state 251
+//[room_blocked	& dirt1=3	& dirt2=2	& energy=0	& slippery_level=0]
+	action CLEAN21
+		313 : 1
+state 252
+//[room_blocked	& dirt1=3	& dirt2=3	& energy=0	& slippery_level=0]
+	action CLEAN21
+		321 : 1
+state 253
+//[!room_blocked	& dirt1=2	& dirt2=3	& energy=0	& slippery_level=0]
+	action CHARGE2
+		319 : 1
+state 254 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=2	& energy=9	& slippery_level=0]
+	action __NOLABEL__
+		254 : 1
+state 255 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=0	& energy=9	& slippery_level=0]
+	action __NOLABEL__
+		255 : 1
+state 256
+//[room_blocked	& dirt1=0	& dirt2=0	& energy=7	& slippery_level=0]
+	action NEXT
+		3 : 0.03125
+		157 : 0.03125
+		160 : 0.03125
+		163 : 0.03125
+		165 : 0.03125
+		284 : 0.03125
+		285 : 0.03125
+		286 : 0.03125
+		287 : 0.03125
+		288 : 0.03125
+		289 : 0.03125
+		290 : 0.03125
+		291 : 0.03125
+		292 : 0.03125
+		293 : 0.03125
+		294 : 0.03125
+		295 : 0.03125
+		296 : 0.03125
+		297 : 0.03125
+		298 : 0.03125
+		299 : 0.03125
+		300 : 0.03125
+		301 : 0.03125
+		302 : 0.03125
+		303 : 0.03125
+		304 : 0.03125
+		305 : 0.03125
+		306 : 0.03125
+		307 : 0.03125
+		308 : 0.03125
+		309 : 0.03125
+		310 : 0.03125
+state 257
+//[room_blocked	& dirt1=0	& dirt2=1	& energy=7	& slippery_level=0]
+	action CHARGE2
+		322 : 0.9
+		323 : 0.1
+state 258
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=7	& slippery_level=0]
+	action CLEAN21
+		3 : 1
+state 259
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=7	& slippery_level=0]
+	action CLEAN21
+		286 : 1
+state 260
+//[room_blocked	& dirt1=0	& dirt2=3	& energy=7	& slippery_level=0]
+	action CLEAN22
+		324 : 1
+state 261
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=7	& slippery_level=0]
+	action CLEAN21
+		287 : 1
+state 262
+//[room_blocked	& dirt1=1	& dirt2=0	& energy=7	& slippery_level=0]
+	action CLEAN22
+		325 : 1
+state 263
+//[room_blocked	& dirt1=1	& dirt2=1	& energy=7	& slippery_level=0]
+	action CLEAN22
+		326 : 1
+state 264
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=7	& slippery_level=0]
+	action CLEAN11
+		286 : 1
+state 265
+//[room_blocked	& dirt1=1	& dirt2=2	& energy=7	& slippery_level=0]
+	action CLEAN21
+		327 : 1
+state 266
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=7	& slippery_level=0]
+	action CLEAN21
+		292 : 1
+state 267
+//[room_blocked	& dirt1=1	& dirt2=3	& energy=7	& slippery_level=0]
+	action CLEAN22
+		324 : 1
+state 268
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=7	& slippery_level=0]
+	action CLEAN21
+		294 : 1
+state 269
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=7	& slippery_level=0]
+	action CLEAN11
+		290 : 1
+state 270
+//[room_blocked	& dirt1=2	& dirt2=1	& energy=7	& slippery_level=0]
+	action CLEAN22
+		326 : 1
+state 271
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=7	& slippery_level=0]
+	action CLEAN11
+		292 : 1
+state 272
+//[room_blocked	& dirt1=2	& dirt2=2	& energy=7	& slippery_level=0]
+	action CLEAN22
+		327 : 1
+state 273
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=7	& slippery_level=0]
+	action CLEAN11
+		294 : 1
+state 274
+//[room_blocked	& dirt1=2	& dirt2=3	& energy=7	& slippery_level=0]
+	action CLEAN22
+		324 : 1
+state 275
+//[!room_blocked	& dirt1=2	& dirt2=3	& energy=7	& slippery_level=0]
+	action CLEAN21
+		302 : 1
+state 276
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=7	& slippery_level=0]
+	action CLEAN11
+		298 : 1
+state 277
+//[room_blocked	& dirt1=3	& dirt2=1	& energy=7	& slippery_level=0]
+	action CLEAN22
+		326 : 1
+state 278
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=7	& slippery_level=0]
+	action CLEAN11
+		300 : 1
+state 279
+//[room_blocked	& dirt1=3	& dirt2=2	& energy=7	& slippery_level=0]
+	action CLEAN22
+		327 : 1
+state 280
+//[!room_blocked	& dirt1=3	& dirt2=2	& energy=7	& slippery_level=0]
+	action CLEAN11
+		302 : 1
+state 281
+//[room_blocked	& dirt1=3	& dirt2=3	& energy=7	& slippery_level=0]
+	action CLEAN22
+		324 : 1
+state 282
+//[!room_blocked	& dirt1=3	& dirt2=3	& energy=7	& slippery_level=0]
+	action CLEAN11
+		304 : 1
+state 283 "(dirt1 < 0)"
+//[!room_blocked	& dirt1=-1	& dirt2=0	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		283 : 1
+state 284
+//[room_blocked	& dirt1=0	& dirt2=0	& energy=6	& slippery_level=0]
+	action NEXT
+		4 : 0.03125
+		5 : 0.03125
+		6 : 0.03125
+		7 : 0.03125
+		8 : 0.03125
+		9 : 0.03125
+		10 : 0.03125
+		11 : 0.03125
+		12 : 0.03125
+		13 : 0.03125
+		14 : 0.03125
+		15 : 0.03125
+		16 : 0.03125
+		17 : 0.03125
+		18 : 0.03125
+		19 : 0.03125
+		20 : 0.03125
+		21 : 0.03125
+		22 : 0.03125
+		23 : 0.03125
+		24 : 0.03125
+		25 : 0.03125
+		26 : 0.03125
+		27 : 0.03125
+		28 : 0.03125
+		29 : 0.03125
+		30 : 0.03125
+		31 : 0.03125
+		32 : 0.03125
+		33 : 0.03125
+		34 : 0.03125
+		35 : 0.03125
+state 285
+//[room_blocked	& dirt1=0	& dirt2=1	& energy=6	& slippery_level=0]
+	action CLEAN22
+		215 : 1
+state 286
+//[!room_blocked	& dirt1=0	& dirt2=1	& energy=6	& slippery_level=0]
+	action CLEAN21
+		5 : 1
+state 287
+//[!room_blocked	& dirt1=0	& dirt2=2	& energy=6	& slippery_level=0]
+	action CLEAN21
+		7 : 1
+state 288
+//[room_blocked	& dirt1=0	& dirt2=3	& energy=6	& slippery_level=0]
+	action CLEAN22
+		328 : 1
+state 289
+//[!room_blocked	& dirt1=0	& dirt2=3	& energy=6	& slippery_level=0]
+	action CLEAN21
+		9 : 1
+state 290
+//[!room_blocked	& dirt1=1	& dirt2=0	& energy=6	& slippery_level=0]
+	action CLEAN11
+		5 : 1
+state 291
+//[room_blocked	& dirt1=1	& dirt2=1	& energy=6	& slippery_level=0]
+	action CLEAN22
+		215 : 1
+state 292
+//[!room_blocked	& dirt1=1	& dirt2=1	& energy=6	& slippery_level=0]
+	action CLEAN22
+		45 : 1
+state 293
+//[room_blocked	& dirt1=1	& dirt2=2	& energy=6	& slippery_level=0]
+	action CLEAN22
+		329 : 1
+state 294
+//[!room_blocked	& dirt1=1	& dirt2=2	& energy=6	& slippery_level=0]
+	action CLEAN21
+		15 : 1
+state 295
+//[room_blocked	& dirt1=1	& dirt2=3	& energy=6	& slippery_level=0]
+	action CLEAN22
+		328 : 1
+state 296
+//[!room_blocked	& dirt1=1	& dirt2=3	& energy=6	& slippery_level=0]
+	action CLEAN21
+		17 : 1
+state 297
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=6	& slippery_level=0]
+	action CHARGE2
+		212 : 0.9
+		330 : 0.1
+state 298
+//[!room_blocked	& dirt1=2	& dirt2=0	& energy=6	& slippery_level=0]
+	action CLEAN11
+		13 : 1
+state 299
+//[room_blocked	& dirt1=2	& dirt2=1	& energy=6	& slippery_level=0]
+	action CLEAN22
+		215 : 1
+state 300
+//[!room_blocked	& dirt1=2	& dirt2=1	& energy=6	& slippery_level=0]
+	action CLEAN11
+		15 : 1
+state 301
+//[room_blocked	& dirt1=2	& dirt2=2	& energy=6	& slippery_level=0]
+	action CLEAN22
+		329 : 1
+state 302
+//[!room_blocked	& dirt1=2	& dirt2=2	& energy=6	& slippery_level=0]
+	action CLEAN11
+		17 : 1
+state 303
+//[room_blocked	& dirt1=2	& dirt2=3	& energy=6	& slippery_level=0]
+	action CLEAN22
+		328 : 1
+state 304
+//[!room_blocked	& dirt1=2	& dirt2=3	& energy=6	& slippery_level=0]
+	action CLEAN21
+		25 : 1
+state 305
+//[!room_blocked	& dirt1=3	& dirt2=0	& energy=6	& slippery_level=0]
+	action CLEAN11
+		21 : 1
+state 306
+//[!room_blocked	& dirt1=3	& dirt2=1	& energy=6	& slippery_level=0]
+	action CLEAN11
+		23 : 1
+state 307
+//[room_blocked	& dirt1=3	& dirt2=2	& energy=6	& slippery_level=0]
+	action CLEAN22
+		329 : 1
+state 308
+//[!room_blocked	& dirt1=3	& dirt2=2	& energy=6	& slippery_level=0]
+	action CLEAN11
+		25 : 1
+state 309
+//[room_blocked	& dirt1=3	& dirt2=3	& energy=6	& slippery_level=0]
+	action CLEAN22
+		328 : 1
+state 310
+//[!room_blocked	& dirt1=3	& dirt2=3	& energy=6	& slippery_level=0]
+	action CLEAN11
+		27 : 1
+state 311 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-1	& dirt2=0	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		311 : 1
+state 312 "(dirt1 < 0)"
+//[!room_blocked	& dirt1=-1	& dirt2=1	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		312 : 1
+state 313 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-3	& dirt2=2	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		313 : 1
+state 314 "(dirt1 < 0)"
+//[!room_blocked	& dirt1=-1	& dirt2=2	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		314 : 1
+state 315 "(dirt1 < 0)"
+//[!room_blocked	& dirt1=-1	& dirt2=3	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		315 : 1
+state 316 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-3	& dirt2=1	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		316 : 1
+state 317 "(dirt1 < 0)"
+//[!room_blocked	& dirt1=-3	& dirt2=1	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		317 : 1
+state 318 "(dirt1 < 0)"
+//[!room_blocked	& dirt1=-3	& dirt2=2	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		318 : 1
+state 319 "(dirt1 < 0)"
+//[!room_blocked	& dirt1=-3	& dirt2=3	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		319 : 1
+state 320 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-3	& dirt2=0	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		320 : 1
+state 321 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-3	& dirt2=3	& energy=0	& slippery_level=0]
+	action __NOLABEL__
+		321 : 1
+state 322 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=1	& energy=7	& slippery_level=0]
+	action __NOLABEL__
+		322 : 1
+state 323
+//[room_blocked	& dirt1=0	& dirt2=1	& energy=10	& slippery_level=0]
+	action CHARGE2
+		323 : 0.1
+		331 : 0.9
+state 324 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=3	& energy=7	& slippery_level=0]
+	action __NOLABEL__
+		324 : 1
+state 325 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=0	& energy=7	& slippery_level=0]
+	action __NOLABEL__
+		325 : 1
+state 326 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=1	& energy=7	& slippery_level=0]
+	action __NOLABEL__
+		326 : 1
+state 327 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=2	& energy=7	& slippery_level=0]
+	action __NOLABEL__
+		327 : 1
+state 328 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=3	& energy=6	& slippery_level=0]
+	action __NOLABEL__
+		328 : 1
+state 329 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-2	& dirt2=2	& energy=6	& slippery_level=0]
+	action __NOLABEL__
+		329 : 1
+state 330
+//[room_blocked	& dirt1=2	& dirt2=0	& energy=9	& slippery_level=0]
+	action NEXT
+		332 : 1
+state 331 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-5	& dirt2=1	& energy=10	& slippery_level=0]
+	action __NOLABEL__
+		331 : 1
+state 332 "(dirt1 < 0)"
+//[room_blocked	& dirt1=-9	& dirt2=0	& energy=9	& slippery_level=0]
+	action __NOLABEL__
+		332 : 1

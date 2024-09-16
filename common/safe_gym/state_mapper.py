@@ -103,6 +103,26 @@ class StateMapper:
         assert isinstance(mapped_state, np.ndarray)
         return mapped_state
 
+    def map_dict_to_array(self, state: dict) -> np.ndarray:
+        """Maps the state variables of the given state into the
+        correct format.
+
+        Args:
+            state (dict): Raw state
+
+        Returns:
+            np.ndarray: Transformed state
+        """
+        assert isinstance(state, dict)
+        size = len(self.mapper.keys())
+        mapped_state = np.zeros(size, np.int32)
+        for name in state:
+            if name not in self.disabled_features:
+                n_idx = self.mapper[name]
+                mapped_state[n_idx] = state[name]
+        assert isinstance(mapped_state, np.ndarray)
+        return mapped_state
+
     def get_feature_names(self):
         feature_names = []
         for idx, name in enumerate(self.original_format):

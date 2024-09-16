@@ -97,6 +97,8 @@ class StormBridge:
         assert isinstance(path, str)
         assert isinstance(constant_definitions, str)
         prism_program = stormpy.parse_prism_program(path)
+        with open(path, 'r') as f:
+            self.prism_file_content = f.read()
         prism_program = stormpy.preprocess_symbolic_input(
             prism_program, [], constant_definitions)[0].as_prism_program()
         suggestions = dict()

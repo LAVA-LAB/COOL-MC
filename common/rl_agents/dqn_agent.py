@@ -13,6 +13,20 @@ import torch
 import numpy as np
 
 
+def get_ranked_value(tensor, rank):
+    # Check if the provided rank is valid
+    if rank < 0 or rank >= tensor.size(0):
+        raise ValueError("Rank must be within the range of the tensor size")
+
+    # Get the sorted indices of the tensor in descending order
+    sorted_indices = torch.argsort(tensor, descending=True)
+
+    # Find the index corresponding to the specified rank
+    rank_index = sorted_indices[rank]
+
+    # Return the value at the specified rank index
+    return tensor[rank_index].item(), rank_index.item()
+
 
 class ReplayBuffer(object):
     def __init__(self, max_size : int, state_dimension : int):
@@ -180,6 +194,9 @@ class DQNAgent(Agent):
         self.batch_size = batch_size
         self.exp_counter = 0
         self.learn_step_counter = 0
+        self.nth_action_instead = None
+        self.block_nth_action = None
+        self.state_filters = []
 
     def save(self, artifact_path='model'):
         """
@@ -223,6 +240,19 @@ class DQNAgent(Agent):
         self.exp_counter+=1
 
 
+    def get_nt_action_alternative(self, state : np.array, nth_action_instead):
+        """Get action index from the action name
+
+        Args:
+            state (np.array): State
+            action_name (str): Action Name
+
+        Returns:
+            int: Action Index
+        """
+        _, action_index = get_ranked_value(self.q_eval.forward(state), nth_action_instead)
+        return action_index
+
     def select_action(self, state : np.ndarray, deploy=False) -> int:
         """Select random action or action based on the current state.
 
@@ -233,7 +263,27 @@ class DQNAgent(Agent):
         Returns:
             [type]: action
         """
+        if self.block_nth_action is not None:
+            if self.block_nth_action == torch.argmax(self.q_eval.forward(state)).item():
+                if self.nth_action_instead is not None:
+                    _, action_index = get_ranked_value(self.q_eval.forward(state), self.nth_action_instead)
+                    return action_index
+                else:
+                    # Return the second best action
+                    _, action_index = get_ranked_value(self.q_eval.forward(state), 1)
+                    return action_index
+        if self.nth_action_instead is not None:
+            _, action_index = get_ranked_value(self.q_eval.forward(state), self.nth_action_instead)
+            return action_index
         if deploy:
+            for state_filter in self.state_filters:
+                #print("====================================")
+                #print("State Filter", state_filter)
+                #print("State Copy", state_copy)
+                #print("Original State", state)
+                #print(state_filter[0].__class__.__name__, state.__class__.__name__)
+                if np.array_equal(state_filter[0], state):
+                    return state_filter[1] # For alternative checking
             return int(torch.argmax(self.q_eval.forward(state)).item())
         if torch.rand(1).item() < self.epsilon:
             self.epsilon *= self.epsilon_dec
@@ -267,6 +317,5 @@ class DQNAgent(Agent):
         loss = self.q_eval.loss(q_target, q_pred)
         loss.backward()
         self.q_eval.optimizer.step()
-
 
 

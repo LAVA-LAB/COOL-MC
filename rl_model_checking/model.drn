@@ -1,0 +1,933 @@
+// Exported by storm
+// Original model type: DTMC
+@type: DTMC
+@parameters
+
+@reward_models
+
+@nr_states
+222
+@nr_choices
+222
+@model
+state 0 "(n_feature = 1)" init
+	action 0
+		1 : 1
+state 1 "(n_feature = 1)"
+	action 0
+		2 : 1
+state 2 "(n_feature = 1)"
+	action 0
+		3 : 1
+state 3 "(n_feature = 1)"
+	action 0
+		4 : 1
+state 4 "(n_feature = 1)"
+	action 0
+		5 : 1
+state 5
+	action 0
+		6 : 1
+state 6 "(n_feature = 1)"
+	action 0
+		7 : 1
+state 7
+	action 0
+		8 : 1
+state 8
+	action 0
+		9 : 1
+state 9
+	action 0
+		10 : 1
+state 10 "(n_feature = 1)"
+	action 0
+		11 : 1
+state 11 "(n_feature = 1)"
+	action 0
+		12 : 0.0625
+		13 : 0.0625
+		14 : 0.0625
+		15 : 0.0625
+		16 : 0.0625
+		17 : 0.0625
+		18 : 0.0625
+		19 : 0.0625
+		20 : 0.0625
+		21 : 0.0625
+		22 : 0.0625
+		23 : 0.0625
+		24 : 0.0625
+		25 : 0.0625
+		26 : 0.0625
+		27 : 0.0625
+state 12 "(n_feature = 1)"
+	action 0
+		28 : 1
+state 13 "(n_feature = 1)"
+	action 0
+		29 : 1
+state 14 "(n_feature = 1)"
+	action 0
+		30 : 1
+state 15 "(n_feature = 1)"
+	action 0
+		31 : 1
+state 16 "(n_feature = 1)"
+	action 0
+		32 : 1
+state 17
+	action 0
+		33 : 1
+state 18 "(n_feature = 1)"
+	action 0
+		34 : 1
+state 19
+	action 0
+		35 : 1
+state 20 "(n_feature = 1)"
+	action 0
+		36 : 1
+state 21 "(n_feature = 1)"
+	action 0
+		37 : 1
+state 22 "(n_feature = 1)"
+	action 0
+		38 : 1
+state 23 "(n_feature = 1)"
+	action 0
+		39 : 1
+state 24 "(n_feature = 1)"
+	action 0
+		40 : 1
+state 25 "(n_feature = 1)"
+	action 0
+		41 : 1
+state 26 "(n_feature = 1)"
+	action 0
+		42 : 1
+state 27 "(n_feature = 1)"
+	action 0
+		43 : 1
+state 28 "(n_feature = 1)"
+	action 0
+		44 : 1
+state 29 "(n_feature = 1)"
+	action 0
+		45 : 1
+state 30 "(n_feature = 1)"
+	action 0
+		46 : 1
+state 31 "(n_feature = 1)"
+	action 0
+		47 : 1
+state 32 "(n_feature = 1)"
+	action 0
+		48 : 1
+state 33 "(n_feature = 1)"
+	action 0
+		49 : 1
+state 34 "(n_feature = 1)"
+	action 0
+		50 : 1
+state 35 "(n_feature = 1)"
+	action 0
+		51 : 1
+state 36 "(n_feature = 1)"
+	action 0
+		52 : 1
+state 37 "(n_feature = 1)"
+	action 0
+		53 : 1
+state 38 "(n_feature = 1)"
+	action 0
+		54 : 1
+state 39 "(n_feature = 1)"
+	action 0
+		55 : 1
+state 40 "(n_feature = 1)"
+	action 0
+		56 : 1
+state 41 "(n_feature = 1)"
+	action 0
+		57 : 1
+state 42 "(n_feature = 1)"
+	action 0
+		58 : 1
+state 43 "(n_feature = 1)"
+	action 0
+		59 : 1
+state 44 "(n_feature = 1)"
+	action 0
+		60 : 1
+state 45 "(n_feature = 1)"
+	action 0
+		61 : 1
+state 46 "(n_feature = 1)"
+	action 0
+		62 : 1
+state 47 "(n_feature = 1)"
+	action 0
+		63 : 1
+state 48 "(n_feature = 1)"
+	action 0
+		64 : 1
+state 49 "(n_feature = 1)"
+	action 0
+		65 : 1
+state 50 "(n_feature = 1)"
+	action 0
+		66 : 1
+state 51
+	action 0
+		67 : 1
+state 52 "(n_feature = 1)"
+	action 0
+		68 : 1
+state 53 "(n_feature = 1)"
+	action 0
+		69 : 1
+state 54 "(n_feature = 1)"
+	action 0
+		70 : 1
+state 55 "(n_feature = 1)"
+	action 0
+		71 : 1
+state 56 "(n_feature = 1)"
+	action 0
+		72 : 1
+state 57 "(n_feature = 1)"
+	action 0
+		73 : 1
+state 58 "(n_feature = 1)"
+	action 0
+		74 : 1
+state 59 "(n_feature = 1)"
+	action 0
+		75 : 1
+state 60
+	action 0
+		76 : 1
+state 61 "(n_feature = 1)"
+	action 0
+		77 : 1
+state 62 "(n_feature = 1)"
+	action 0
+		78 : 1
+state 63 "(n_feature = 1)"
+	action 0
+		79 : 1
+state 64 "(n_feature = 1)"
+	action 0
+		80 : 1
+state 65 "(n_feature = 1)"
+	action 0
+		81 : 1
+state 66
+	action 0
+		82 : 1
+state 67 "(n_feature = 1)"
+	action 0
+		83 : 1
+state 68 "(n_feature = 1)"
+	action 0
+		84 : 1
+state 69 "(n_feature = 1)"
+	action 0
+		85 : 1
+state 70 "(n_feature = 1)"
+	action 0
+		86 : 1
+state 71 "(n_feature = 1)"
+	action 0
+		87 : 1
+state 72 "(n_feature = 1)"
+	action 0
+		88 : 1
+state 73 "(n_feature = 1)"
+	action 0
+		89 : 1
+state 74 "(n_feature = 1)"
+	action 0
+		90 : 1
+state 75 "(n_feature = 1)"
+	action 0
+		91 : 1
+state 76 "(n_feature = 1)"
+	action 0
+		92 : 1
+state 77 "(n_feature = 1)"
+	action 0
+		93 : 1
+state 78 "(n_feature = 1)"
+	action 0
+		94 : 1
+state 79 "(n_feature = 1)"
+	action 0
+		95 : 1
+state 80
+	action 0
+		96 : 1
+state 81 "(n_feature = 1)"
+	action 0
+		97 : 1
+state 82 "(n_feature = 1)"
+	action 0
+		98 : 1
+state 83 "(n_feature = 1)"
+	action 0
+		99 : 1
+state 84 "(n_feature = 1)"
+	action 0
+		100 : 1
+state 85 "(n_feature = 1)"
+	action 0
+		101 : 1
+state 86 "(n_feature = 1)"
+	action 0
+		102 : 1
+state 87 "(n_feature = 1)"
+	action 0
+		103 : 1
+state 88 "(n_feature = 1)"
+	action 0
+		104 : 1
+state 89
+	action 0
+		105 : 1
+state 90 "(n_feature = 1)"
+	action 0
+		106 : 1
+state 91
+	action 0
+		107 : 1
+state 92 "(n_feature = 1)"
+	action 0
+		108 : 1
+state 93 "(n_feature = 1)"
+	action 0
+		109 : 1
+state 94
+	action 0
+		110 : 1
+state 95
+	action 0
+		111 : 1
+state 96 "(n_feature = 1)"
+	action 0
+		112 : 1
+state 97 "(n_feature = 1)"
+	action 0
+		113 : 1
+state 98 "(n_feature = 1)"
+	action 0
+		114 : 1
+state 99 "(n_feature = 1)"
+	action 0
+		115 : 1
+state 100
+	action 0
+		116 : 1
+state 101 "(n_feature = 1)"
+	action 0
+		117 : 1
+state 102
+	action 0
+		118 : 1
+state 103
+	action 0
+		119 : 1
+state 104
+	action 0
+		120 : 1
+state 105 "(n_feature = 1)"
+	action 0
+		121 : 1
+state 106
+	action 0
+		122 : 1
+state 107 "(n_feature = 1)"
+	action 0
+		123 : 1
+state 108 "(n_feature = 1)"
+	action 0
+		124 : 1
+state 109 "(n_feature = 1)"
+	action 0
+		125 : 1
+state 110 "(n_feature = 1)"
+	action 0
+		126 : 1
+state 111 "(n_feature = 1)"
+	action 0
+		127 : 1
+state 112 "(n_feature = 1)"
+	action 0
+		128 : 1
+state 113 "(n_feature = 1)"
+	action 0
+		129 : 1
+state 114 "(n_feature = 1)"
+	action 0
+		130 : 1
+state 115 "(n_feature = 1)"
+	action 0
+		131 : 1
+state 116 "(n_feature = 1)"
+	action 0
+		132 : 1
+state 117 "(n_feature = 1)"
+	action 0
+		133 : 1
+state 118 "(n_feature = 1)"
+	action 0
+		134 : 1
+state 119 "(n_feature = 1)"
+	action 0
+		135 : 1
+state 120 "(n_feature = 1)"
+	action 0
+		136 : 1
+state 121 "(n_feature = 1)"
+	action 0
+		137 : 1
+state 122 "(n_feature = 1)"
+	action 0
+		138 : 1
+state 123 "(n_feature = 1)"
+	action 0
+		139 : 1
+state 124 "(n_feature = 1)"
+	action 0
+		140 : 1
+state 125 "(n_feature = 1)"
+	action 0
+		141 : 1
+state 126 "(n_feature = 1)"
+	action 0
+		142 : 1
+state 127 "(n_feature = 1)"
+	action 0
+		143 : 1
+state 128 "(n_feature = 1)"
+	action 0
+		144 : 1
+state 129 "(n_feature = 1)"
+	action 0
+		145 : 1
+state 130
+	action 0
+		146 : 1
+state 131 "(n_feature = 1)"
+	action 0
+		147 : 1
+state 132 "(n_feature = 1)"
+	action 0
+		148 : 1
+state 133
+	action 0
+		149 : 1
+state 134 "(n_feature = 1)"
+	action 0
+		150 : 1
+state 135
+	action 0
+		151 : 1
+state 136
+	action 0
+		152 : 1
+state 137
+	action 0
+		153 : 1
+state 138
+	action 0
+		154 : 1
+state 139
+	action 0
+		155 : 1
+state 140 "(n_feature = 1)"
+	action 0
+		156 : 1
+state 141
+	action 0
+		157 : 1
+state 142 "(n_feature = 1)"
+	action 0
+		158 : 1
+state 143 "(n_feature = 1)"
+	action 0
+		159 : 1
+state 144 "(n_feature = 1)"
+	action 0
+		160 : 1
+state 145 "(n_feature = 1)"
+	action 0
+		161 : 1
+state 146
+	action 0
+		162 : 1
+state 147
+	action 0
+		163 : 1
+state 148 "(n_feature = 1)"
+	action 0
+		164 : 1
+state 149
+	action 0
+		165 : 1
+state 150 "(n_feature = 1)"
+	action 0
+		166 : 1
+state 151
+	action 0
+		167 : 1
+state 152 "(n_feature = 1)"
+	action 0
+		168 : 1
+state 153
+	action 0
+		169 : 1
+state 154 "(n_feature = 1)"
+	action 0
+		170 : 1
+state 155
+	action 0
+		171 : 1
+state 156 "(n_feature = 1)"
+	action 0
+		172 : 1
+state 157
+	action 0
+		173 : 1
+state 158 "(n_feature = 1)"
+	action 0
+		174 : 1
+state 159 "(n_feature = 1)"
+	action 0
+		175 : 1
+state 160
+	action 0
+		176 : 1
+state 161 "(n_feature = 1)"
+	action 0
+		177 : 1
+state 162 "(n_feature = 1)"
+	action 0
+		178 : 1
+state 163 "(n_feature = 1)"
+	action 0
+		179 : 1
+state 164 "(n_feature = 1)"
+	action 0
+		180 : 1
+state 165
+	action 0
+		181 : 1
+state 166 "(n_feature = 1)"
+	action 0
+		182 : 1
+state 167
+	action 0
+		183 : 1
+state 168 "(n_feature = 1)"
+	action 0
+		184 : 1
+state 169
+	action 0
+		185 : 1
+state 170 "(n_feature = 1)"
+	action 0
+		186 : 1
+state 171
+	action 0
+		187 : 1
+state 172 "(n_feature = 1)"
+	action 0
+		188 : 1
+state 173 "(n_feature = 1)"
+	action 0
+		189 : 1
+state 174 "(n_feature = 1)"
+	action 0
+		190 : 1
+state 175 "(n_feature = 1)"
+	action 0
+		191 : 1
+state 176
+	action 0
+		192 : 1
+state 177 "(n_feature = 1)"
+	action 0
+		193 : 1
+state 178 "(n_feature = 1)"
+	action 0
+		194 : 1
+state 179 "(n_feature = 1)"
+	action 0
+		195 : 1
+state 180 "(n_feature = 1)"
+	action 0
+		196 : 1
+state 181
+	action 0
+		197 : 1
+state 182 "(n_feature = 1)"
+	action 0
+		198 : 1
+state 183
+	action 0
+		199 : 1
+state 184 "(n_feature = 1)"
+	action 0
+		200 : 1
+state 185
+	action 0
+		201 : 1
+state 186 "(n_feature = 1)"
+	action 0
+		202 : 1
+state 187
+	action 0
+		203 : 1
+state 188 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 189 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 190 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 191 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 192
+	action 0
+		220 : 1
+state 193 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 194 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 195 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 196 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 197 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 198 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 199 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 200 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 201 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 202 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 203 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625
+state 204 "(n_feature = 1)"
+	action 0
+		204 : 1
+state 205 "(n_feature = 1)"
+	action 0
+		205 : 1
+state 206 "(n_feature = 1)"
+	action 0
+		206 : 1
+state 207 "(n_feature = 1)"
+	action 0
+		207 : 1
+state 208 "(n_feature = 1)"
+	action 0
+		208 : 1
+state 209 "(n_feature = 1)"
+	action 0
+		209 : 1
+state 210 "(n_feature = 1)"
+	action 0
+		210 : 1
+state 211 "(n_feature = 1)"
+	action 0
+		211 : 1
+state 212 "(n_feature = 1)"
+	action 0
+		212 : 1
+state 213 "(n_feature = 1)"
+	action 0
+		213 : 1
+state 214 "(n_feature = 1)"
+	action 0
+		214 : 1
+state 215 "(n_feature = 1)"
+	action 0
+		215 : 1
+state 216 "(n_feature = 1)"
+	action 0
+		216 : 1
+state 217 "(n_feature = 1)"
+	action 0
+		217 : 1
+state 218 "(n_feature = 1)"
+	action 0
+		218 : 1
+state 219 "(n_feature = 1)"
+	action 0
+		219 : 1
+state 220
+	action 0
+		221 : 1
+state 221 "(n_feature = 1)"
+	action 0
+		204 : 0.0625
+		205 : 0.0625
+		206 : 0.0625
+		207 : 0.0625
+		208 : 0.0625
+		209 : 0.0625
+		210 : 0.0625
+		211 : 0.0625
+		212 : 0.0625
+		213 : 0.0625
+		214 : 0.0625
+		215 : 0.0625
+		216 : 0.0625
+		217 : 0.0625
+		218 : 0.0625
+		219 : 0.0625

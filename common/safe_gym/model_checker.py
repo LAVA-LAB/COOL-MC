@@ -83,13 +83,23 @@ class ModelChecker():
         assert str(agent.__class__).find("common.rl_agents") != -1
         assert isinstance(state, np.ndarray)
         action_index = agent.select_action(state, True)
+        #print(agent.q_eval.forward(state).max().item()-agent.q_eval.forward(state).min().item())
+        #if agent.q_eval.forward(state).max().item()-agent.q_eval.forward(state).min().item() > 700:
+            #print(state, agent.q_eval.forward(state).max().item()-agent.q_eval.forward(state).min().item())
+            # Get the index of the most preferred action
+            #action_index = agent.q_eval.forward(state).argmax().item()
+            #most_preferred_action = env.action_mapper.actions[action_index]
+            # Get the index of the least preferred action
+            #action_index = agent.q_eval.forward(state).argmin().item()
+            #least_preferred_action = env.action_mapper.actions[action_index]
+
         action_name = env.action_mapper.actions[action_index]
         assert isinstance(action_name, str)
         return action_name
 
     def induced_markov_chain(self, agent: common.rl_agents, preprocessors, env,
                              constant_definitions: str,
-                             formula_str: str, collect_label_and_states:bool=False) -> Tuple[float, int]:
+                             formula_str: str, collect_label_and_states:bool=False, drn_file_name="test.drn") -> Tuple[float, int]:
         """Creates a Markov chain of an MDP induced by a policy
         and applies model checking.py
 
@@ -150,14 +160,15 @@ class ModelChecker():
             available_actions = sorted(simulator.available_actions())
             current_action_name = prism_program.get_action_name(action_index)
             # conditions on the action
+            #print(state_valuation.to_json())
             state = self.__get_clean_state_dict(
                 state_valuation.to_json(), env.storm_bridge.state_json_example)
             state = self.__get_numpy_state(env, state)
-
             # Preprocess state
             if preprocessors!=None:
                 for preprocessor in preprocessors:
                     state = preprocessor.preprocess(agent, state, env.action_mapper, current_action_name, True)
+                    
 
             # Collect states and actions if wanted
             if collect_label_and_states:
@@ -178,6 +189,13 @@ class ModelChecker():
 
 
             cond1 = (current_action_name == selected_action)
+            if preprocessors!=None:
+                for preprocessor in preprocessors:
+                    tmp_cond = preprocessor.force_true()
+                    # Forces true, if one preprocessor forces true
+                    if tmp_cond == True:
+                        cond1 = tmp_cond
+                        break
             assert isinstance(cond1, bool)
             return cond1
 
@@ -191,6 +209,7 @@ class ModelChecker():
                                                         stormpy.StateValuationFunctionActionMaskDouble(
                                                             incremental_building))
         model = constructor.build()
+        model_building_end = time.time()
         model_size = len(model.states)
         model_transitions = model.nr_transitions
         model_checking_start_time = time.time()
@@ -198,14 +217,116 @@ class ModelChecker():
         properties = stormpy.parse_properties(formula_str, prism_program)
 
         result = stormpy.model_checking(model, properties[0])
+        #scheduler = result.scheduler
+        #print(scheduler)
 
         model_checking_time = time.time() - model_checking_start_time
 
-        stormpy.export_to_drn(model,"test.drn")
+        stormpy.export_to_drn(model,drn_file_name)
+        
         initial_state = model.initial_states[0]
         #print('Result for initial state', result.at(initial_state))
         mdp_result = result.at(initial_state)
 
-        info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
-        print(self.counter)
+        interconnection_start = time.time()
+        state_interconnections = [] # state, action_idx, action name, [(next_state, prob)]
+        for idx, state in enumerate(model.states):
+            # Extract state from drn file
+            state_dict = extract_drn_state_from_state_id(drn_file_name, state.id)
+            # Transform state to numpy array
+            np_state = env.storm_bridge.state_mapper.map_dict_to_array(state_dict)
+            for action in state.actions:
+                action_idx = agent.select_action(np_state,True)
+                action_name = env.action_mapper.action_index_to_action_name(action_idx)
+                all_next_states = []
+                for transition in action.transitions:
+                    #print("From state {} with probability {}, go to state {}".format(state, transition.value(), transition.column))
+                    next_state_dict = extract_drn_state_from_state_id(drn_file_name, transition.column)
+                    np_next_state = env.storm_bridge.state_mapper.map_dict_to_array(next_state_dict)
+                    all_next_states.append((np_next_state, transition.value()))
+                state_interconnections.append((np_state, action_idx, action_name, all_next_states, env.storm_bridge.state_mapper.get_feature_names()))
+        trans_counter = 0
+        for state in state_interconnections:
+            for next_state in state[3]:
+                trans_counter += 1
+        
+            
+        interconnection_end = time.time()
+        info = {"property": formula_str, "model_building_time": (model_building_end-model_building_start), "interconnection_time":interconnection_end-interconnection_start, "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes, "state_interconnections": state_interconnections}
+        print("Interconnection time: ", info["interconnection_time"])
+        #print(self.counter)
         return mdp_result, info
+
+
+import re
+def replace_exclamations(feature_string):
+    # Regular expression to find all instances of !RANDOM_WORD
+    exclamation_regex = re.compile(r'!\s*(\S+)')
+    
+    # Replace each instance with RANDOM_WORD=false
+    replaced_string = exclamation_regex.sub(r'\1=False', feature_string)
+    
+    return replaced_string
+
+
+def remove_surroundings(feature_string):
+    # Remove the leading and trailing //[]
+    feature_string = feature_string.strip().strip('[]')
+    
+    return feature_string
+
+
+
+
+def parse_feature_string(feature_string):
+    # Remove the leading and trailing //[]
+    feature_string = feature_string.strip().strip('[]')
+    
+    # Split by '&' to get individual feature assignments
+    features = feature_string.split('&')
+    
+    # Initialize an empty dictionary
+    feature_dict = {}
+    
+    # Regular expression to match feature name and value
+    feature_regex = re.compile(r'(\S+)\s*=\s*(\S+)')
+    
+    # Iterate through each feature assignment
+    for feature in features:
+        feature = feature.strip()
+        if feature.startswith('!'):
+            feature_name = feature[1:].strip()
+            feature_value = 'False'
+        elif feature_regex.match(feature):
+            match = feature_regex.match(feature)
+            feature_name = match.group(1).strip()
+            feature_value = match.group(2).strip()
+        else:
+            feature_name = feature.strip()
+            feature_value = 'True'
+        
+        # Assign to dictionary
+        if feature_value == "True":
+            feature_value = 1
+        elif feature_value == "False":
+            feature_value = 0
+        feature_dict[feature_name] = int(feature_value)
+    
+    return feature_dict
+
+def extract_drn_state_from_state_id(file_path, state_id):
+    f = open(file_path, "r")
+    check = False
+    for line in f:
+        if line.startswith("state " + str(state_id) + "\n") or line.startswith("state " + str(state_id) + " "):
+            check = True
+        if line.startswith("//") and check:
+            line = line.strip()
+        
+            line = replace_exclamations(line)
+            line = line.replace("//[", "")
+            #print(line)
+            return parse_feature_string(line)
+
+    f.close()
+    raise Exception("State not found" + str(state_id))
