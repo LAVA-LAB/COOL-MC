@@ -11,6 +11,10 @@ from common.interpreter.temporal_feature_rank import *
 from common.interpreter.temporal_feature_2d import *
 from common.interpreter.temporal_action_analysis import *
 from common.interpreter.temporal_adv_attacks import *
+from common.interpreter.temporal_attack_and_defense import *
+from common.interpreter.co_activation_graph_analysis import *
+from common.interpreter.co_graph_critical_states import *
+from common.interpreter.feature_pruning import *
 
 '''
 HOW TO ADD MORE INTERPRETERS?
@@ -58,4 +62,12 @@ class InterpreterBuilder():
             interpreter = TemporalActionAnalysis(interpreter_string)
         elif interpreter_name == "temporal_adv_attacks":
             interpreter = TemporalAdvAttacks(interpreter_string)
+        elif interpreter_name == "co_activation_graph_analysis":
+            interpreter = CoActivationGraphAnalysis(interpreter_string)
+        elif interpreter_name == "co_graph_critical_states":
+            interpreter = CoActivationGraphAnalysisCriticalStates(interpreter_string)
+        elif interpreter_name == "feature_pruner":
+            interpreter = FeaturePruner(interpreter_string)
+        elif interpreter_name == "temporal_adv_attack_and_defense":
+            interpreter = TemporalAdvAttackAndDefense(interpreter_string)
         return interpreter

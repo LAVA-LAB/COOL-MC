@@ -4,7 +4,7 @@ from common.preprocessors.single_agent_fgsm import FGSM
 from common.preprocessors.single_agent_deepfool_attack import DeepFool
 import stormpy
 import random
-class TemporalAdvAttacks:
+class TemporalAdvAttackAndDefense:
 
     def __init__(self, config):
         self.config = config
@@ -15,9 +15,11 @@ class TemporalAdvAttacks:
         self.prop_query = config_str.split(";")[1]
         self.epsilon = float(config_str.split(";")[2])
         self.attack_name = config_str.split(";")[3]
+        self.defense_name = config_str.split(";")[4]
 
     def attack_successful(self, env, rl_agent, state):
-        attack_config_str = f"{self.attack_name};"+str(self.epsilon)
+        current_flag = 0
+        attack_config_str = "fgsm;"+str(self.epsilon)
         original_action = rl_agent.select_action(state, True)
         if self.attack_name == "fgsm":
             attacker = FGSM(env.storm_bridge.state_mapper, attack_config_str, "fgsm")
@@ -28,9 +30,24 @@ class TemporalAdvAttacks:
         adv_state = attacker.preprocess(rl_agent, state, env.action_mapper, "", True)
         adv_action = rl_agent.select_action(adv_state, True)
         if original_action != adv_action:
-            return 1
+            current_flag = 1
         else:
-            return 0
+            current_flag = 0
+        # floor
+        if self.defense_name == "floor":
+            for i in range(0, len(adv_state)):
+                adv_state[i] = int(adv_state[i])
+        elif self.defense_name == "round":
+            for i in range(0, len(adv_state)):
+                adv_state[i] = round(adv_state[i])
+        else:
+            raise Exception("Defense not supported")
+        def_action = rl_agent.select_action(adv_state, True)
+        if original_action != def_action:
+            current_flag += 3
+        else:
+            current_flag += 2
+        return current_flag
         
 
     def interpret(self, env, m_project, model_checking_info):

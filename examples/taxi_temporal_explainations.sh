@@ -9,7 +9,7 @@
 
 
 # Temporal Critical State Analysis
-#python cool_mc.py --parent_run_id="54cfe828d1664d9890db735f2360ab6c" --project_name="taxi_experiments" --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F jobs_done=1 ]" --interpreter="temporal_critical_state_interpreter;P=? [ F (n_feature=1 & (X n_feature=1)) ];700"
+python cool_mc.py --parent_run_id="54cfe828d1664d9890db735f2360ab6c" --project_name="taxi_experiments" --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F jobs_done=1 ]" --interpreter="temporal_critical_state_interpreter;P=? [ F (n_feature=1 & (X n_feature=1)) ];700"
 #python cool_mc.py --parent_run_id="54cfe828d1664d9890db735f2360ab6c" --project_name="taxi_experiments" --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F jobs_done=2 ]" --interpreter="temporal_critical_state_interpreter;P=? [ F (n_feature=1 & (X n_feature=1)) ];700"
 
 

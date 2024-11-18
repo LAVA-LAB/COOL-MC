@@ -97,4 +97,4 @@ class DeepFool(Preprocessor):
             #print(rl_agent.select_action(state), rl_agent.select_action(pert_image.numpy()))
             self.update_buffer(state.long().numpy(), adv_perturbation.numpy(), True)
 
-            return pert_image.numpy()
+            return pert_image.numpy()[0]

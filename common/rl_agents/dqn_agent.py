@@ -11,7 +11,7 @@ from common.utilities.helper import *
 from collections import OrderedDict
 import torch
 import numpy as np
-
+import copy
 
 def get_ranked_value(tensor, rank):
     # Check if the provided rank is valid
@@ -90,6 +90,17 @@ class ReplayBuffer(object):
 
         return torch.tensor(states).to(DEVICE), torch.tensor(actions).to(DEVICE), torch.tensor(rewards).to(DEVICE), torch.tensor(states_).to(DEVICE), torch.tensor(terminal).to(DEVICE)
 
+    def copy(self):
+        """Creates a deep copy of the replay buffer."""
+        new_buffer = ReplayBuffer(self.size, self.state_memory.shape[1])
+        new_buffer.memory_counter = self.memory_counter
+        new_buffer.state_memory = np.copy(self.state_memory)
+        new_buffer.new_state_memory = np.copy(self.new_state_memory)
+        new_buffer.action_memory = np.copy(self.action_memory)
+        new_buffer.reward_memory = np.copy(self.reward_memory)
+        new_buffer.terminal_memory = np.copy(self.terminal_memory)
+        return new_buffer
+
 class DeepQNetwork(nn.Module):
     def __init__(self, state_dimension : int, number_of_neurons : List[int], number_of_actions : int, lr : float):
         """
@@ -163,6 +174,22 @@ class DeepQNetwork(nn.Module):
         """
         self.load_state_dict(torch.load(file_name))
 
+    def copy(self):
+        """Creates a deep copy of the network."""
+        # Create a new network instance with the same initialization parameters
+        new_network = DeepQNetwork(
+            state_dimension=self.state_dimension,
+            number_of_neurons=self.number_of_neurons,
+            number_of_actions=self.number_of_actions,
+            lr=self.learning_rate
+        )
+        # Copy over the state dict (weights and biases)
+        new_network.load_state_dict(copy.deepcopy(self.state_dict()))
+        # Copy the optimizer state
+        new_network.optimizer.load_state_dict(copy.deepcopy(self.optimizer.state_dict()))
+        return new_network
+
+
 
 class DQNAgent(Agent):
 
@@ -184,6 +211,9 @@ class DQNAgent(Agent):
         """
         self.number_of_actions = number_of_actions
         self.replay_buffer = ReplayBuffer(replay_buffer_size, state_dimension)
+        self.state_dimension = state_dimension
+        self.number_of_neurons = number_of_neurons
+        self.learning_rate = learning_rate
         self.q_eval = DeepQNetwork(state_dimension, number_of_neurons, number_of_actions, learning_rate)
         self.q_next = DeepQNetwork(state_dimension, number_of_neurons, number_of_actions, learning_rate)
         self.epsilon = epsilon
@@ -197,6 +227,7 @@ class DQNAgent(Agent):
         self.nth_action_instead = None
         self.block_nth_action = None
         self.state_filters = []
+        self.replay_buffer_size = replay_buffer_size
 
     def save(self, artifact_path='model'):
         """
@@ -219,8 +250,22 @@ class DQNAgent(Agent):
             model_root_folder_path (str): Model root folder path.
         """
         try:
-            self.q_eval.load_checkpoint(os.path.join(model_root_folder_path,'q_eval.chkpt'))
-            self.q_next.load_checkpoint(os.path.join(model_root_folder_path,'q_next.chkpt'))
+            self.q_eval_path = os.path.join(model_root_folder_path,'q_eval.chkpt')
+            self.q_eval.load_checkpoint(self.q_eval_path)
+            self.q_next_path = os.path.join(model_root_folder_path,'q_next.chkpt')
+            self.q_next.load_checkpoint(self.q_next_path)
+        except Exception as msg:
+            print(msg)
+    
+    def load2(self):
+        """Loads the Agent from the MLFlow server.
+
+        Args:
+            model_root_folder_path (str): Model root folder path.
+        """
+        try:
+            self.q_eval.load_checkpoint(self.q_eval_path)
+            self.q_next.load_checkpoint(self.q_next_path)
         except Exception as msg:
             print(msg)
 
@@ -318,4 +363,47 @@ class DQNAgent(Agent):
         loss.backward()
         self.q_eval.optimizer.step()
 
+    def copy(self):
+        """Creates a deep copy of the agent."""
+        # Create a new agent with the same initialization parameters
+        new_agent = DQNAgent(
+            state_dimension=self.state_dimension,
+            number_of_neurons=self.number_of_neurons,
+            number_of_actions=self.number_of_actions,
+            epsilon=self.epsilon,
+            epsilon_dec=self.epsilon_dec,
+            epsilon_min=self.epsilon_min,
+            gamma=self.gamma.item(),  # Convert tensor to float
+            learning_rate=self.learning_rate,
+            replace=self.replace,
+            batch_size=self.batch_size,
+            replay_buffer_size=self.replay_buffer_size
+        )
 
+        # Copy over the networks
+        new_agent.q_eval.load_state_dict(copy.deepcopy(self.q_eval.state_dict()))
+        new_agent.q_next.load_state_dict(copy.deepcopy(self.q_next.state_dict()))
+
+        # Copy the optimizer states
+        new_agent.q_eval.optimizer.load_state_dict(copy.deepcopy(self.q_eval.optimizer.state_dict()))
+        new_agent.q_next.optimizer.load_state_dict(copy.deepcopy(self.q_next.optimizer.state_dict()))
+
+        # Copy over other attributes
+        new_agent.exp_counter = self.exp_counter
+        new_agent.learn_step_counter = self.learn_step_counter
+        new_agent.nth_action_instead = self.nth_action_instead
+        new_agent.block_nth_action = self.block_nth_action
+        new_agent.state_filters = copy.deepcopy(self.state_filters)
+        new_agent.epsilon = self.epsilon
+        new_agent.epsilon_dec = self.epsilon_dec
+        new_agent.epsilon_min = self.epsilon_min
+        new_agent.gamma = torch.tensor(self.gamma.item()).to(DEVICE)
+
+        # Copy
+        new_agent.q_eval_path = self.q_eval_path
+        new_agent.q_next_path = self.q_next_path
+
+        # Deep copy the replay buffer
+        new_agent.replay_buffer = self.replay_buffer.copy()
+
+        return new_agent
