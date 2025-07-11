@@ -9,6 +9,7 @@
 //		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {}
 //	},
     "runArgs": [
+	    "--network=host"
     ],
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
