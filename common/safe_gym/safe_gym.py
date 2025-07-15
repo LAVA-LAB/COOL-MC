@@ -9,7 +9,7 @@ from gymnasium.spaces import Discrete
 import numpy as np
 from common.safe_gym.storm_bridge import StormBridge
 from common.safe_gym.action_mapper import ActionMapper
-
+import os
 
 class SafeGym(gym.Env):
     """
@@ -49,6 +49,9 @@ class SafeGym(gym.Env):
             [-math.inf]*self.state.shape[0]), np.array([math.inf]*self.state.shape[0]))
         # Action Space
         self.action_space = Discrete(len(self.action_mapper.actions))
+        self.env_name = os.path.basename(prism_file_path).replace('.prism', '')
+
+        
 
     def step(self, action_index: int) -> Tuple[np.ndarray, Union[float, int], bool, dict]:
         """Executes the action passed via the action_index (int).
@@ -63,6 +66,7 @@ class SafeGym(gym.Env):
         action_name = self.action_mapper.action_index_to_action_name(
             action_index)
         n_state, reward, self.done = self.storm_bridge.step(action_name)
+        
         self.steps += 1
         if self.steps >= self.max_steps:
             self.truncated = True

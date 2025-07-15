@@ -1,0 +1,92 @@
+//LLM:You are CLEANER-LLM: every turn you receive dirt1 (–9…4), dirt2 (0…4), energy (0…10), slippery_level (0…3), and room_blocked (true/false) and must reply with one uppercase action word only—NEXT, IDLE, CLEAN11, CLEAN12, CLEAN21, CLEAN22, ALL_PURPOSE_CLEAN, CHARGE1, or CHARGE2. Cleaning actions require room_blocked=false and energy>0: CLEAN11/21 shave one point of dirt1/2 for 1 energy, CLEAN12/22 cut up to three for 2 energy, and ALL_PURPOSE_CLEAN zeroes both dirts for 3 energy while maxing slippery_level. Use NEXT to leave when the room is clean or blocked, IDLE to wait (reduces slipperiness but still costs 1 energy), and CHARGE1/2 to recharge when energy is low (CHARGE1 gives bigger boosts but may fail). Any illegal or careless choice can trigger the penalised game-over. Your goal is to clean all rooms.
+mdp
+
+// Constants
+const int INIT_DIRT1_LEVEL = 1;
+const int INIT_DIRT2_LEVEL = 2;
+const int INIT_ENERGY = 10;
+const int INIT_SLIPPERY_LEVEL = 0;
+const bool INIT_ROOM_BLOCKED = false;
+
+const int MAX_DIRT1_LEVEL = 4;
+const int MAX_DIRT2_LEVEL = 4;
+const int MAX_ENERGY = 10;
+const int MAX_SLIPPERY_LEVEL = 4;
+
+// Formulas
+formula GAME_OVER = (dirt1<0);
+formula NO_GAME_OVER = !GAME_OVER;
+formula IS_BLOCKED = room_blocked;
+
+formula NOT_BLOCKED = !IS_BLOCKED;
+
+formula NO_ENERGY = (energy<=0);
+
+formula STILL_ENERGY = !NO_ENERGY;
+
+module cleaning_robot
+	// Variables
+	dirt1: [-9..MAX_DIRT1_LEVEL] init INIT_DIRT1_LEVEL;
+	dirt2: [0..MAX_DIRT2_LEVEL] init INIT_DIRT2_LEVEL;
+	energy: [0..MAX_ENERGY] init INIT_ENERGY;
+	slippery_level: [0..MAX_SLIPPERY_LEVEL-1] init INIT_SLIPPERY_LEVEL;
+	room_blocked: bool init INIT_ROOM_BLOCKED;
+
+	// Next Room Command
+	[NEXT] energy=0 | (dirt1>0 & room_blocked=false) | (dirt2>0 & room_blocked=false) & NO_GAME_OVER -> 1.0 : (dirt1'=-2);
+	[NEXT] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[NEXT] energy>0 & NO_GAME_OVER & slippery_level=0  & ((dirt1=0 & dirt2=0) | room_blocked=true)-> (1/32) : (dirt1'=0) & (dirt2'=0) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=0) & (dirt2'=0) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=0) & (dirt2'=1) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=0) & (dirt2'=1) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=0) & (dirt2'=2) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=0) & (dirt2'=2) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=0) & (dirt2'=3) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=0) & (dirt2'=3) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=1) & (dirt2'=0) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=1) & (dirt2'=0) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=1) & (dirt2'=1) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=1) & (dirt2'=1) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=1) & (dirt2'=2) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=1) & (dirt2'=2) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=1) & (dirt2'=3) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=1) & (dirt2'=3) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=2) & (dirt2'=0) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=2) & (dirt2'=0) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=2) & (dirt2'=1) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=2) & (dirt2'=1) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=2) & (dirt2'=2) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=2) & (dirt2'=2) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=2) & (dirt2'=3) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=2) & (dirt2'=3) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=3) & (dirt2'=0) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=3) & (dirt2'=0) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=3) & (dirt2'=1) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=3) & (dirt2'=1) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=3) & (dirt2'=2) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=3) & (dirt2'=2) & (room_blocked'=false) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=3) & (dirt2'=3) & (room_blocked'=true) & (energy'=max(energy-1,0)) + (1/32) : (dirt1'=3) & (dirt2'=3) & (room_blocked'=false) & (energy'=max(energy-1,0)) ;
+	[NEXT] energy>0 & NO_GAME_OVER & slippery_level>0 & ((dirt1=0 & dirt2=0) | room_blocked=true)-> (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=0) & (dirt2'=0) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=0) & (dirt2'=0) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=0) & (dirt2'=1) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=0) & (dirt2'=1) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=0) & (dirt2'=2) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=0) & (dirt2'=2) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=0) & (dirt2'=3) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=0) & (dirt2'=3) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=1) & (dirt2'=0) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=1) & (dirt2'=0) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=1) & (dirt2'=1) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=1) & (dirt2'=1) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=1) & (dirt2'=2) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=1) & (dirt2'=2) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=1) & (dirt2'=3) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=1) & (dirt2'=3) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=2) & (dirt2'=0) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=2) & (dirt2'=0) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=2) & (dirt2'=1) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=2) & (dirt2'=1) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=2) & (dirt2'=2) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=2) & (dirt2'=2) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=2) & (dirt2'=3) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=2) & (dirt2'=3) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=3) & (dirt2'=0) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=3) & (dirt2'=0) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=3) & (dirt2'=1) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=3) & (dirt2'=1) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=3) & (dirt2'=2) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=3) & (dirt2'=2) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=3) & (dirt2'=3) & (room_blocked'=true) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (slippery_level/MAX_SLIPPERY_LEVEL * 1/32) : (dirt1'=3) & (dirt2'=3) & (room_blocked'=false) & (energy'=max(energy-1,0)) & (slippery_level'=max(0,slippery_level-1)) + (1-slippery_level/MAX_SLIPPERY_LEVEL) : (energy'=max(energy-2,0)) & (slippery_level'=max(slippery_level-1,0));
+	// Idle Command
+	[IDLE] (energy=0 | room_blocked=true) & NO_GAME_OVER -> 1.0 : (dirt1'=-4);
+	[IDLE] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[IDLE] (energy>0 & room_blocked=false) & NO_GAME_OVER -> 1: (slippery_level'=0) & (energy'=max(energy-1,0));
+	// Clean1 Option1 Command
+	[CLEAN11] (energy=0 | room_blocked=true | dirt1=0) & NO_GAME_OVER-> 1.0 : (dirt1'=-1);
+	[CLEAN11] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[CLEAN11] (energy>0 & room_blocked=false & dirt1>0) & NO_GAME_OVER & slippery_level=0-> 1 : (dirt1'=max(dirt1-1,0)) & (energy'=max(energy-1,0));
+	[CLEAN11] (energy>0 & room_blocked=false & dirt1>0) & NO_GAME_OVER & slippery_level>0-> (1-slippery_level/MAX_SLIPPERY_LEVEL) : (dirt1'=max(dirt1-1,0)) & (energy'=max(energy-1,0)) & (slippery_level'=max(slippery_level-1,0)) + (slippery_level/MAX_SLIPPERY_LEVEL) : (energy'=max(energy-1,0));
+	// Clean1 Option2 Command
+	[CLEAN12] (energy=0 | room_blocked=true | dirt1=0) & NO_GAME_OVER-> 1.0 : (dirt1'=-1);
+	[CLEAN12] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[CLEAN12] (energy>0 & room_blocked=false & dirt1>0) & NO_GAME_OVER & slippery_level=0-> 1 : (dirt1'=max(dirt1-3,0)) & (energy'=max(energy-2,0));
+	[CLEAN12] (energy>0 & room_blocked=false & dirt1>0) & NO_GAME_OVER & slippery_level>0-> (1-slippery_level/MAX_SLIPPERY_LEVEL) : (dirt1'=max(dirt1-3,0)) & (energy'=max(energy-2,0)) & (slippery_level'=max(slippery_level-1,0)) + (slippery_level/MAX_SLIPPERY_LEVEL) : (energy'=max(energy-2,0));
+	// Clean2 Option1 Command
+	[CLEAN21] (energy=0 | room_blocked=true | dirt2=0) & NO_GAME_OVER-> 1.0 : (dirt1'=-1);
+	[CLEAN21] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[CLEAN21] (energy>0 & room_blocked=false & dirt2>0) & NO_GAME_OVER & slippery_level=0-> 1 : (dirt2'=max(dirt2-1,0)) & (energy'=max(energy-1,0));
+	[CLEAN21] (energy>0 & room_blocked=false & dirt2>0) & NO_GAME_OVER & slippery_level>0-> (1-slippery_level/MAX_SLIPPERY_LEVEL) : (dirt2'=max(dirt2-1,0)) & (energy'=max(energy-1,0)) & (slippery_level'=max(slippery_level-1,0)) + (slippery_level/MAX_SLIPPERY_LEVEL) : (energy'=max(energy-1,0));
+	// Clean2 Option2 Command
+	[CLEAN22] (energy=0 | room_blocked=true | dirt2=0) & NO_GAME_OVER-> 1.0 : (dirt1'=-1);
+	[CLEAN22] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[CLEAN22] (energy>0 & room_blocked=false & dirt2>0) & NO_GAME_OVER & slippery_level=0-> 1 : (dirt2'=max(dirt2-3,0)) & (energy'=max(energy-2,0));
+	[CLEAN22] (energy>0 & room_blocked=false & dirt2>0) & NO_GAME_OVER & slippery_level>0-> (1-slippery_level/MAX_SLIPPERY_LEVEL) : (dirt2'=max(dirt2-3,0)) & (energy'=max(energy-2,0)) & (slippery_level'=max(slippery_level-1,0)) + (slippery_level/MAX_SLIPPERY_LEVEL) : (energy'=max(energy-2,0));
+	// All Purpose Clean Command
+	[ALL_PURPOSE_CLEAN] (energy=0 | room_blocked=true | (dirt1=0 & dirt2=0)) & NO_GAME_OVER -> 1.0 : (dirt1'=-1);
+	[ALL_PURPOSE_CLEAN] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[ALL_PURPOSE_CLEAN] energy>0 & room_blocked=false & (dirt1>0 | dirt2>0) & NO_GAME_OVER -> 1 : (dirt1'=0) & (dirt2'=0) & (energy'=max(energy-3,0)) & (slippery_level'=MAX_SLIPPERY_LEVEL-1);
+	// Charge1 Command
+	[CHARGE1] (energy=0 | room_blocked=true) & NO_GAME_OVER -> 1.0 : (dirt1'=-1);
+	[CHARGE1] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[CHARGE1] energy>0 & room_blocked=false & NO_GAME_OVER & energy <= 2 -> 0.5 : (energy'=min(energy+7, MAX_ENERGY)) + 0.45 : (energy'=energy) + 0.05 : (energy'=energy-1);
+	[CHARGE1] energy>0 & room_blocked=false & NO_GAME_OVER & energy > 2 -> 0.9 : (dirt1'=-5) + 0.1 : (energy'=min(energy+5, MAX_ENERGY));
+	// Charge2 Command
+	[CHARGE2] (energy=0) & NO_GAME_OVER -> 1.0 : (dirt1'=-3);
+	[CHARGE2] GAME_OVER -> 1.0 : (dirt1'=dirt1);
+	[CHARGE2] energy>0 & energy <= 2 & NO_GAME_OVER -> 0.9 : (energy'=min(energy+3, MAX_ENERGY)) + 0.1 : (energy'=energy-1);
+	[CHARGE2] energy>2 & NO_GAME_OVER -> 0.9 : (dirt1'=-5) + 0.1 : (energy'=min(energy+3, MAX_ENERGY));
+endmodule
+
+rewards "steps"
+	 [CLEAN11] NOT_BLOCKED & NO_GAME_OVER & STILL_ENERGY & (dirt1>0): 20*dirt1;
+	 [CLEAN12] NOT_BLOCKED & NO_GAME_OVER & STILL_ENERGY & (dirt1>0): 20*dirt1;
+	 [CLEAN21] NOT_BLOCKED & NO_GAME_OVER & STILL_ENERGY & (dirt2>0): 20*dirt2;
+	 [CLEAN22] NOT_BLOCKED & NO_GAME_OVER & STILL_ENERGY & (dirt2>0): 20*dirt2;
+	 [ALL_PURPOSE_CLEAN] NOT_BLOCKED & NO_GAME_OVER & STILL_ENERGY & (dirt1>0 | dirt2>0): 20*dirt1*dirt2;
+	 [NEXT] (IS_BLOCKED & NO_GAME_OVER & STILL_ENERGY) | (dirt1=0 & dirt2=0 & NO_GAME_OVER & NOT_BLOCKED & STILL_ENERGY): 20;
+	 [CHARGE1] energy>0 & room_blocked=false & NO_GAME_OVER & energy <= 2: 10;
+	 [CHARGE2] energy>0 & energy <= 2 & NO_GAME_OVER: 10;
+	 [IDLE] (energy>0 & room_blocked=false) & NO_GAME_OVER & slippery_level>0 : 10;
+endrewards
+
+label "bad_event" = (dirt1=-1);

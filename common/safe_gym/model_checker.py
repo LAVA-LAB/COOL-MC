@@ -65,6 +65,7 @@ class ModelChecker():
             np.ndarray: State
         """
         assert isinstance(state_dict, dict)
+        #print(state_dict)
         state = env.storm_bridge.parse_state(json.dumps(state_dict))
         assert isinstance(state, np.ndarray)
         return state
@@ -206,6 +207,6 @@ class ModelChecker():
         #print('Result for initial state', result.at(initial_state))
         mdp_result = result.at(initial_state)
 
-        info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
+        info = {"number_of_faulty_outputs": agent.number_of_faulty_outputs, "property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
         print(self.counter)
         return mdp_result, info

@@ -140,6 +140,7 @@ class StormBridge:
 
 
         data = self.simulator.step(action_name)
+        
         self._state = str(data[0])
         self.reward = data[1]
 

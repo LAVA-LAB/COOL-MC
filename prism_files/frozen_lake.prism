@@ -1,3 +1,4 @@
+//LLM:You’re on a 4 × 4 icy grid: start at pos 0, reach the frisbee at 15 for +1, and avoid the holes at 5, 7, 11, 12 (falling in ends the episode in absorbing state 16). At every step output exactly one action—LEFT (pos − 1), DOWN (pos + 4), RIGHT (pos + 1), or UP (pos − 4); the intended move succeeds with probability 0.33, otherwise you drift sideways, and borders block off-grid moves. Act to maximise the chance of hitting 15.
 mdp
 
 //Winter is here. You and your friends were tossing around a
@@ -59,113 +60,113 @@ formula NOT_DONE = (IS_DONE = false);
 module agent
 	pos: [0..16] init start_position;
 	//1
-	[a3_up] TOP_BORDER & LEFT_BORDER & NOT_IN_HOLE & NOT_DONE-> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos);
+	[UP] TOP_BORDER & LEFT_BORDER & NOT_IN_HOLE & NOT_DONE-> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos);
 	//2
-	[a3_up] TOP_BORDER & NOT_LEFT_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-1);
+	[UP] TOP_BORDER & NOT_LEFT_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-1);
 	//3
-	[a3_up] TOP_BORDER  & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos-1);
+	[UP] TOP_BORDER  & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos-1);
 	//4
-	[a3_up] NOT_TOP_BORDER & LEFT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos);
+	[UP] NOT_TOP_BORDER & LEFT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos);
 	//5
-	[a3_up] NOT_TOP_BORDER & NOT_RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-1);
+	[UP] NOT_TOP_BORDER & NOT_RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-1);
 	//6
-	[a3_up] NOT_TOP_BORDER & RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos-1);
+	[UP] NOT_TOP_BORDER & RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos-1);
 	//7
-	[a3_up] LEFT_BORDER & BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos);
+	[UP] LEFT_BORDER & BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos);
 	//8
-	[a3_up] NOT_LEFT_BORDER & BOTTOM_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-1);
+	[UP] NOT_LEFT_BORDER & BOTTOM_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-1);
 	//9
-	[a3_up] BOTTOM_BORDER & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1) : (pos'=done);
+	[UP] BOTTOM_BORDER & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1) : (pos'=done);
 
 	//1
-	[a2_right] TOP_BORDER & LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[RIGHT] TOP_BORDER & LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//2
-	[a2_right] TOP_BORDER & NOT_LEFT_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[RIGHT] TOP_BORDER & NOT_LEFT_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//3
-	[a2_right] TOP_BORDER  & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[RIGHT] TOP_BORDER  & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//4
-	[a2_right] NOT_TOP_BORDER & LEFT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[RIGHT] NOT_TOP_BORDER & LEFT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//5
-	[a2_right] NOT_TOP_BORDER & NOT_RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[RIGHT] NOT_TOP_BORDER & NOT_RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//6
-	[a2_right] NOT_TOP_BORDER & RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[RIGHT] NOT_TOP_BORDER & RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//7
-	[a2_right] LEFT_BORDER & BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos);
+	[RIGHT] LEFT_BORDER & BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos);
 	//8
-	[a2_right] NOT_LEFT_BORDER & BOTTOM_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos);
+	[RIGHT] NOT_LEFT_BORDER & BOTTOM_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos);
 	//9
-	[a2_right] BOTTOM_BORDER & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1) : (pos'=done);
+	[RIGHT] BOTTOM_BORDER & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1) : (pos'=done);
 
 	//1
-	[a1_down] TOP_BORDER & LEFT_BORDER & NOT_IN_HOLE & NOT_DONE-> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1);
+	[DOWN] TOP_BORDER & LEFT_BORDER & NOT_IN_HOLE & NOT_DONE-> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1);
 	//2
-	[a1_down] TOP_BORDER & NOT_LEFT_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos+1);
+	[DOWN] TOP_BORDER & NOT_LEFT_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos+1);
 	//3
-	[a1_down] TOP_BORDER  & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos);
+	[DOWN] TOP_BORDER  & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos);
 	//4
-	[a1_down] NOT_TOP_BORDER & LEFT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1);
+	[DOWN] NOT_TOP_BORDER & LEFT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1);
 	//5
-	[a1_down] NOT_TOP_BORDER & NOT_RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos+1);
+	[DOWN] NOT_TOP_BORDER & NOT_RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos+1);
 	//6
-	[a1_down] NOT_TOP_BORDER & RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos);
+	[DOWN] NOT_TOP_BORDER & RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos);
 	//7
-	[a1_down] LEFT_BORDER & BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1);
+	[DOWN] LEFT_BORDER & BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos+VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+1);
 	//8
-	[a1_down] NOT_LEFT_BORDER & BOTTOM_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos+1);
+	[DOWN] NOT_LEFT_BORDER & BOTTOM_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos+1);
 	//9
-	[a1_down] BOTTOM_BORDER & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1) : (pos'=pos+1);
+	[DOWN] BOTTOM_BORDER & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1) : (pos'=pos+1);
 
 	//1
-	[a0_left] TOP_BORDER & LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[LEFT] TOP_BORDER & LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//2
-	[a0_left] TOP_BORDER & NOT_LEFT_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[LEFT] TOP_BORDER & NOT_LEFT_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//3
-	[a0_left] TOP_BORDER  & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[LEFT] TOP_BORDER  & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//4
-	[a0_left] NOT_TOP_BORDER & LEFT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[LEFT] NOT_TOP_BORDER & LEFT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//5
-	[a0_left] NOT_TOP_BORDER & NOT_RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[LEFT] NOT_TOP_BORDER & NOT_RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_LEFT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//6
-	[a0_left] NOT_TOP_BORDER & RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
+	[LEFT] NOT_TOP_BORDER & RIGHT_BORDER & NOT_BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos+VERTICAL_MOVE);
 	//7
-	[a0_left] LEFT_BORDER & BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos);
+	[LEFT] LEFT_BORDER & BOTTOM_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos);
 	//8
-	[a0_left] NOT_LEFT_BORDER & BOTTOM_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos);
+	[LEFT] NOT_LEFT_BORDER & BOTTOM_BORDER & NOT_RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1-(1-control)) : (pos'=pos-1) + ((1-control)/2) : (pos'=pos-VERTICAL_MOVE) + ((1-control)/2) : (pos'=pos);
 	//9
-	[a0_left] BOTTOM_BORDER & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1) : (pos'=pos+1);
+	[LEFT] BOTTOM_BORDER & RIGHT_BORDER & NOT_IN_HOLE & NOT_DONE -> (1) : (pos'=pos+1);
 
 
 
 
 	//In hole
-	[a3_up] WATER & NOT_DONE -> (pos'=done);
-	[a2_right] WATER & NOT_DONE -> (pos'=done);
-	[a1_down] WATER & NOT_DONE -> (pos'=done);
-	[a0_left] WATER & NOT_DONE -> (pos'=done);
+	[UP] WATER & NOT_DONE -> (pos'=done);
+	[RIGHT] WATER & NOT_DONE -> (pos'=done);
+	[DOWN] WATER & NOT_DONE -> (pos'=done);
+	[LEFT] WATER & NOT_DONE -> (pos'=done);
 	//Done (absorbing state)
-	[a3_up] IS_DONE -> (pos'=done);
-	[a2_right] IS_DONE -> (pos'=done);
-	[a1_down] IS_DONE -> (pos'=done);
-	[a0_left] IS_DONE -> (pos'=done);
+	[UP] IS_DONE -> (pos'=done);
+	[RIGHT] IS_DONE -> (pos'=done);
+	[DOWN] IS_DONE -> (pos'=done);
+	[LEFT] IS_DONE -> (pos'=done);
 
 
 endmodule
 
 rewards
-	[a3_up] WATER & NOT_DONE : 0;
-	[a2_right] WATER & NOT_DONE : 0;
-	[a1_down] WATER & NOT_DONE : 0;
-	[a0_left] WATER & NOT_DONE : 0;
+	[UP] WATER & NOT_DONE : 0;
+	[RIGHT] WATER & NOT_DONE : 0;
+	[DOWN] WATER & NOT_DONE : 0;
+	[LEFT] WATER & NOT_DONE : 0;
 
-	[a3_up] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
-	[a2_right] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
-	[a1_down] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
-	[a0_left] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
+	[UP] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
+	[RIGHT] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
+	[DOWN] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
+	[LEFT] NOT_AT_FRISBEE & NOT_IN_HOLE & NOT_DONE : 0;
 
-	[a3_up] AT_FRISBEE & NOT_DONE : 1;
-	[a2_right] AT_FRISBEE & NOT_DONE : 1;
-	[a1_down] AT_FRISBEE & NOT_DONE : 1;
-	[a0_left] AT_FRISBEE & NOT_DONE : 1;
+	[UP] AT_FRISBEE & NOT_DONE : 1;
+	[RIGHT] AT_FRISBEE & NOT_DONE : 1;
+	[DOWN] AT_FRISBEE & NOT_DONE : 1;
+	[LEFT] AT_FRISBEE & NOT_DONE : 1;
 
 endrewards
 

@@ -1,3 +1,7 @@
+# COOL-MC LLM Verification
+Please install locally the Ollama tool (https://ollama.com/download). Then follow the README instructions to make the Docker running and execute bash/llm_experiments.sh to run the LLM verification experiments (uncomment the verification tasks).
+
+
 # COOL-MC
 COOL-MC is a tool designed to address several challenges associated with reinforcement learning (RL) systems, including the lack of interpretability, vulnerability to adversarial attacks coupled with inefficient defense methods, and learning unsafe behavior due to the limited expressiveness of reward functions.
 COOL-MC combines the capabilities of Farama gymnasium and the probabilistic model checker Storm.

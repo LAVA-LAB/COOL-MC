@@ -75,6 +75,10 @@ if __name__ == '__main__':
     # Model checking
     mdp_reward_result, model_checking_info = env.storm_bridge.model_checker.induced_markov_chain(m_project.agent, m_project.preprocessors, env, m_project.command_line_arguments['constant_definitions'], m_project.command_line_arguments['prop'], collect_label_and_states)
     m_project.mlflow_bridge.log_result(mdp_reward_result)
+    m_project.mlflow_bridge.log_number_of_states(model_checking_info['model_size'])
+    m_project.mlflow_bridge.log_number_of_transitions(model_checking_info['model_transitions'])
+    m_project.mlflow_bridge.log_faulty_outputs(model_checking_info['number_of_faulty_outputs'])
+    m_project.mlflow_bridge.log_time_in_seconds(model_checking_info['model_building_time'] + model_checking_info['model_checking_time'])
 
     run_id = m_project.mlflow_bridge.get_run_id()
     print(f'{original_prop}:\t{mdp_reward_result}')

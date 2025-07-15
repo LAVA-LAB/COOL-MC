@@ -1,0 +1,24 @@
+// Exported by storm
+// Original model type: MDP
+@type: MDP
+@parameters
+
+@reward_models
+
+@nr_states
+3
+@nr_choices
+3
+@model
+state 0 init
+//[!done	& !passenger	& x=2	& y=2	& fuel=10	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action LEFT
+		1 : 1
+state 1
+//[!done	& !passenger	& x=1	& y=2	& fuel=9	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action DOWN
+		2 : 1
+state 2
+//[!done	& !passenger	& x=1	& y=1	& fuel=10	& jobs_done=0	& passenger_loc_x=0	& passenger_loc_y=4	& passenger_dest_x=0	& passenger_dest_y=0]
+	action UP
+		1 : 1

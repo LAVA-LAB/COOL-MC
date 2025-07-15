@@ -148,6 +148,18 @@ class MlFlowBridge:
     def log_result(self, result):
         mlflow.log_param('result', result)
 
+    def log_number_of_states(self, number_of_states):
+        mlflow.log_param('number_of_states', number_of_states)
+
+    def log_number_of_transitions(self, number_of_transitions):
+        mlflow.log_param('number_of_transitions', number_of_transitions)
+
+    def log_time_in_seconds(self, time_in_seconds):
+        mlflow.log_param("time_in_seconds", time_in_seconds)
+
+    def log_faulty_outputs(self, faulty_outputs):
+        mlflow.log_param("faulty_outputs", faulty_outputs)
+
 
     def get_best_reward(self,command_line_arguments):
         run_path = self.get_agent_path().replace("/artifacts/model","")

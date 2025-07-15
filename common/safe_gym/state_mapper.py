@@ -105,10 +105,25 @@ class StateMapper:
 
     def get_feature_names(self):
         feature_names = []
+        #print("Original format:", self.original_format)
         for idx, name in enumerate(self.original_format):
             if name not in self.disabled_features:
                 feature_names.append(name)
         return feature_names
+
+    def get_textual_state_representation(self, state: np.ndarray, ignore_features=[], replace_feature_names={}) -> str:
+        feature_names = self.get_feature_names()
+        get_textual_state_representation = ""
+        for idx, name in enumerate(feature_names):
+    
+            if name in ignore_features:
+                continue
+            replaced_name = replace_feature_names.get(name, name)
+            get_textual_state_representation += f"{replaced_name}={state[self.mapper[name]]};"
+        
+
+        return get_textual_state_representation[:-1]  # Remove last space
+            
 
 
     def inverse_mapping(self, idx: int) -> Union[str, None]:
