@@ -60,6 +60,13 @@ class Agent():
         """
         pass
 
+    def get_faulty_outputs(self):
+        """
+        Returns the number of faulty outputs of the agent.
+        This is used to measure the quality of the agent.
+        """
+        return [0]
+
     def load(self, root_folder:str):
         """
         Loads the RL agent from the folder

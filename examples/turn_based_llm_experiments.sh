@@ -1,0 +1,16 @@
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-gemma3:4b#llama3.1:8b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="15_slippery_sticks.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F turn=2 & done=true ]"
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-llama3.1:8b#gemma3:4b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="15_slippery_sticks.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F turn=2 & done=true ]"
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-gemma3:4b#gemma3:4b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="15_slippery_sticks.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F turn=2 & done=true  ]"
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-llama3.1:8b#llama3.1:8b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="15_slippery_sticks.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F turn=2 & done=true  ]"
+python cool_mc.py --rl_algorithm="turn_based_llm_agent-llama3.1:8b#llama3.1:8b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="15_slippery_sticks.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ X (turn=2 & remaining_sticks=13)  ]"
+
+
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-llama3.1:8b#gemma3:4b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="15_slippery_sticks.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F turn=2 & remaining_sticks<0 ]"
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-llama3.1:8b#gemma3:4b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="15_slippery_sticks.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ F turn=2 & remaining_sticks<=1 ]"
+
+
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-gemma3:4b#gemma3:4b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="pick_or_grap.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ (coins1-coins2=2 | coins1-coins2=0)  U (coins1-coins2=1) ]"
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-llama3.1:8b#gemma3:4b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="pick_or_grap.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ G coins1>=coins2 ]"
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-gemma3:4b#llama3.1:8b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="pick_or_grap.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ G coins1>=coins2 ]"
+#python cool_mc.py --rl_algorithm="turn_based_llm_agent-llama3.1:8b#llama3.1:8b" --project_name="turn_based_llm_examples" --constant_definitions="" --prism_dir="../prism_files" --prism_file_path="pick_or_grap.prism" --seed=128 --task="rl_model_checking" --prop="P=? [ G coins1>=coins2 ]"
+

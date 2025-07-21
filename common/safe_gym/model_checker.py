@@ -207,6 +207,6 @@ class ModelChecker():
         #print('Result for initial state', result.at(initial_state))
         mdp_result = result.at(initial_state)
 
-        info = {"number_of_faulty_outputs": agent.number_of_faulty_outputs, "property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
-        print(self.counter)
+        info = {"number_of_faulty_outputs": agent.get_faulty_outputs(), "property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
+
         return mdp_result, info

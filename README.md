@@ -1,5 +1,5 @@
 # COOL-MC LLM Verification
-Please install locally the Ollama tool (https://ollama.com/download). Then follow the README instructions to make the Docker running and execute bash/llm_experiments.sh to run the LLM verification experiments (uncomment the verification tasks).
+Please install locally the Ollama tool (https://ollama.com/download). Then follow the README instructions to make the Docker running and execute bash examples/turn_based_llm_experiments.sh to run the LLM verification experiments (uncomment the verification tasks).
 
 
 # COOL-MC

@@ -1,0 +1,34 @@
+//LLM:Greedy is a two-player turn-based charity game with a shared pot of coins. On each turn, a player can take one coin (action name PICK_1), or try to take two coins (action name PICK_2). The game ends when the pot is empty.
+mdp
+
+// Constants
+const double PICK_2_DETECT=0;
+const int MAX_COINS = 9;
+const int PLAYER1 = 1;
+const int PLAYER2 = 2;
+
+
+const int PICK_1 = 1;
+const int PICK_2 = 2;
+
+// Formulas
+formula GAME_OVER = (done=true);
+formula NO_GAME_OVER = !GAME_OVER;
+
+module pick_or_steal
+	// Variables
+    coins1 : [0..MAX_COINS] init 0;
+    coins2 : [0..MAX_COINS] init 0;
+	remaining_coins: [0..MAX_COINS] init MAX_COINS;
+	turn: [1..2] init 1;
+	done : bool init false;
+
+    [PICK_1] remaining_coins>0 & NO_GAME_OVER & turn=PLAYER1 -> (1.0) : (remaining_coins'=max(remaining_coins-PICK_1, 0)) & (coins1'=min(coins1+PICK_1, MAX_COINS)) & (turn'=PLAYER2);
+    [PICK_1] remaining_coins>0 & NO_GAME_OVER & turn=PLAYER2 -> (1.0) : (remaining_coins'=max(remaining_coins-PICK_1, 0)) & (coins2'=min(coins2+PICK_1, MAX_COINS)) & (turn'=PLAYER1);
+    [PICK_1] remaining_coins=0 & NO_GAME_OVER -> 1 : (done'=true);
+
+    [PICK_2] remaining_coins>0 & NO_GAME_OVER & turn=PLAYER1 -> (1.0-PICK_2_DETECT) : (remaining_coins'=max(remaining_coins-PICK_2, 0)) & (coins1'=min(coins1+PICK_2, MAX_COINS)) & (turn'=PLAYER2) + (PICK_2_DETECT) : (turn'=PLAYER2); 
+    [PICK_2] remaining_coins>0 & NO_GAME_OVER & turn=PLAYER2 -> (1.0-PICK_2_DETECT) : (remaining_coins'=max(remaining_coins-PICK_2, 0)) & (coins2'=min(coins2+PICK_2, MAX_COINS)) & (turn'=PLAYER1) + (PICK_2_DETECT) : (turn'=PLAYER1);
+    [PICK_2] remaining_coins=0 & NO_GAME_OVER -> 1 : (done'=true);
+endmodule
+

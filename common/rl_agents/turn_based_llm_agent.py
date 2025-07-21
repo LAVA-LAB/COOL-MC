@@ -38,20 +38,22 @@ def get_llm_response_text(
     return response.message.content
 
 
-class LLMAgent():
+class TurnBasedLLMAgent():
 
-    def __init__(self, model_name):
-        self.model_name = model_name
-        #print("LLMAgent initialized with model:", model_name)
+    def __init__(self, first_agent_model, second_agent_model):
+        print("TurnBasedLLMAgent initialized with models:", first_agent_model, second_agent_model)
+        self.first_agent_model = first_agent_model
+        self.second_agent_model = second_agent_model
         self.state_action_pairs = {}
-        self.number_of_faulty_outputs = 0
+        self.number_of_faulty_outputs1 = 0
+        self.number_of_faulty_outputs2 = 0
 
     def get_faulty_outputs(self):
         """
         Returns the number of faulty outputs of the agent.
         This is used to measure the quality of the agent.
         """
-        return [self.number_of_faulty_outputs]
+        return [self.number_of_faulty_outputs1, self.number_of_faulty_outputs2]
         
 
     def select_action(self, state : np.ndarray, deploy : bool =False):
@@ -64,54 +66,59 @@ class LLMAgent():
         """
         ignore_features = []
         replace_feature_names = {}
-        #print(state)
-        if self.env_name == "transporter":
-            ignore_features = ["done", "jobs_done", "passenger_dest_x", "passenger_dest_y", "passenger_loc_x", "passenger_loc_y", "passenger"]
-            replace_feature_names = {"x":"current x-coordinate", 
-                                        "y":"current y-coordinate", 
-                                        #"passenger_dest_x": "passenger destination x-coordinate", 
-                                        #"passenger_dest_y": "passenger destination y-coordinate",
-                                        #"passenger_loc_x": "passenger location x-coordinate", 
-                                        #"passenger_loc_y": "passenger location y-coordinate",
-                                        "fuel": "remaining fuel",}
-        elif self.env_name == "transporter2":
-            ignore_features = ["done", "jobs_done"]
-            replace_feature_names = {#"x":"current x-coordinate", 
-                                        #"y":"current y-coordinate", 
-                                        "passenger_dest_x": "passenger destination x-coordinate", 
-                                        "passenger_dest_y": "passenger destination y-coordinate",
-                                        "passenger_loc_x": "passenger location x-coordinate", 
-                                        "passenger_loc_y": "passenger location y-coordinate",
-                                        "fuel": "remaining fuel",}
-        #print(self.state_mapper.get_feature_names())
+        # Get turn feature
+        current_turn = self.state_mapper.get_feature_value(state, "turn")
+        #print("Current turn:", current_turn)
+        if current_turn == 1:
+            model_name = self.first_agent_model
+        else:
+            model_name = self.second_agent_model
+        print("Selected model for turn", current_turn, ":", model_name)
+        if self.env_name == "15_slippery_sticks":
+            ignore_features = ["turn", "done"]
+            replace_feature_names = {"remaining_sticks": "remaining sticks"}
+        elif self.env_name == "pick_or_grap":
+            ignore_features = ["turn", "done"]
+            replace_feature_names = {"coins1": "collected player 1 coins", "coins2": "collected player 2 coins", "remaining_coins": "remaining coins in the pot"}
         
+
         actions = self.action_mapper.actions
-        prompt = self.env_description + "\n\n" + "Current State: " + self.state_mapper.get_textual_state_representation(state, ignore_features, replace_feature_names=replace_feature_names) + "\n\n" +  f"What is the next action to take to fullfill your goal? Please answer with the action name only."
+        prompt = self.env_description + "\n" + "" + self.state_mapper.get_textual_state_representation(state, ignore_features, replace_feature_names=replace_feature_names) + "\n" +  f"You are player {current_turn}. What is the next action to take? Please answer with the EXACT action name "+ str(self.action_mapper.actions)+" only."
+
         if prompt not in self.state_action_pairs.keys():
+            print(prompt)
             #print("Prompt for LLM:\n\n", prompt)
             response_text = get_llm_response_text(
-                model_name=self.model_name,
+                model_name=model_name,
                 prompt=prompt
             )
+            
             response_text = response_text.split("</think>")[1].strip() if "</think>" in response_text else response_text.strip()
+            print("LLM response:\n\n",  response_text)
             #print("LLM response:\n\n",  response_text)
             
             selected_action_name = self.filter_action_from_response(response_text)
             #print("Selected action from LLM:", selected_action_name)
             if selected_action_name is None:
+                #print("No action matched in response, defaulting to first action.")
+                
                 selected_action_name = actions[0]  # Default to the first action if none matched
-                self.number_of_faulty_outputs += 1
+                if current_turn == 0:
+                    self.number_of_faulty_outputs1 += 1
+                else:
+                    self.number_of_faulty_outputs2 += 1
                 
             action_index = self.action_mapper.action_name_to_action_index(selected_action_name)
             self.state_action_pairs[prompt] = action_index
         else:
             #print("Using cached response for prompt.")
             action_index = self.state_action_pairs[prompt]
-        
 
         return action_index
 
+
     def filter_action_from_response(self, response_text: str):
+        print(self.action_mapper.actions)
         for action in self.action_mapper.actions:
             if action.lower() in response_text.lower():
                 #print("Matched action:", action)

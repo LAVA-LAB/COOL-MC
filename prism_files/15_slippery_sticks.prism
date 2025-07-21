@@ -1,0 +1,32 @@
+//LLM:In this game, two players take turns removing 1–3 sticks from a pile; the player forced to take the last stick loses. Action TAKE_1 removes one stick, action TAKE_2 removes two sticks, action TAKE_3 removes three sticks.
+mdp
+
+// Constants
+const double slippery=0.2;
+const int PLAYER1 = 1;
+const int PLAYER2 = 2;
+
+const int TAKE_1 = 1;
+const int TAKE_2 = 2;
+const int TAKE_3 = 3;
+
+// Formulas
+formula GAME_OVER = (done=true);
+formula NO_GAME_OVER = !GAME_OVER;
+
+module slippery_sticks
+	// Variables
+	remaining_sticks: [0..15] init 15;
+	turn: [1..2] init 1;
+	done : bool init false;
+
+    [TAKE_1] remaining_sticks>1 & NO_GAME_OVER-> (1.0-slippery) : (remaining_sticks'=max(remaining_sticks-TAKE_1, 0)) & (turn'=(turn=PLAYER1) ? PLAYER2 : PLAYER1) + slippery : (remaining_sticks'=remaining_sticks) & (turn'=(turn=PLAYER1) ? PLAYER2 : PLAYER1);
+    [TAKE_1] remaining_sticks<=1 & NO_GAME_OVER -> 1 : (done'=true);
+
+    [TAKE_2] remaining_sticks>2 & NO_GAME_OVER-> (1.0-slippery) : (remaining_sticks'=max(remaining_sticks-TAKE_2, 0)) & (turn'=(turn=PLAYER1) ? PLAYER2 : PLAYER1) + slippery : (remaining_sticks'=remaining_sticks) & (turn'=(turn=PLAYER1) ? PLAYER2 : PLAYER1);
+    [TAKE_2] remaining_sticks<=2 & NO_GAME_OVER -> 1 : (done'=true);
+
+    [TAKE_3] remaining_sticks>3 & NO_GAME_OVER-> (1.0-slippery) : (remaining_sticks'=max(remaining_sticks-TAKE_3, 0)) & (turn'=(turn=PLAYER1) ? PLAYER2 : PLAYER1) + slippery : (remaining_sticks'=remaining_sticks) & (turn'=(turn=PLAYER1) ? PLAYER2 : PLAYER1);
+    [TAKE_3] remaining_sticks<=3 & NO_GAME_OVER -> 1 : (done'=true);
+
+endmodule

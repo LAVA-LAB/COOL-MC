@@ -6,6 +6,7 @@ from common.rl_agents.hillclimbing_agent import *
 from common.rl_agents.sarsa_max_agent import *
 from common.rl_agents.reinforce_agent import *
 from common.rl_agents.llm_agent import LLMAgent
+from common.rl_agents.turn_based_llm_agent import TurnBasedLLMAgent
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class
@@ -64,4 +65,10 @@ class AgentBuilder():
         elif command_line_arguments['rl_algorithm'].find("llm_agent-") == 0:
             model_name = command_line_arguments['rl_algorithm'].replace("llm_agent-","")
             agent = LLMAgent(model_name=model_name)
+        elif command_line_arguments['rl_algorithm'].find("turn_based_llm_agent-") == 0:
+            model_name = command_line_arguments['rl_algorithm'].replace("turn_based_llm_agent-","")
+            print("Building TurnBasedLLMAgent with model:", model_name)
+            first_agent_model = model_name.split("#")[0]
+            second_agent_model = model_name.split("#")[1]
+            agent = TurnBasedLLMAgent(first_agent_model = first_agent_model, second_agent_model=second_agent_model)
         return agent
