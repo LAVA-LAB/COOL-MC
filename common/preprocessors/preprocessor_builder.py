@@ -10,6 +10,13 @@ from common.preprocessors.single_agent_ffgsm import *
 from common.preprocessors.rounder import *
 # Robustness
 from common.preprocessors.integer_l1_robustness import *
+# Quantum Noise
+from common.preprocessors.quantum_depolarizing_noise import *
+from common.preprocessors.quantum_amplitude_damping import *
+from common.preprocessors.quantum_phase_damping import *
+from common.preprocessors.quantum_bit_flip import *
+from common.preprocessors.quantum_phase_flip import *
+from common.preprocessors.quantum_generalized_amplitude_damping import *
 
 '''
 HOW TO ADD MORE AGENTS?
@@ -35,7 +42,8 @@ class PreprocessorBuilder():
         if command_line_arguments['preprocessor'] != "" and command_line_arguments['preprocessor']!="None":
             preprocessors = []
         for preprocessor_str in command_line_arguments['preprocessor'].split("#"):
-            preprocessor_name = preprocessor_str.split(";")[0]
+            # Extract preprocessor name (before : or ; separator)
+            preprocessor_name = preprocessor_str.split(";")[0].split(":")[0]
             if preprocessor_name == "normalizer":
                 preprocessor = Normalizer(state_mapper, preprocessor_str, command_line_arguments['task'])
                 preprocessor.load(preprocessor_path)
@@ -66,6 +74,30 @@ class PreprocessorBuilder():
                 preprocessors.append(preprocessor)
             elif preprocessor_name == "integer_l1_robustness":
                 preprocessor = IntegerL1Robustness(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "quantum_depolarizing_noise":
+                preprocessor = QuantumDepolarizingNoise(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "quantum_amplitude_damping":
+                preprocessor = QuantumAmplitudeDamping(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "quantum_phase_damping":
+                preprocessor = QuantumPhaseDamping(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "quantum_bit_flip":
+                preprocessor = QuantumBitFlip(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "quantum_phase_flip":
+                preprocessor = QuantumPhaseFlip(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "quantum_generalized_amplitude_damping":
+                preprocessor = QuantumGeneralizedAmplitudeDamping(state_mapper, preprocessor_str, command_line_arguments['task'])
                 preprocessor.load(preprocessor_path)
                 preprocessors.append(preprocessor)
         return preprocessors

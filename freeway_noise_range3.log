@@ -1,0 +1,250 @@
+2025/11/12 20:07:23 INFO mlflow.projects.utils: === Created directory /tmp/tmpxyae5qa9 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:07:23 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.01 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '6776c26689e0439b8bba58b7a4bc59b0' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/z49lj5z58vevy4h69dkv3gghaya0a5nomfhuz3l9et
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.01', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/z49lj5z58vevy4h69dkv3gghaya0a5nomfhuz3l9et/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/z49lj5z58vevy4h69dkv3gghaya0a5nomfhuz3l9et/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.01
+Preprocessors quantum_depolarizing_noise:0.01
+Configured quantum agent with gate-level depolarizing noise (p=0.01 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.5905504287679646
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	354.2764799594879
+Model Checking Time:	0.0006647109985351562
+Constant definitions:	
+Run ID: z49lj5z58vevy4h69dkv3gghaya0a5nomfhuz3l9et
+2025/11/12 20:13:20 INFO mlflow.projects: === Run (ID '6776c26689e0439b8bba58b7a4bc59b0') succeeded ===
+=======================
+2025/11/12 20:13:21 INFO mlflow.projects.utils: === Created directory /tmp/tmpbyi6n6x4 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:13:21 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.02 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'd34f4e151c05428d855eff3c14834694' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/kvcue3d6luwoh9d5ao0ora2748j492naomutifdpki
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.02', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/kvcue3d6luwoh9d5ao0ora2748j492naomutifdpki/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/kvcue3d6luwoh9d5ao0ora2748j492naomutifdpki/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.02
+Preprocessors quantum_depolarizing_noise:0.02
+Configured quantum agent with gate-level depolarizing noise (p=0.02 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.5567246861358034
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	337.44847989082336
+Model Checking Time:	0.0006434917449951172
+Constant definitions:	
+Run ID: kvcue3d6luwoh9d5ao0ora2748j492naomutifdpki
+2025/11/12 20:19:02 INFO mlflow.projects: === Run (ID 'd34f4e151c05428d855eff3c14834694') succeeded ===
+=======================
+2025/11/12 20:19:03 INFO mlflow.projects.utils: === Created directory /tmp/tmplzrhaq7d for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:19:03 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.03 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '1c62781b6e6d4012a3bdac91438b0532' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/hqlzq4xl71w2w9p12fj36r10mb3x8w6h0h1ozdl6zy
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.03', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/hqlzq4xl71w2w9p12fj36r10mb3x8w6h0h1ozdl6zy/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/hqlzq4xl71w2w9p12fj36r10mb3x8w6h0h1ozdl6zy/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.03
+Preprocessors quantum_depolarizing_noise:0.03
+Configured quantum agent with gate-level depolarizing noise (p=0.03 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.5215087464025405
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	321.4692690372467
+Model Checking Time:	0.0006744861602783203
+Constant definitions:	
+Run ID: hqlzq4xl71w2w9p12fj36r10mb3x8w6h0h1ozdl6zy
+2025/11/12 20:24:27 INFO mlflow.projects: === Run (ID '1c62781b6e6d4012a3bdac91438b0532') succeeded ===
+=======================
+2025/11/12 20:24:28 INFO mlflow.projects.utils: === Created directory /tmp/tmpy6dtms6b for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:24:28 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.04 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '56619ba83fa148a8929db615fe8fbaf4' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/enn8oxlof9u6z68kz27rnh0yw15izrwjbl1erzl1mt
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.04', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/enn8oxlof9u6z68kz27rnh0yw15izrwjbl1erzl1mt/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/enn8oxlof9u6z68kz27rnh0yw15izrwjbl1erzl1mt/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.04
+Preprocessors quantum_depolarizing_noise:0.04
+Configured quantum agent with gate-level depolarizing noise (p=0.04 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.48664077065342426
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	327.7679109573364
+Model Checking Time:	0.0006709098815917969
+Constant definitions:	
+Run ID: enn8oxlof9u6z68kz27rnh0yw15izrwjbl1erzl1mt
+2025/11/12 20:29:58 INFO mlflow.projects: === Run (ID '56619ba83fa148a8929db615fe8fbaf4') succeeded ===
+=======================
+2025/11/12 20:29:59 INFO mlflow.projects.utils: === Created directory /tmp/tmpnb29cv4y for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:29:59 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.05 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '3839d5928ead45ec8750f650db57b277' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/jta8nx1fpky0zzqp555wzojxrjxsqkbuf2pr83djlz
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.05', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/jta8nx1fpky0zzqp555wzojxrjxsqkbuf2pr83djlz/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/jta8nx1fpky0zzqp555wzojxrjxsqkbuf2pr83djlz/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.05
+Preprocessors quantum_depolarizing_noise:0.05
+Configured quantum agent with gate-level depolarizing noise (p=0.05 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.45349828206350085
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	309.5318534374237
+Model Checking Time:	0.0006434917449951172
+Constant definitions:	
+Run ID: jta8nx1fpky0zzqp555wzojxrjxsqkbuf2pr83djlz
+2025/11/12 20:35:12 INFO mlflow.projects: === Run (ID '3839d5928ead45ec8750f650db57b277') succeeded ===
+=======================
+2025/11/12 20:35:13 INFO mlflow.projects.utils: === Created directory /tmp/tmpi_m_vsky for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:35:13 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.06 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '0e6bb68871124c3594c02a7e7ef011fc' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/0j46z7m87q8emg5vebmh5eur6o67xm24x55wfu7ram
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.06', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/0j46z7m87q8emg5vebmh5eur6o67xm24x55wfu7ram/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/0j46z7m87q8emg5vebmh5eur6o67xm24x55wfu7ram/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.06
+Preprocessors quantum_depolarizing_noise:0.06
+Configured quantum agent with gate-level depolarizing noise (p=0.06 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.4230030417139798
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	310.166974067688
+Model Checking Time:	0.0006268024444580078
+Constant definitions:	
+Run ID: 0j46z7m87q8emg5vebmh5eur6o67xm24x55wfu7ram
+2025/11/12 20:40:25 INFO mlflow.projects: === Run (ID '0e6bb68871124c3594c02a7e7ef011fc') succeeded ===
+=======================
+2025/11/12 20:40:26 INFO mlflow.projects.utils: === Created directory /tmp/tmp2jatpwos for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:40:26 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.07 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'a1cb566afdfa4107bed91d4e5068baac' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/55j076f080m3x3ltnd1o3rvuh0ugl3fdjheu39ho1k
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.07', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/55j076f080m3x3ltnd1o3rvuh0ugl3fdjheu39ho1k/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/55j076f080m3x3ltnd1o3rvuh0ugl3fdjheu39ho1k/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.07
+Preprocessors quantum_depolarizing_noise:0.07
+Configured quantum agent with gate-level depolarizing noise (p=0.07 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.39564674987878073
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	307.0578365325928
+Model Checking Time:	0.0006585121154785156
+Constant definitions:	
+Run ID: 55j076f080m3x3ltnd1o3rvuh0ugl3fdjheu39ho1k
+2025/11/12 20:45:36 INFO mlflow.projects: === Run (ID 'a1cb566afdfa4107bed91d4e5068baac') succeeded ===
+=======================
+2025/11/12 20:45:37 INFO mlflow.projects.utils: === Created directory /tmp/tmph41oiyzb for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:45:37 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.08 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '2891c317fbed4599ba2a1c7d0f73f3c2' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/vdhqw378p85b9lr6u56f3zq8bd74u0zg5pmytvdlll
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.08', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/vdhqw378p85b9lr6u56f3zq8bd74u0zg5pmytvdlll/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/vdhqw378p85b9lr6u56f3zq8bd74u0zg5pmytvdlll/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.08
+Preprocessors quantum_depolarizing_noise:0.08
+Configured quantum agent with gate-level depolarizing noise (p=0.08 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.3715799424985286
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	310.7053699493408
+Model Checking Time:	0.0006198883056640625
+Constant definitions:	
+Run ID: vdhqw378p85b9lr6u56f3zq8bd74u0zg5pmytvdlll
+2025/11/12 20:50:50 INFO mlflow.projects: === Run (ID '2891c317fbed4599ba2a1c7d0f73f3c2') succeeded ===
+=======================
+2025/11/12 20:50:51 INFO mlflow.projects.utils: === Created directory /tmp/tmpzx8bnrky for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:50:51 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.09 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '26e7352700e34a88b1aa3a8c6758b9b2' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/863wl1cg2w7l3fcow724g5c6fnqx1iafox8sjb6wg0
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.09', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/863wl1cg2w7l3fcow724g5c6fnqx1iafox8sjb6wg0/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/863wl1cg2w7l3fcow724g5c6fnqx1iafox8sjb6wg0/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.09
+Preprocessors quantum_depolarizing_noise:0.09
+Configured quantum agent with gate-level depolarizing noise (p=0.09 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.35071751121362754
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	301.69580578804016
+Model Checking Time:	0.0006501674652099609
+Constant definitions:	
+Run ID: 863wl1cg2w7l3fcow724g5c6fnqx1iafox8sjb6wg0
+2025/11/12 20:55:56 INFO mlflow.projects: === Run (ID '26e7352700e34a88b1aa3a8c6758b9b2') succeeded ===
+=======================
+2025/11/12 20:55:57 INFO mlflow.projects.utils: === Created directory /tmp/tmpvpux96t6 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 20:55:57 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=freeway_experiments --parent_run_id=last --preprocessor=quantum_depolarizing_noise:0.1 --prism_dir=../prism_files --prism_file_path=freeway.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'f67b2c1a6e504d35bea7fb7179a9e3d4' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run fb883d5ba68041cb9674883a2528efe3 from project freeway_experiments
+Copying run...
+Copied run to ../mlruns/437278008735162994/kbp618m6v8xi8ccntcxgnyyuuzow7ig8u4e8is2zfu
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'freeway_experiments', 'parent_run_id': 'fb883d5ba68041cb9674883a2528efe3', 'prism_dir': '../prism_files', 'prism_file_path': 'freeway.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_depolarizing_noise:0.1', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/437278008735162994/kbp618m6v8xi8ccntcxgnyyuuzow7ig8u4e8is2zfu/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/437278008735162994/kbp618m6v8xi8ccntcxgnyyuuzow7ig8u4e8is2zfu/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Depolarizing Noise: p=0.1
+Preprocessors quantum_depolarizing_noise:0.1
+Configured quantum agent with gate-level depolarizing noise (p=0.1 per gate)
+  Device: default.mixed (density matrix simulation)
+P=? [ F "goal" ]:	0.3328323314837199
+Model Size:		496
+Number of Transitions:	2080
+Model Building Time:	306.15117716789246
+Model Checking Time:	0.0006296634674072266
+Constant definitions:	
+Run ID: kbp618m6v8xi8ccntcxgnyyuuzow7ig8u4e8is2zfu
+2025/11/12 21:01:05 INFO mlflow.projects: === Run (ID 'f67b2c1a6e504d35bea7fb7179a9e3d4') succeeded ===
+=======================

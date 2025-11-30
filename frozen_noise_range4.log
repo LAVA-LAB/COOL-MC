@@ -1,0 +1,260 @@
+2025/11/12 16:47:49 INFO mlflow.projects.utils: === Created directory /tmp/tmpfe8u1qd3 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:47:49 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.01 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '53e4fbac2db04be98e0f7aff4d29c5dc' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/k283wgvv98jg32rndj27973dgsccv1leios8arr9of
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.01', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/k283wgvv98jg32rndj27973dgsccv1leios8arr9of/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/k283wgvv98jg32rndj27973dgsccv1leios8arr9of/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.01
+Preprocessors quantum_amplitude_damping:0.01
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.01 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.0274994740739481
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	20.728132247924805
+Model Checking Time:	0.0004134178161621094
+Constant definitions:	start_position=0,control=0.99
+Run ID: k283wgvv98jg32rndj27973dgsccv1leios8arr9of
+2025/11/12 16:48:13 INFO mlflow.projects: === Run (ID '53e4fbac2db04be98e0f7aff4d29c5dc') succeeded ===
+=======================
+2025/11/12 16:48:14 INFO mlflow.projects.utils: === Created directory /tmp/tmp8j3gb414 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:48:14 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.02 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '33c0d717961b45e687a323a2657c5558' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/yi4tov1kczssyqsehlbqql92qhcsdw40m1b0eh7dyx
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.02', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/yi4tov1kczssyqsehlbqql92qhcsdw40m1b0eh7dyx/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/yi4tov1kczssyqsehlbqql92qhcsdw40m1b0eh7dyx/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.02
+Preprocessors quantum_amplitude_damping:0.02
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.02 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.02751096786201049
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	20.24910259246826
+Model Checking Time:	0.0008289813995361328
+Constant definitions:	start_position=0,control=0.99
+Run ID: yi4tov1kczssyqsehlbqql92qhcsdw40m1b0eh7dyx
+2025/11/12 16:48:37 INFO mlflow.projects: === Run (ID '33c0d717961b45e687a323a2657c5558') succeeded ===
+=======================
+2025/11/12 16:48:39 INFO mlflow.projects.utils: === Created directory /tmp/tmpf5i6c80y for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:48:39 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.03 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '455f37caa7e4492ea32668beba8a2390' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/qq57a4gkwhauvrszihesya0gnm1fpc5l8ub1rt9xd9
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.03', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/qq57a4gkwhauvrszihesya0gnm1fpc5l8ub1rt9xd9/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/qq57a4gkwhauvrszihesya0gnm1fpc5l8ub1rt9xd9/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.03
+Preprocessors quantum_amplitude_damping:0.03
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.03 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.02752139611841191
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	20.794537782669067
+Model Checking Time:	0.0006113052368164062
+Constant definitions:	start_position=0,control=0.99
+Run ID: qq57a4gkwhauvrszihesya0gnm1fpc5l8ub1rt9xd9
+2025/11/12 16:49:02 INFO mlflow.projects: === Run (ID '455f37caa7e4492ea32668beba8a2390') succeeded ===
+=======================
+2025/11/12 16:49:03 INFO mlflow.projects.utils: === Created directory /tmp/tmp0y5qo5y_ for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:49:03 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.04 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'f85c8995169041f7a0d6cd5e80ec771b' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/6ubaqfzbqnzbvy827a0vhsenhqhis54r85aceot6xn
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.04', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/6ubaqfzbqnzbvy827a0vhsenhqhis54r85aceot6xn/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/6ubaqfzbqnzbvy827a0vhsenhqhis54r85aceot6xn/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.04
+Preprocessors quantum_amplitude_damping:0.04
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.04 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.027530831478338465
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	20.20592188835144
+Model Checking Time:	0.0004284381866455078
+Constant definitions:	start_position=0,control=0.99
+Run ID: 6ubaqfzbqnzbvy827a0vhsenhqhis54r85aceot6xn
+2025/11/12 16:49:26 INFO mlflow.projects: === Run (ID 'f85c8995169041f7a0d6cd5e80ec771b') succeeded ===
+=======================
+2025/11/12 16:49:28 INFO mlflow.projects.utils: === Created directory /tmp/tmpm751i7rf for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:49:28 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.05 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '15e4f8ca1b6d426aa49118ff2c4dcc9d' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/x4uxom7ub37ipo4hcmp75vzbg5skxj1116i18leinx
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.05', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/x4uxom7ub37ipo4hcmp75vzbg5skxj1116i18leinx/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/x4uxom7ub37ipo4hcmp75vzbg5skxj1116i18leinx/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.05
+Preprocessors quantum_amplitude_damping:0.05
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.05 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.02753939660924361
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	19.558608293533325
+Model Checking Time:	0.00040411949157714844
+Constant definitions:	start_position=0,control=0.99
+Run ID: x4uxom7ub37ipo4hcmp75vzbg5skxj1116i18leinx
+2025/11/12 16:49:50 INFO mlflow.projects: === Run (ID '15e4f8ca1b6d426aa49118ff2c4dcc9d') succeeded ===
+=======================
+2025/11/12 16:49:51 INFO mlflow.projects.utils: === Created directory /tmp/tmpitaa27dj for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:49:51 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.06 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '67a10e091c544d93af131b4cb5607407' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/dvemwod90xqtbepj78m9lukapbyodc72qxvwkhhfrx
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.06', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/dvemwod90xqtbepj78m9lukapbyodc72qxvwkhhfrx/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/dvemwod90xqtbepj78m9lukapbyodc72qxvwkhhfrx/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.06
+Preprocessors quantum_amplitude_damping:0.06
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.06 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.02754716250501083
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	21.529279708862305
+Model Checking Time:	0.0007150173187255859
+Constant definitions:	start_position=0,control=0.99
+Run ID: dvemwod90xqtbepj78m9lukapbyodc72qxvwkhhfrx
+2025/11/12 16:50:16 INFO mlflow.projects: === Run (ID '67a10e091c544d93af131b4cb5607407') succeeded ===
+=======================
+2025/11/12 16:50:17 INFO mlflow.projects.utils: === Created directory /tmp/tmpkxw0uul_ for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:50:17 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.07 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '423d0af7946d4c4297afe9db4c8964a4' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/c0yta7rdlqi7nixkgm8t3x1z0gb4h66mp1cps027t5
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.07', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/c0yta7rdlqi7nixkgm8t3x1z0gb4h66mp1cps027t5/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/c0yta7rdlqi7nixkgm8t3x1z0gb4h66mp1cps027t5/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.07
+Preprocessors quantum_amplitude_damping:0.07
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.07 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.027554179608916013
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	23.200772047042847
+Model Checking Time:	0.0011324882507324219
+Constant definitions:	start_position=0,control=0.99
+Run ID: c0yta7rdlqi7nixkgm8t3x1z0gb4h66mp1cps027t5
+2025/11/12 16:50:44 INFO mlflow.projects: === Run (ID '423d0af7946d4c4297afe9db4c8964a4') succeeded ===
+=======================
+2025/11/12 16:50:46 INFO mlflow.projects.utils: === Created directory /tmp/tmpsk9vx08m for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:50:46 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.08 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'b177bc1d141449a09e4e988360775d4d' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/7hnirdn6853tgk5rc1kwiodghxzqagknp3bstwm3bs
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.08', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/7hnirdn6853tgk5rc1kwiodghxzqagknp3bstwm3bs/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/7hnirdn6853tgk5rc1kwiodghxzqagknp3bstwm3bs/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.08
+Preprocessors quantum_amplitude_damping:0.08
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.08 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.027560471049516717
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	21.493755102157593
+Model Checking Time:	0.0004189014434814453
+Constant definitions:	start_position=0,control=0.99
+Run ID: 7hnirdn6853tgk5rc1kwiodghxzqagknp3bstwm3bs
+2025/11/12 16:51:12 INFO mlflow.projects: === Run (ID 'b177bc1d141449a09e4e988360775d4d') succeeded ===
+=======================
+2025/11/12 16:51:13 INFO mlflow.projects.utils: === Created directory /tmp/tmpa2wj3zdw for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:51:13 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.09 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '8a185b5f35364af3a62b14bb47c66729' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/84xvd23r9vbmvb8gi0we2gue00jwax1hdvkdmlqtxt
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.09', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/84xvd23r9vbmvb8gi0we2gue00jwax1hdvkdmlqtxt/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/84xvd23r9vbmvb8gi0we2gue00jwax1hdvkdmlqtxt/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.09
+Preprocessors quantum_amplitude_damping:0.09
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.09 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.02756618479141732
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	21.744349479675293
+Model Checking Time:	0.0008869171142578125
+Constant definitions:	start_position=0,control=0.99
+Run ID: 84xvd23r9vbmvb8gi0we2gue00jwax1hdvkdmlqtxt
+2025/11/12 16:51:38 INFO mlflow.projects: === Run (ID '8a185b5f35364af3a62b14bb47c66729') succeeded ===
+=======================
+2025/11/12 16:51:40 INFO mlflow.projects.utils: === Created directory /tmp/tmpgl8lc32j for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 16:51:40 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=frozen_lake_experiment --parent_run_id=last --preprocessor=quantum_amplitude_damping:0.1 --prism_dir=../prism_files --prism_file_path=frozen_lake.prism --constant_definitions=start_position=0,control=0.99 --prop='P=? [ F "at_frisbee" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '86a7f9d093a24efb811b466a55e11485' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run 9c6d855c63ce418ba3e3c001f3ebfdb6 from project frozen_lake_experiment
+Copying run...
+Copied run to ../mlruns/946964409166557318/uk05dake2d3j9c1e0c4iveorpnk61d3m2l7iy7kbme
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'frozen_lake_experiment', 'parent_run_id': '9c6d855c63ce418ba3e3c001f3ebfdb6', 'prism_dir': '../prism_files', 'prism_file_path': 'frozen_lake.prism', 'constant_definitions': 'start_position=0,control=0.99', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 500, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_amplitude_damping:0.1', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "at_frisbee" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.0001, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/946964409166557318/uk05dake2d3j9c1e0c4iveorpnk61d3m2l7iy7kbme/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/946964409166557318/uk05dake2d3j9c1e0c4iveorpnk61d3m2l7iy7kbme/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Amplitude Damping: gamma=0.1
+Preprocessors quantum_amplitude_damping:0.1
+Configured quantum agent with gate-level amplitude damping noise (gamma=0.1 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Models energy relaxation (T1 decay) - qubits decay from |1⟩ to |0⟩
+P=? [ F "at_frisbee" ]:	0.027571343624439904
+Model Size:		17
+Number of Transitions:	48
+Model Building Time:	19.659880876541138
+Model Checking Time:	0.0013611316680908203
+Constant definitions:	start_position=0,control=0.99
+Run ID: uk05dake2d3j9c1e0c4iveorpnk61d3m2l7iy7kbme
+2025/11/12 16:52:03 INFO mlflow.projects: === Run (ID '86a7f9d093a24efb811b466a55e11485') succeeded ===
+=======================

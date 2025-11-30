@@ -1,0 +1,260 @@
+2025/11/12 17:28:45 INFO mlflow.projects.utils: === Created directory /tmp/tmpjm2dqzm2 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:28:45 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.01 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'bce0def270664164813ae821de99bdc5' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/lv62pruwnzij2vwoyzczs5rn3ob7vm2la2gme72gb3
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.01', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/lv62pruwnzij2vwoyzczs5rn3ob7vm2la2gme72gb3/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/lv62pruwnzij2vwoyzczs5rn3ob7vm2la2gme72gb3/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.01
+Preprocessors quantum_bit_flip:0.01
+Configured quantum agent with gate-level bit flip noise (p=0.01 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.4177369431252548
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.2082009315490723
+Model Checking Time:	0.00031495094299316406
+Constant definitions:	
+Run ID: lv62pruwnzij2vwoyzczs5rn3ob7vm2la2gme72gb3
+2025/11/12 17:28:49 INFO mlflow.projects: === Run (ID 'bce0def270664164813ae821de99bdc5') succeeded ===
+=======================
+2025/11/12 17:28:50 INFO mlflow.projects.utils: === Created directory /tmp/tmp9yjrfas0 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:28:50 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.02 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '9931f50374f94161959237debc5d4034' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/12bwizxu9n4bc748ycp0h0f1davr5v132y22loqbv3
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.02', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/12bwizxu9n4bc748ycp0h0f1davr5v132y22loqbv3/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/12bwizxu9n4bc748ycp0h0f1davr5v132y22loqbv3/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.02
+Preprocessors quantum_bit_flip:0.02
+Configured quantum agent with gate-level bit flip noise (p=0.02 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.3540569322141787
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.1914825439453125
+Model Checking Time:	0.0002942085266113281
+Constant definitions:	
+Run ID: 12bwizxu9n4bc748ycp0h0f1davr5v132y22loqbv3
+2025/11/12 17:28:55 INFO mlflow.projects: === Run (ID '9931f50374f94161959237debc5d4034') succeeded ===
+=======================
+2025/11/12 17:28:56 INFO mlflow.projects.utils: === Created directory /tmp/tmp9lqv_woa for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:28:56 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.03 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'a2acb9159c60467b8846b47ba2f715cf' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/p64wh31ebgucfzatsoh3hvxhcmd6sig81fqaafcio8
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.03', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/p64wh31ebgucfzatsoh3hvxhcmd6sig81fqaafcio8/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/p64wh31ebgucfzatsoh3hvxhcmd6sig81fqaafcio8/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.03
+Preprocessors quantum_bit_flip:0.03
+Configured quantum agent with gate-level bit flip noise (p=0.03 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.2584075788094064
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.184697151184082
+Model Checking Time:	0.000331878662109375
+Constant definitions:	
+Run ID: p64wh31ebgucfzatsoh3hvxhcmd6sig81fqaafcio8
+2025/11/12 17:29:01 INFO mlflow.projects: === Run (ID 'a2acb9159c60467b8846b47ba2f715cf') succeeded ===
+=======================
+2025/11/12 17:29:02 INFO mlflow.projects.utils: === Created directory /tmp/tmpa6j76wqe for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:29:02 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.04 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'a60bbcba97d4415193c8b4747e9b5d98' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/1q26bz3w2nw49aktxwfgkycscwetgzom8ucl4m93u2
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.04', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/1q26bz3w2nw49aktxwfgkycscwetgzom8ucl4m93u2/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/1q26bz3w2nw49aktxwfgkycscwetgzom8ucl4m93u2/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.04
+Preprocessors quantum_bit_flip:0.04
+Configured quantum agent with gate-level bit flip noise (p=0.04 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.16984284191772084
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.065943717956543
+Model Checking Time:	0.0003094673156738281
+Constant definitions:	
+Run ID: 1q26bz3w2nw49aktxwfgkycscwetgzom8ucl4m93u2
+2025/11/12 17:29:06 INFO mlflow.projects: === Run (ID 'a60bbcba97d4415193c8b4747e9b5d98') succeeded ===
+=======================
+2025/11/12 17:29:07 INFO mlflow.projects.utils: === Created directory /tmp/tmpr786i_il for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:29:07 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.05 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'a414e0a1ff4d4777b011a9ee049a5b1f' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/pyfx8kq44dpp9sy5yw5h3am30cgreofxflvrmsnaxx
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.05', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/pyfx8kq44dpp9sy5yw5h3am30cgreofxflvrmsnaxx/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/pyfx8kq44dpp9sy5yw5h3am30cgreofxflvrmsnaxx/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.05
+Preprocessors quantum_bit_flip:0.05
+Configured quantum agent with gate-level bit flip noise (p=0.05 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.10941572198421405
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.1994149684906006
+Model Checking Time:	0.00030994415283203125
+Constant definitions:	
+Run ID: pyfx8kq44dpp9sy5yw5h3am30cgreofxflvrmsnaxx
+2025/11/12 17:29:12 INFO mlflow.projects: === Run (ID 'a414e0a1ff4d4777b011a9ee049a5b1f') succeeded ===
+=======================
+2025/11/12 17:29:13 INFO mlflow.projects.utils: === Created directory /tmp/tmpbqemz9ow for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:29:13 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.06 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '33defa8cbdaa4b2687c45c6d180fbf0d' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/c43nlfz2h4vhym8gyon7gpfoq71m13oy37dxc4l7ho
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.06', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/c43nlfz2h4vhym8gyon7gpfoq71m13oy37dxc4l7ho/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/c43nlfz2h4vhym8gyon7gpfoq71m13oy37dxc4l7ho/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.06
+Preprocessors quantum_bit_flip:0.06
+Configured quantum agent with gate-level bit flip noise (p=0.06 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.07384399857879825
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.0548644065856934
+Model Checking Time:	0.0003266334533691406
+Constant definitions:	
+Run ID: c43nlfz2h4vhym8gyon7gpfoq71m13oy37dxc4l7ho
+2025/11/12 17:29:17 INFO mlflow.projects: === Run (ID '33defa8cbdaa4b2687c45c6d180fbf0d') succeeded ===
+=======================
+2025/11/12 17:29:18 INFO mlflow.projects.utils: === Created directory /tmp/tmpw62s8q13 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:29:18 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.07 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '02679fd3e35c4582a3e33de935c9a97d' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/sdrigbpuns4h44wvr7oks4xxdo146nrn9rt489oetf
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.07', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/sdrigbpuns4h44wvr7oks4xxdo146nrn9rt489oetf/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/sdrigbpuns4h44wvr7oks4xxdo146nrn9rt489oetf/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.07
+Preprocessors quantum_bit_flip:0.07
+Configured quantum agent with gate-level bit flip noise (p=0.07 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.05374454260538512
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.200726270675659
+Model Checking Time:	0.0003044605255126953
+Constant definitions:	
+Run ID: sdrigbpuns4h44wvr7oks4xxdo146nrn9rt489oetf
+2025/11/12 17:29:23 INFO mlflow.projects: === Run (ID '02679fd3e35c4582a3e33de935c9a97d') succeeded ===
+=======================
+2025/11/12 17:29:24 INFO mlflow.projects.utils: === Created directory /tmp/tmpufirmyn3 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:29:24 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.08 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID '8b7fbe7af9e849cd9f6660383319bcbf' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/7aolx9h0jnr52tdllcgfaznn8mva8yevtg7g18dlc6
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.08', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/7aolx9h0jnr52tdllcgfaznn8mva8yevtg7g18dlc6/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/7aolx9h0jnr52tdllcgfaznn8mva8yevtg7g18dlc6/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.08
+Preprocessors quantum_bit_flip:0.08
+Configured quantum agent with gate-level bit flip noise (p=0.08 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.04225059919116017
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.2269327640533447
+Model Checking Time:	0.00033593177795410156
+Constant definitions:	
+Run ID: 7aolx9h0jnr52tdllcgfaznn8mva8yevtg7g18dlc6
+2025/11/12 17:29:28 INFO mlflow.projects: === Run (ID '8b7fbe7af9e849cd9f6660383319bcbf') succeeded ===
+=======================
+2025/11/12 17:29:29 INFO mlflow.projects.utils: === Created directory /tmp/tmpw_tdphgq for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:29:29 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.09 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'a413b37166d642cf91dd3c95633ea1c2' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/imk3oded8kdao9ljccwr6di704e66asnjc9anhpthn
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.09', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/imk3oded8kdao9ljccwr6di704e66asnjc9anhpthn/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/imk3oded8kdao9ljccwr6di704e66asnjc9anhpthn/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.09
+Preprocessors quantum_bit_flip:0.09
+Configured quantum agent with gate-level bit flip noise (p=0.09 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.035478978549259264
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.192006826400757
+Model Checking Time:	0.00029754638671875
+Constant definitions:	
+Run ID: imk3oded8kdao9ljccwr6di704e66asnjc9anhpthn
+2025/11/12 17:29:34 INFO mlflow.projects: === Run (ID 'a413b37166d642cf91dd3c95633ea1c2') succeeded ===
+=======================
+2025/11/12 17:29:35 INFO mlflow.projects.utils: === Created directory /tmp/tmppa9py4t2 for downloading remote URIs passed to arguments of type 'path' ===
+2025/11/12 17:29:35 INFO mlflow.projects.backend.local: === Running command 'python run.py --project_name=ski_experiments --parent_run_id=last --preprocessor=quantum_bit_flip:0.1 --prism_dir=../prism_files --prism_file_path=ski2.prism --constant_definitions='' --prop='P=? [ F "goal" ]' --interpreter='' --prob_threshold=0 --task rl_model_checking --disabled_features '' --seed -1 --training_threshold -1000000000000 --num_episodes 1000 --eval_interval 9 --sliding_window_size 100 --reward_flag 0 --max_steps 100 --wrong_action_penalty 1000 --deploy 0 --postprocessor '' --range_plotting 1 --rl_algorithm dqn_agent --alpha 0.99 --noise_scale 0.01 --layers 2 --neurons 64 --replay_buffer_size 300000 --epsilon 1 --epsilon_dec 0.9999 --epsilon_min 0.1 --gamma 0.99 --replace 304 --lr 0.0001 --batch_size 32' in run with ID 'f1950af7f4b04752b43b1a24124610e0' === 
+Write to file test.drn.
+Write to file test.drn.
+Loaded last run a67c08f057614750ae1d6f64ca8444e7 from project ski_experiments
+Copying run...
+Copied run to ../mlruns/883524926124897103/6kwyjkso6piy3g9h31rsel7riyymzuxp0m8vlrx5hw
+We use the following command line arguments:
+{'task': 'rl_model_checking', 'project_name': 'ski_experiments', 'parent_run_id': 'a67c08f057614750ae1d6f64ca8444e7', 'prism_dir': '../prism_files', 'prism_file_path': 'ski2.prism', 'constant_definitions': '', 'disabled_features': '', 'seed': -1, 'training_threshold': -1000000000000.0, 'num_episodes': 1000, 'eval_interval': 9, 'sliding_window_size': 100, 'reward_flag': True, 'max_steps': 100, 'wrong_action_penalty': 1000, 'deploy': 0, 'preprocessor': 'quantum_bit_flip:0.1', 'postprocessor': '', 'interpreter': '', 'prop': 'P=? [ F "goal" ]', 'range_plotting': 1, 'rl_algorithm': 'qreinforce', 'alpha': 0.99, 'noise_scale': 0.01, 'layers': 2, 'neurons': 64, 'replay_buffer_size': 300000, 'epsilon': 1.0, 'epsilon_dec': 0.9999, 'epsilon_min': 0.1, 'gamma': 0.99, 'replace': 304, 'lr': 0.01, 'prob_threshold': 0.0, 'batch_size': 32}
+/workspaces/coolmc/mlruns/883524926124897103/6kwyjkso6piy3g9h31rsel7riyymzuxp0m8vlrx5hw/artifacts/model
+Loaded Quantum REINFORCE model from /workspaces/coolmc/mlruns/883524926124897103/6kwyjkso6piy3g9h31rsel7riyymzuxp0m8vlrx5hw/artifacts/model/quantum_reinforce.pth
+Agent loaded.
+Quantum Bit Flip: p=0.1
+Preprocessors quantum_bit_flip:0.1
+Configured quantum agent with gate-level bit flip noise (p=0.1 per gate)
+  Device: default.mixed (density matrix simulation)
+  Effect: Applies Pauli-X with probability p (|0⟩ ↔ |1⟩ swap)
+P=? [ F "goal" ]:	0.03136641762829138
+Model Size:		7
+Number of Transitions:	12
+Model Building Time:	2.0786333084106445
+Model Checking Time:	0.0003337860107421875
+Constant definitions:	
+Run ID: 6kwyjkso6piy3g9h31rsel7riyymzuxp0m8vlrx5hw
+2025/11/12 17:29:39 INFO mlflow.projects: === Run (ID 'f1950af7f4b04752b43b1a24124610e0') succeeded ===
+=======================

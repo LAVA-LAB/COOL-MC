@@ -9,6 +9,7 @@ from common.rl_agents.sarsa_max_agent import *
 from common.rl_agents.reinforce_agent import *
 from common.rl_agents.ppo import *
 from common.rl_agents.turnbased_n_ppo_agents import *
+from common.rl_agents.quantum_reinforce_agent import *
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class
@@ -32,7 +33,8 @@ class AgentBuilder():
         #print('Build model with', model_root_folder_path, command_line_arguments)
         #print('Environment', observation_space.shape, action_space.n)
         print(model_root_folder_path)
-        model_root_folder_path = model_root_folder_path.replace("file://","")
+        if model_root_folder_path is not None:
+            model_root_folder_path = model_root_folder_path.replace("file://","")
         eps_clip = 0.2          # clip parameter for PPO
         gamma = 0.99            # discount factor
 
@@ -95,6 +97,20 @@ class AgentBuilder():
                 agent.load(model_root_folder_path)
         elif command_line_arguments['rl_algorithm'] == 'reinforce':
             agent = ReinforceAgent(state_dimension=state_dimension, number_of_actions=action_space.n, gamma=command_line_arguments['gamma'], hidden_layer_size= command_line_arguments['neurons'],lr=command_line_arguments['lr'])
+            if model_root_folder_path!= None:
+                agent.load(model_root_folder_path)
+        elif command_line_arguments['rl_algorithm'] == 'qreinforce':
+            # Quantum REINFORCE Agent with parameter shift rule
+            agent = QuantumReinforceAgent(
+                state_dim=state_dimension,
+                action_dim=action_space.n,
+                num_qubits=command_line_arguments.get('num_qubits', 4),
+                num_layers=command_line_arguments.get('layers', 3),
+                learning_rate=command_line_arguments.get('lr', 0.01),  # Higher default for REINFORCE
+                gamma=command_line_arguments.get('gamma', 0.99),
+                use_parameter_shift=command_line_arguments.get('use_parameter_shift', False),  # Use backprop for speed
+                entropy_coef=command_line_arguments.get('entropy_coef', 0.01)  # Entropy bonus
+            )
             if model_root_folder_path!= None:
                 agent.load(model_root_folder_path)
         return agent

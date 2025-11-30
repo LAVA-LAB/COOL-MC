@@ -1,0 +1,101 @@
+mdp
+const int WALL=4;
+const int GOAL=5;
+
+
+formula BINARY_ZERO = (p3=0) & (p2=0) & (p1=0) & (p0=0);
+
+formula BINARY_ONE = (p3=0) & (p2=0) & (p1=0) & (p0=1);
+
+formula BINARY_TWO = (p3=0) & (p2=0) & (p1=1) & (p0=0);
+
+formula BINARY_THREE = (p3=0) & (p2=0) & (p1=1) & (p0=1);
+
+formula BINARY_FOUR = (p3=0) & (p2=1) & (p1=0) & (p0=0);
+
+formula BINARY_FIVE = (p3=0) & (p2=1) & (p1=0) & (p0=1);
+
+formula BINARY_SIX = (p3=0) & (p2=1) & (p1=1) & (p0=0);
+
+formula BINARY_SEVEN = (p3=0) & (p2=1) & (p1=1) & (p0=1);
+
+formula BINARY_EIGHT = (p3=1) & (p2=0) & (p1=0) & (p0=0);
+
+formula BINARY_NINE = (p3=1) & (p2=0) & (p1=0) & (p0=1);
+
+formula BINARY_TEN = (p3=1) & (p2=0) & (p1=1) & (p0=0);
+
+formula BINARY_ELEVEN = (p3=1) & (p2=0) & (p1=1) & (p0=1);
+
+formula BINARY_TWELVE = (p3=1) & (p2=1) & (p1=0) & (p0=0);
+
+formula BINARY_THIRTEEN = (p3=1) & (p2=1) & (p1=0) & (p0=1);
+
+formula BINARY_FOURTEEN = (p3=1) & (p2=1) & (p1=1) & (p0=0);
+
+formula BINARY_FIFTEEN = (p3=1) & (p2=1) & (p1=1) & (p0=1);
+
+
+
+module agent
+	p3 : [0..1] init 0;
+	p2 : [0..1] init 0;
+	p1 : [0..1] init 0;
+	p0 : [0..1] init 1;
+	
+
+	[left] BINARY_ZERO -> true;
+	[right] BINARY_ZERO -> true;
+
+
+	//ODD use left
+	[left] 	BINARY_ONE -> (p3'=0) & (p2'=0) & (p1'=1) & (p0'=0);
+	[right] BINARY_ONE -> (p3'=0) & (p2'=0) & (p1'=0) & (p0'=0);
+
+	//EVEN use right
+	[left] 	BINARY_TWO -> (p3'=0) & (p2'=0) & (p1'=0) & (p0'=0);
+	[right] BINARY_TWO -> (p3'=0) & (p2'=0) & (p1'=1) & (p0'=1);
+
+	//ODD use left
+	[left] 	BINARY_THREE -> (p3'=0) & (p2'=1) & (p1'=0) & (p0'=0);
+	[right] BINARY_THREE -> (p3'=0) & (p2'=0) & (p1'=0) & (p0'=0);
+
+
+	//EVEN use right
+	[left] 	BINARY_FOUR -> (p3'=0) & (p2'=0) & (p1'=0) & (p0'=0);
+	[right] BINARY_FOUR -> (p3'=0) & (p2'=1) & (p1'=0) & (p0'=1);
+
+	//ODD use left
+	[left] 	BINARY_FIVE -> (p3'=0) & (p2'=1) & (p1'=1) & (p0'=0);
+	[right] BINARY_FIVE -> (p3'=0) & (p2'=0) & (p1'=0) & (p0'=0);
+
+
+	//GOAL
+	[left] 	BINARY_SIX -> true;
+	[right] BINARY_SIX -> true;
+
+	
+endmodule
+
+rewards
+	// Reward for left actions that don't go to zero
+	[left] BINARY_ONE : 1;
+	[left] BINARY_THREE : 1;
+	[left] BINARY_FIVE : 1;
+	[left] BINARY_SEVEN : 1;
+	[left] BINARY_NINE : 1;
+	[left] BINARY_ELEVEN : 1;
+	[left] BINARY_THIRTEEN : 1;
+
+	// Reward for right actions that don't go to zero
+	[right] BINARY_TWO : 1;
+	[right] BINARY_FOUR : 1;
+	[right] BINARY_SIX : 1;
+	[right] BINARY_EIGHT : 1;
+	[right] BINARY_TEN : 1;
+	[right] BINARY_TWELVE : 1;
+	[right] BINARY_FOURTEEN : 1;
+endrewards
+
+label "goal" = BINARY_SIX;
+label "crash" = BINARY_ZERO;
