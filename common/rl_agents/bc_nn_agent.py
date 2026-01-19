@@ -108,7 +108,8 @@ class BCNNAgent(Agent):
         self.network = BCNetwork(state_dimension, number_of_neurons, number_of_actions, learning_rate)
         self.best_model_path = None
 
-    def behavioral_cloning(self, data: dict, epochs: int = 100) -> tuple[int | None, float | None, float | None, float | None, float | None]:
+    
+    def behavioral_cloning(self, env, data: dict, epochs: int = 100) -> tuple[int | None, float | None, float | None, float | None, float | None]:
         """
         Perform supervised training on a behavioral cloning dataset.
         Uses class weighting to handle imbalanced action labels.

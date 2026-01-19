@@ -31,7 +31,7 @@ def train(project, env, prop_type=''):
         dataset.create(env)
         data = dataset.get_data()
         # Behavioral cloning
-        training_epoch, train_accuracy, test_accuracy, train_loss, test_loss = project.agent.behavioral_cloning(data, project.command_line_arguments['bc_epochs'])
+        training_epoch, train_accuracy, test_accuracy, train_loss, test_loss = project.agent.behavioral_cloning(env, data, project.command_line_arguments['bc_epochs'])
         if training_epoch != None:
             if train_accuracy != None:
                 project.mlflow_bridge.log_property(train_accuracy, "Behavioral Cloning Training Accuracy", training_epoch)

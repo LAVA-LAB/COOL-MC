@@ -48,7 +48,7 @@ class Agent():
         """
         pass
 
-    def behavioral_cloning(self, data: dict) -> tuple[int | None, float | None, float | None, float | None, float | None]:
+    def behavioral_cloning(self, env, data: dict, epochs: int = 100) -> tuple[int | None, float | None, float | None, float | None, float | None]:
         """
         Perform supervised training on a behavioral cloning dataset.
 
