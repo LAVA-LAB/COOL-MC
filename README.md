@@ -403,5 +403,5 @@ Do you have any questions or ideas for collaborative work? Contact us via dgross
 
 ## Contributors
 The main developer of this repository is Dennis Gross.
-For any questions or inquiries related to the repository, write him an email via dgross@science.ru.nl.
+For any questions or inquiries related to the repository, write him on [LinkedIn](https://www.linkedin.com/in/dennis-gro%C3%9F-b25044326/).
 This tool is developed with help from Nils Jansen, Sebastian Junges, and Guillermo A. Perez.
