@@ -5,6 +5,7 @@ from common.rl_agents.turnbased_n_agents import *
 from common.rl_agents.hillclimbing_agent import *
 from common.rl_agents.sarsa_max_agent import *
 from common.rl_agents.reinforce_agent import *
+from common.rl_agents.bc_nn_agent import *
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class
@@ -58,6 +59,11 @@ class AgentBuilder():
                 agent.load(model_root_folder_path)
         elif command_line_arguments['rl_algorithm'] == 'reinforce':
             agent = ReinforceAgent(state_dimension=state_dimension, number_of_actions=action_space.n, gamma=command_line_arguments['gamma'], hidden_layer_size= command_line_arguments['neurons'],lr=command_line_arguments['lr'])
+            if model_root_folder_path!= None:
+                agent.load(model_root_folder_path)
+        elif command_line_arguments['rl_algorithm'] == 'bc_nn_agent':
+            number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'],command_line_arguments['neurons'])
+            agent = BCNNAgent(state_dimension, number_of_neurons, action_space.n, learning_rate=command_line_arguments['lr'], batch_size=command_line_arguments['batch_size'])
             if model_root_folder_path!= None:
                 agent.load(model_root_folder_path)
         return agent
