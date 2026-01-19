@@ -290,7 +290,7 @@ For testing the installation, follow the steps [here](https://moves-rwth.github.
 
 ## COOL-MC Publications
 
-COOL-MC: A Comprehensive Tool for Learning and Model Checking:
+
 `@inproceedings{gross2022cool,
   title={COOL-MC: a comprehensive tool for reinforcement learning and model checking},
   author={Gross, Dennis and Jansen, Nils and Junges, Sebastian and P{\'e}rez, Guillermo A},
@@ -300,7 +300,7 @@ COOL-MC: A Comprehensive Tool for Learning and Model Checking:
   organization={Springer}
 }`
 
-Targeted Adversarial Attacks on Deep Reinforcement Learning Policies via Model Checking:
+
 `
 @inproceedings{Gross2023targeted,
 	title = { {Targeted Adversarial Attacks on Deep Reinforcement Learning Policies via Model Checking} },
@@ -311,7 +311,6 @@ Targeted Adversarial Attacks on Deep Reinforcement Learning Policies via Model C
 }
 `
 
-Turn-based Multi-Agent Reinforcement Learning Model Checking:
 `
 @inproceedings{Gross2023turn,
 	title = { {Turn-based Multi-Agent Reinforcement Learning Model Checking} },
@@ -322,8 +321,6 @@ Turn-based Multi-Agent Reinforcement Learning Model Checking:
 }
 `
 
-Model Checking for Adversarial Multi-Agent Reinforcement Learning
-with Reactive Defense Methods:
 `
 @inproceedings{Gross2023cmarl,
 	title = { {Model Checking for Adversarial Multi-Agent Reinforcement Learning
@@ -333,6 +330,72 @@ with Reactive Defense Methods} },
 	year = { 2023 },
 	url = { }
 }
+
+@inproceedings{DBLP:conf/esann/GrossS24,
+  author       = {Dennis Gross and
+                  Helge Spieker},
+  title        = {Safety-Oriented Pruning and Interpretation of Reinforcement Learning
+                  Policies},
+  booktitle    = {{ESANN}},
+  year         = {2024}
+}
+
+@inproceedings{DBLP:conf/icaart/GrossS24,
+  author       = {Dennis Gross and
+                  Helge Spieker},
+  title        = {Probabilistic Model Checking of Stochastic Reinforcement Learning
+                  Policies},
+  booktitle    = {{ICAART} {(3)}},
+  pages        = {438--445},
+  publisher    = {{SCITEPRESS}},
+  year         = {2024}
+}
+
+@inproceedings{DBLP:conf/pts/GrossS24,
+  author       = {Dennis Gross and
+                  Helge Spieker},
+  title        = {Enhancing {RL} Safety with Counterfactual {LLM} Reasoning},
+  booktitle    = {{ICTSS}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {15383},
+  pages        = {23--29},
+  publisher    = {Springer},
+  year         = {2024}
+}
+
+@article{DBLP:journals/corr/abs-2510-06756,
+  author       = {Dennis Gross and
+                  Helge Spieker and
+                  Arnaud Gotlieb},
+  title        = {Verifying Memoryless Sequential Decision-making of Large Language
+                  Models},
+  journal      = {CoRR},
+  volume       = {abs/2510.06756},
+  year         = {2025}
+}
+
+@inproceedings{DBLP:conf/icaart/GrossS25,
+  author       = {Dennis Gross and
+                  Helge Spieker},
+  title        = {Co-Activation Graph Analysis of Safety-Verified and Explainable Deep
+                  Reinforcement Learning Policies},
+  booktitle    = {{ICAART} {(2)}},
+  pages        = {611--621},
+  publisher    = {{SCITEPRESS}},
+  year         = {2025}
+}
+
+@inproceedings{DBLP:conf/sac/GrossS25,
+  author       = {Dennis Gross and
+                  Helge Spieker},
+  title        = {{PCTL} Model Checking for Temporal {RL} Policy Safety Explanations},
+  booktitle    = {{SAC}},
+  pages        = {1514--1521},
+  publisher    = {{ACM}},
+  year         = {2025}
+}
+
+
 `
 
 Do you have any questions or ideas for collaborative work? Contact us via dgross@science.ru.nl.
