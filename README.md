@@ -398,7 +398,7 @@ with Reactive Defense Methods} },
 
 `
 
-Do you have any questions or ideas for collaborative work? Contact us via dgross@science.ru.nl.
+Do you have any questions or ideas for collaborative work? Contact us via [LinkedIn](https://www.linkedin.com/in/dennis-gro%C3%9F-b25044326/).
 
 
 ## Contributors
