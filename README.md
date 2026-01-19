@@ -395,7 +395,19 @@ with Reactive Defense Methods} },
   year         = {2025}
 }
 
+@article{gross2025translating,
+  title={Translating the Rashomon Effect to Sequential Decision-Making Tasks},
+  author={Gross, Dennis and Betten, J{\o}rn Eirik and Spieker, Helge},
+  journal={arXiv preprint arXiv:2512.17470},
+  year={2025}
+}
 
+@article{gross2025formal,
+  title={Formal Verification of Noisy Quantum Reinforcement Learning Policies},
+  author={Gross, Dennis},
+  journal={arXiv preprint arXiv:2512.01502},
+  year={2025}
+}
 `
 
 Do you have any questions or ideas for collaborative work? Contact us via [LinkedIn](https://www.linkedin.com/in/dennis-gro%C3%9F-b25044326/).
