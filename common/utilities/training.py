@@ -9,6 +9,7 @@ import numpy as np
 import torch
 from collections import deque
 import gc
+from common.behavioral_cloning_dataset.behavioral_cloning_dataset_builder import *
 
 
 
@@ -23,6 +24,28 @@ def train(project, env, prop_type=''):
 
 
     project.agent.load_env(env)
+    # Behavioral Cloning Dataset
+    behavioral_cloning_dataset_builder = BehavioralCloningDatasetBuilder()
+    dataset = behavioral_cloning_dataset_builder.build(project.command_line_arguments['behavioral_cloning'])
+    if dataset != None:
+        dataset.create(env)
+        data = dataset.get_data()
+        # Behavioral cloning
+        training_epoch, train_accuracy, test_accuracy, train_loss, test_loss = project.agent.behavioral_cloning(data, project.command_line_arguments['bc_epochs'])
+        if training_epoch != None:
+            if train_accuracy != None:
+                project.mlflow_bridge.log_property(train_accuracy, "Behavioral Cloning Training Accuracy", training_epoch)
+            if test_accuracy != None:
+                project.mlflow_bridge.log_property(test_accuracy, "Behavioral Cloning Test Accuracy", training_epoch)
+            if train_loss != None:
+                project.mlflow_bridge.log_property(train_loss, "Behavioral Cloning Training Loss", training_epoch)
+            if test_loss != None:
+                project.mlflow_bridge.log_property(test_loss, "Behavioral Cloning Test Loss", training_epoch)
+            # Save the trained BC model immediately after training
+            project.save()
+
+
+
     try:
         for episode in range(project.command_line_arguments['num_episodes']):
             state = env.reset()

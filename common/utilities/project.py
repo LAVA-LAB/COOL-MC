@@ -47,6 +47,17 @@ class Project():
                     del saved_command_line_arguments['preprocessor']
                 except:
                     pass
+            if self.command_line_arguments['behavioral_cloning'] != '':
+                # Only delete it if it is not set by the command line (in this case take new one)
+                # If "None", later during building none will be created
+                try:
+                    del saved_command_line_arguments['behavioral_cloning']
+                except:
+                    pass
+            try:
+                del saved_command_line_arguments['bc_epochs']
+            except:
+                pass
             try:
                 del saved_command_line_arguments['epsilon']
             except:

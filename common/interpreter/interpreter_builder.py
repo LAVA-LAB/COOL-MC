@@ -14,13 +14,6 @@ class InterpreterBuilder():
 
     @staticmethod
     def build_interpreter(interpreter_string):
-        #print('Build model with', model_root_folder_path, command_line_arguments)
-        #print('Environment', observation_space.shape, action_space.n)
-        try:
-            state_dimension = observation_space.shape[0]
-        except:
-            state_dimension = 1
-        postprocessor = None
         interpreter_name = interpreter_string.split(";")[0]
         interpreter = None
         if interpreter_name == "decision_tree":

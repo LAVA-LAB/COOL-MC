@@ -48,6 +48,19 @@ class Agent():
         """
         pass
 
+    def behavioral_cloning(self, data: dict) -> tuple[int | None, float | None, float | None, float | None, float | None]:
+        """
+        Perform supervised training on a behavioral cloning dataset.
+
+        Args:
+            data: The behavioral cloning dataset.
+
+        Returns:
+            A tuple of (training_epoch, train_accuracy, test_accuracy, train_loss, test_loss).
+            Values may be None if not available.
+        """
+        return None, None, None, None, None
+
     def get_hyperparameters(self):
         """
         Get the RL agent hyperparameters

@@ -55,6 +55,12 @@ def get_arguments() -> Dict[str, Any]:
     arg_parser.add_argument('--deploy', help='Deploy Flag (0=no deploy, 1=deploy).', type=int,
                             default=0)
 
+    # Behavioral Cloning
+    arg_parser.add_argument('--bc_epochs', help='What is the number of training epochs for behavioral cloning?', type=int,
+                            default=100)
+    arg_parser.add_argument('--behavioral_cloning', help='Preprocessor configuration string.', type=str,
+                            default='')
+
     # Preprocessor
     arg_parser.add_argument('--preprocessor', help='Preprocessor configuration string.', type=str,
                             default='')
