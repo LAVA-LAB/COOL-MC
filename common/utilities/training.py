@@ -47,7 +47,7 @@ def train(project, env, prop_type=''):
 
 
     try:
-        for episode in range(project.command_line_arguments['num_episodes']):
+        for episode in range(project.command_line_arguments['num_episodes']): 
             state = env.reset()
             done = False
             episode_reward = 0

@@ -41,11 +41,15 @@ WORKDIR /home/vscode/
 #RUN git checkout tags/1.7.0
 #RUN python setup.py build_ext --storm-dir /storm/build/ develop
 
-#WORKDIR /workspaces/coolmc
-#WORKDIR /
-#COPY ../requirements.txt .
-#RUN pip install -r requirements.txt
+# Upgrade pip to latest version for better dependency resolution
+RUN pip install --upgrade pip setuptools wheel
 
+# Copy requirements.txt and install Python dependencies
+# This layer will be cached unless requirements.txt changes
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
+
+WORKDIR /workspaces/coolmc
 
 #COPY common common
 #COPY custom_openai_gyms custom_openai_gyms
