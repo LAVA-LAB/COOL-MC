@@ -81,7 +81,7 @@ def get_arguments() -> Dict[str, Any]:
                             default=1)
 
     # Agents
-    arg_parser.add_argument('--rl_algorithm', help='What is the used RL algorithm?', type=str,
+    arg_parser.add_argument('--algorithm', help='What is the used agent algorithm?', type=str,
                             default='dqn_agent')
     arg_parser.add_argument('--alpha', help='Alpha', type=float,
                             default=0.99)

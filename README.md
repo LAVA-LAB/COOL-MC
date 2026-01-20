@@ -8,7 +8,7 @@ Beyond behavioral cloning, COOL-MC also enables verification of policies trained
 At a high-level, COOL-MC takes a formal environment model of the stochastic system, a specification, and a trained policy as input, and outputs whether the policy satisfies or violates the specification.
 
 
-![components](images/cool-mc.png)
+![diagram](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/cool-mc.png)
 
 COOL-MC has been extended to support various research directions, with some features currently available in separate branches:
 
@@ -74,7 +74,7 @@ python cool_mc.py --task=safe_training \
     --prism_dir="../prism_files" \
     --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" \
     --prop="Pmax=? [ F jobs_done=2 ]" \
-    --rl_algorithm=dqn_agent \
+    --algorithm=dqn_agent \
     --num_episodes=10000 \
     --eval_interval=100 \
     --max_steps=100
@@ -86,7 +86,7 @@ Key arguments:
 - `--prism_file_path`: The PRISM file defining your environment.
 - `--constant_definitions`: Constants for your PRISM model, separated by commas.
 - `--prop`: The property to verify, specified in PCTL (e.g., `Pmax=? [ F goal ]`). During training, `Pmax` indicates that COOL-MC should store policies that maximize the specified probability (in this case, the probability of eventually reaching the goal). Conversely, `Pmin` would store policies that minimize the probability. During verification of an induced DTMC,
-- `--rl_algorithm`: The RL algorithm to use (e.g., `dqn_agent`, `reinforce_agent`).
+- `--algorithm`: The agent algorithm to use (e.g., `dqn_agent`, `reinforce_agent`, `bc_nn_agent`).
 - `--num_episodes`: Number of training episodes.
 - `--eval_interval`: How often (in episodes) to run verification during training.
 

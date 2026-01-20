@@ -1,4 +1,4 @@
-#python cool_mc.py --task=safe_training --project_name="djssp_experiments" --rl_algorithm=cooperative_poagents --prism_file_path="scheduling_task.prism" --constant_definitions="" --prop="" --reward_flag=0 --seed=128 --epsilon=0.1 --epsilon_dec=0.9999 --layers=2 --neurons=128 --epsilon_min=0.01  --num_episodes=35000 --eval_interval=100
+#python cool_mc.py --task=safe_training --project_name="djssp_experiments" --algorithm=cooperative_poagents --prism_file_path="scheduling_task.prism" --constant_definitions="" --prop="" --reward_flag=0 --seed=128 --epsilon=0.1 --epsilon_dec=0.9999 --layers=2 --neurons=128 --epsilon_min=0.01  --num_episodes=35000 --eval_interval=100
 python cool_mc.py --parent_run_id="last" --task=rl_model_checking --project_name="navigation_experiments" --constant_definitions="" --prop="P=? [F \"jobs_done\" ]"
 python cool_mc.py --parent_run_id="last" --task=rl_model_checking --project_name="navigation_experiments" --constant_definitions="" --prop="P=? [F \"collision\" ]"
 python cool_mc.py --parent_run_id="last" --task=rl_model_checking --project_name="navigation_experiments" --constant_definitions="" --prop="P=? [F \"no_budget\" ]"

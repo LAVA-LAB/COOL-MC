@@ -2,7 +2,7 @@
 
 python cool_mc.py \
   --project_name="bc_taxi_examples" \
-  --rl_algorithm=bc_nn_agent \
+  --algorithm=bc_nn_agent \
   --prism_dir="../prism_files" \
   --prism_file_path="transporter.prism" \
   --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" \
@@ -22,7 +22,7 @@ python cool_mc.py \
 python cool_mc.py \
   --parent_run_id="last" \
   --project_name="bc_taxi_examples" \
-  --rl_algorithm=bc_nn_agent \
+  --algorithm=bc_nn_agent \
   --prism_dir="../prism_files" \
   --prism_file_path="transporter.prism" \
   --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" \
@@ -34,7 +34,7 @@ python cool_mc.py \
 python cool_mc.py \
   --parent_run_id="last" \
   --project_name="bc_taxi_examples" \
-  --rl_algorithm=bc_nn_agent \
+  --algorithm=bc_nn_agent \
   --prism_dir="../prism_files" \
   --prism_file_path="transporter.prism" \
   --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" \

@@ -4,7 +4,7 @@
 #csma.2-2.prism
 python cool_mc.py \
   --project_name="qcomp" \
-  --rl_algorithm=bc_nn_agent \
+  --algorithm=bc_nn_agent \
   --prism_dir="../prism_files" \
   --prism_file_path="zeroconf.prism" \
   --constant_definitions="N=20,K=4,reset=true" \
@@ -23,7 +23,7 @@ python cool_mc.py \
 python cool_mc.py \
   --parent_run_id="last" \
   --project_name="qcomp" \
-  --rl_algorithm=bc_nn_agent \
+  --algorithm=bc_nn_agent \
   --prism_dir="../prism_files" \
   --prism_file_path="zeroconf.prism" \
   --constant_definitions="N=20,K=4,reset=true" \

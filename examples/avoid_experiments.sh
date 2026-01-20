@@ -1,4 +1,4 @@
-#python cool_mc.py --task=safe_training --project_name="avoid_experiments" --rl_algorithm=dqn_agent --prism_file_path="avoid.prism" --constant_definitions="xMax=12,yMax=12,slickness=0.1" --prop=""  --reward_flag=1 --seed=128 --epsilon=0.5 --layers=2 --neurons=128 --epsilon_min=0.01  --num_episodes=3647 --eval_interval=100 --epsilon_dec=0.9999 --lr=0.001 --replay_buffer_size=200000 --training_threshold=10000
+#python cool_mc.py --task=safe_training --project_name="avoid_experiments" --algorithm=dqn_agent --prism_file_path="avoid.prism" --constant_definitions="xMax=12,yMax=12,slickness=0.1" --prop=""  --reward_flag=1 --seed=128 --epsilon=0.5 --layers=2 --neurons=128 --epsilon_min=0.01  --num_episodes=3647 --eval_interval=100 --epsilon_dec=0.9999 --lr=0.001 --replay_buffer_size=200000 --training_threshold=10000
 
 # Possible with 16GB RAM, but not with naive monolithic model checking.
 #P=? [ F<=100 COLLISION=true ]:  0.09587676163584996
