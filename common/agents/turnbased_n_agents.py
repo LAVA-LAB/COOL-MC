@@ -11,9 +11,9 @@ from collections import deque
 import math
 import torch
 import numpy as np
-from common.rl_agents.agent import Agent
-from common.rl_agents.dqn_agent import DQNAgent
-from common.rl_agents.partial_observable_manager import *
+from common.agents.agent import Agent
+from common.agents.dqn_agent import DQNAgent
+from common.agents.partial_observable_manager import *
 
 
 

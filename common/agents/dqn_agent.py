@@ -6,7 +6,7 @@ import torch as T
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from common.rl_agents.agent import Agent
+from common.agents.agent import Agent
 from common.utilities.helper import *
 from collections import OrderedDict
 import torch

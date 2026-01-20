@@ -1,11 +1,11 @@
 import os
-from common.rl_agents.dqn_agent import *
-from common.rl_agents.cooperative_poagents_wrapper import *
-from common.rl_agents.turnbased_n_agents import *
-from common.rl_agents.hillclimbing_agent import *
-from common.rl_agents.sarsa_max_agent import *
-from common.rl_agents.reinforce_agent import *
-from common.rl_agents.bc_nn_agent import *
+from common.agents.dqn_agent import *
+from common.agents.cooperative_poagents_wrapper import *
+from common.agents.turnbased_n_agents import *
+from common.agents.hillclimbing_agent import *
+from common.agents.sarsa_max_agent import *
+from common.agents.reinforce_agent import *
+from common.agents.bc_nn_agent import *
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class

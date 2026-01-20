@@ -6,11 +6,11 @@ import torch as T
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from common.rl_agents.agent import Agent
+from common.agents.agent import Agent
 from collections import OrderedDict
 import torch
 import numpy as np
-from common.rl_agents.dqn_agent import DQNAgent
+from common.agents.dqn_agent import DQNAgent
 from common.utilities.helper import *
 import numpy as np
 

@@ -1,419 +1,249 @@
 # COOL-MC
-COOL-MC is a tool designed to address several challenges associated with reinforcement learning (RL) systems, including the lack of interpretability, vulnerability to adversarial attacks coupled with inefficient defense methods, and learning unsafe behavior due to the limited expressiveness of reward functions.
-COOL-MC combines the capabilities of Farama gymnasium and the probabilistic model checker Storm.
-Its primary objective is to train RL policies in their environments that are modeled as Markov Decision Processes (MDPs), leveraging the Farama gym framework for this purpose.
-These policies are subsequently validated using Storm, focusing on addressing the previously mentioned challenges.
-COOL-MC comprises a simulator for RL policy training, a Storm-based model builder for policy verification using callback functions, and algorithms for establishing performance bounds on the trained policies.
+Probabilistic model checking is a formal verification technique that exhaustively analyzes all possible states and transitions of a stochastic system to check whether it satisfies a given quantitative specification, such as verifying that the probability of reaching a goal state is above a certain threshold. Unfortunately, this approach faces scalability challenges, as the number of states can grow exponentially with system complexity.
 
-In the following diagram, we see the general workflow of COOL-MC.
-First, an agent is trained in an environment (modeled as an MDP via PRISM) concerning a objective.
-Second, the policy is verified for further safety specifications.
-Then, the user can decide to further train the policy or to deploy the agent.
+Behavioral cloning can help address this limitation. On a smaller, tractable version of the system, model checking computes an optimal policy (a mapping from states to actions) with respect to the property of interest. However, this policy only covers states present in the smaller system. To handle new states in the larger system, a function approximator is trained to imitate the optimal policy, enabling it to generalize to unseen states. This learned policy is then applied to the larger system. Since the policy fixes actions, the complex system reduces to only reachable states, making verification tractable. This allows us to check whether the larger system still satisfies the property under the learned policy. If so, we obtain formal guarantees at scale.
 
-![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/workflow.png)
+Beyond behavioral cloning, COOL-MC also enables verification of policies trained via reinforcement learning (RL). In RL, an agent learns a policy with respect to a specified objective, typically maximizing cumulative reward. While the reward function is designed to guide the agent toward behavior that satisfies the specification, it often cannot fully capture complex requirements. COOL-MC allows users to formally verify whether the learned policy actually satisfies the desired specification.
 
-The verification process take the environment, the learned RL agent's policy, and optionally an adversarial attack and defense configuration.
-The verifier outputs than the verification result.
-
-![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/verifier.png)
-
-## An Step-by-Step Example with COOL-MC
-To fully understand COOL-MC, let's dive into a detailed, step-by-step example. Our main objective here is twofold. First, we aim to train an RL (Reinforcement Learning) policy tailored towards a specific objective. Following that, we endeavor to measure the reachability probability denoted as $m := P(F E)$ of the trained RL agent.
-
-![MDP](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/example_mdp.png)
-
-The image above displays a Markov Decision Process (MDP) – the environment for our RL policy training. Remember, this MDP requires description in the PRISM language, as depicted in the image below.
-
-![PRISM Code](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/prism_code.png)
-
-Armed with a well-trained policy and the reachability probability measure, $m := P(F E)$, it's time to compute this measure. This computation requires the incremental construction of the induced Discrete Time Markov Chain (DTMC). Within COOL-MC, this process is handled via callback functions the following way.
-
-We initiate the incremental building process from the 'state A' (the initial state), defined by its unique coordinates (x=1, y=1).
-
-![DTMC1](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc1.png)
-
-Subsequently, we probe our trained policy using the observation of 'state A' to decide on an action. In this case, the action chosen is 'UP'. This choice influences the creation of transitions from 'state A' to potential future states, encapsulating the probabilities tied to these transitions. In this scenario, there is a 0.2 probability of transition to 'state B' (x=2, y=2), and a 0.8 likelihood of staying put in 'state A'.
-
-![DTMC2](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc2.png)
-
-The procedure continues by visiting every state reachable from the current state and querying the policy. Our next stop in this example is 'state B'. After probing the policy with an observation of 'state B', the action of choice becomes 'RIGHT'. This action presents a 0.2 probability of transition to 'state C' (x=2, y=1), a 0.1 probability of returning to 'state B', and a 0.7 likelihood of moving to 'state E' (x=3, y=1).
-
-![DTMC3](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc3.png)
-
-Next on our itinerary is 'state C'. On querying the policy again, the action chosen at 'state C' is 'UP', taking us back to 'state B'.
-
-![DTMC4](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc4.png)
-
-Ultimately, we reach 'state E' and query the policy once more. The selected action here is 'LEFT', and since this action creates a loop at 'state E', we have visited all reachable states. This visitation completes the building process of our induced DTMC.
-
-![DTMC5](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/dtmc5.png)
-
-At this juncture, with the fully constructed induced DTMC, we are equipped to compute the reachability probability measure $m = 1$.
+At a high-level, COOL-MC takes a formal environment model of the stochastic system, a specification, and a trained policy as input, and outputs whether the policy satisfies or violates the specification.
 
 
-## Architecture
-We will first describe the main components of COOL-MC and then delve into the details.
+![components](images/cool-mc.png)
 
-### Training
-The following code runs an agent in an environment. The env variable represents the environment, and the reset method is called to reset the environment to its initial state. The step method is used to take an action in the environment, and observe the resulting next state, reward, and whether the episode has finished (indicated by the done flag).
+COOL-MC has been extended to support various research directions, with some features currently available in separate branches:
 
-The Preprocessor object preprocesses the raw state. Preprocessing the raw state is often necessary in reinforcement learning because the raw state may be difficult for the agent to work with directly. Preprocessing can also be used to apply adversarial attacks and countermeasure simulations to the environment.
+**Explainable AI.** COOL-MC supports multiple approaches for interpreting and explaining trained policies:
+- *Co-activation graph analysis* maps neural network inner workings by analyzing neuron activation patterns, providing insight into safe sequential decision-making.
+- *Temporal safety explanations* combine local explainable AI with PCTL model checking to explain complex, safe sequential decision-making over time.
+- *Safety-oriented pruning* combines neural network pruning with model checking to quantify the effects of pruning and the impact of neural connections on complex safety properties.
+- *Rashomon effect analysis* uses formal verification to compare multiple policies that exhibit identical behavior but differ in their internal structure, such as feature attributions.
 
-The select_action method of the agent object is called to select an action based on the current state.
-The Postprocessor object has a manipulate method that takes in the current state, action, reward, next state, and done flag, and returns modified versions of these variables.
-The step_learn method is then called to update the agent's knowledge based on the observed reward and next state.
+**Secure AI.** COOL-MC enables security analysis of trained policies:
+- *Targeted adversarial attacks* measure the exact impact of adversarial noise on temporal logic properties and craft optimal attacks against trained policies.
+- *Robustness verification* assesses a policy's robustness against adversarial attacks.
+- *Adversarial multi-agent verification* verifies cooperative multi-agent agents in settings with or without adversarial attacks or denoisers.
+- *Turn-based multi-agent verification* verifies turn-based multi-agent agents in stochastic multiplayer games.
 
-The episode_learn method is used by the agent for episodic learning (for example in REINFORCE).
-Finally, the model_checking_learn is used by the agent to learn via the model checking result.
-```
-state = env.reset()
-done = False
-episode_reward = 0
-while done == False:
-    state = Preprocessors.preprocess_state(state, agent, env)
-    action = agent.select_action(state)
-    next_state, reward, done = env.step(action)
-    episode_reward+=reward
-    state, action, reward, next_state, done = Postprocessor.manipulate(state,action,reward,next_state,done)
-    agent.step_learn(next_state, reward, done)
-agent.episode_learn()
-if prop_query == "":
-    print("Reward:",episode_reward)
-else:
-    model_checking_result, model_checking_info = model_checking(env,agent,Preprocessors, Postprocessor)
-    agent.model_checking_learn(model_checking_result, model_checking_info, model_checker)
-    print("Model Checking Result:", model_checking_result)
-```
+**Policy Debugging.** COOL-MC provides techniques to analyze and debug learned policies:
+- *Permissive policies* abstract features by grouping ("lumping") feature values together, allowing the policy to select multiple actions per state. This yields best- and worst-case bounds on policy performance, helping to identify states where the policy is sensitive to specific feature values.
+- *Feature remapping* transforms feature values before feeding them into the policy, enabling analysis of how policies behave when deployed with different configurations than they were trained on, such as varying sensor capacities.
 
-To run the safe_training component via MLflow, execute `mlflow run safe_training --env-manager=local`
+**Quantum Machine Learning.** COOL-MC verifies trained quantum computing policies under quantum noise conditions, including bit-flip, phase-flip, and depolarizing noise. This enables safety verification before deployment on expensive quantum hardware.
+
+**LLM Policy Verification.** COOL-MC supports verification of large language model decision-making:
+- *Memoryless sequential decision-making verification* constructs the reachable portion of an MDP guided by LLM-chosen actions and verifies whether the LLM policy satisfies safety properties.
+- *Counterfactual LLM reasoning* enhances trained policy safety post-training by using LLM reasoning to improve and clarify safe agent execution.
 
 
-#### RL Wrapper
-We wrap all RL agents into a RL wrapper. This RL wrapper handles the interaction with the environment.
-Via our generic interface, we can model check any kind of memoryless policy.
-Our tool also supports probabilistic policies by always choosing the action with the highest probability in the probability distribution at each state and makes the policy therefore deterministic.
+Together, these capabilities make COOL-MC a comprehensive tool for training, verifying, explaining, debugging, and securing data-driven policies across classical, quantum, and LLM-based systems.
 
 
-#### Preprocessors
-A preprocessor is a tool that is used to modify the states that an RL agent receives before they are passed to the agent for learning. There are several types of preprocessors that can be used, depending on the user's preferences and goals. These include normal preprocessors, which are designed to improve the learning process; adversarial preprocessors, which are used to perform adversarial training or attacks; and defensive preprocessors, which are used to evaluate defense methods.
-
-To use an existing preprocessor, you can use the preprocessor command-line argument `preprocessor`. For example, the following command would divide each state feature by 10 before it is observed by the RL agent: `--preprocessor="normalizer,10"`.
-Note, that preprocessors get loaded automatically into the child runs. Use `--preprocessor="None"` to remove the preprocessor in the child run.
-Use `--preprocessor="normalizer,12"`, to use another preprocessor in the child run.
-For more information about how to use preprocessors, you can refer to the examples and to the preprocessors package.
-
-1. If you want to create your own custom preprocessor, you can follow these steps:
-2. Create a new Python script called PREPROCESSORNAME.py in the preprocessors package, and define a new class called PREPROCESSORNAME inside it.
-3. Inherit the preprocessor class from the preprocessor.py script. This will give your custom preprocessor all of the necessary methods and attributes of a preprocessor.
-4. Override any methods that you want to customize in your custom preprocessor.
-5. Import the PREPROCESSORNAME.py script into the preprocessor builder script, which is responsible for building and configuring the preprocessor for your RL agent.
-6. Add the new PREPROCESSORNAME to the build_preprocessor function, which is responsible for constructing the preprocessor object. You will need to pass any necessary arguments to the constructor of your PREPROCESSORNAME class when building the preprocessor.
-
-It is important to make sure that your custom preprocessor is compatible with the rest of the RL agent's code, and that it performs the preprocessing tasks that you expect it to. You may need to test your custom preprocessor to ensure that it is working correctly.
-
-It is possible to concat multiple preprocessors after each other: `--preprocessor="normalizer,10#fgsm,1"`.
-
-
-
-#### Postprocessor
-Postprocessors can be used to postprocess, for example the observed state (before being passed to the replay buffer), or to render the environment.
-Poisoning attacks in reinforcement learning (RL) are a type of adversarial attack that can be used to manipulate the training process of an RL agent. In a poisoning attack, the attacker injects malicious data into the training process in order to cause the RL agent to learn a suboptimal or malicious policy.
-There are several ways in which poisoning attacks can be carried out in RL. One common method is to manipulate the rewards that the RL agent receives during training. For example, the attacker could artificially inflate the rewards for certain actions, causing the RL agent to prioritize those actions and learn a suboptimal policy.
-This can cause the RL agent to learn a policy that is suboptimal or even harmful.
-
-The **Postprocessor** allows the simulation of poissioning attacks during training.
-It manipulates the replay buffers of the RL agents.
-With the tight integration between RL and model checking, it is possible to analyze the effetivness of poissoning attacks.
-
-To use an existing Postprocessor, you can use the Postprocessor command-line argument `postprocessor`. For example, the following command would randomly change the value if the next state is a terminal state and stores the change value into the RL agent experience: `--postprocessor="random_done"`.
-Note, that postprocessors get loaded automatically into the child runs. Use `--postprocessor="None"` to remove the preprocessor in the child run.
-Use `--postprocessor="OTHERPOSTPROCESSOR"`, to use another postprocessor in the child run.
-For more information about how to use postprocessors, you can refer to the examples and to the postprocessors package.
-
-1. If you want to create your own custom postprocessor, you can follow these steps:
-2. Create a new Python script called POSTPROCESSORNAME.py in the postprocessors package, and define a new class called POSTPROCESSORNAME inside it.
-3. Inherit the postprocessor class from the postprocessor.py script. This will give your custom postprocessor all of the necessary methods and attributes of a postprocessor.
-4. Override any methods that you want to customize in your custom postprocessor.
-5. Import the POSTPROCESSORNAME.py script into the postprocessor builder script, which is responsible for building and configuring the postprocessor for your RL agent.
-6. Add the new POSTPROCESSORNAME to the build_postprocessor function, which is responsible for constructing the postprocessor object. You will need to pass any necessary arguments to the constructor of your POSTPROCESSORNAME class when building the postprocessor.
-
-It is important to make sure that your custom postprocessor is compatible with the rest of the RL agent's code, and that it performs the manipulating tasks that you expect it to. You may need to test your custom postprocessor to ensure that it is working correctly.
-
-### Model Checking
-The callback function is used to incrementally build the induced DTMC, which is then passed to the model checker Storm. The callback function is called for every available action at every reachable state by the policy. It first gets the available actions at the current state. Second, it preprocesses the state and then queries the RL policy for an action. If the chosen action is not available, the callback function chooses the first action in the available action list. The callback function then checks if the chosen action was also the trigger for the current callback function and builds the induced DTMC from there if it was.
-```
-def callback_function(state_valuation, action_index):
-    simulator.restart(state_valuation)
-    available_actions = sorted(simulator.available_actions())
-    current_action_name = prism_program.get_action_name(action_index)
-    # conditions on the action
-    state = self.__get_clean_state_dict(state_valuation.to_json(),env.storm_bridge.state_json_example)
-    state = Preprocessor.preprocess_state(state, agent, env)
-    selected_action = self.__get_action_for_state(env, agent, state)
-    if (selected_action in available_actions) is not True:
-        selected_action = available_actions[0]
-    cond1 = (current_action_name == selected_action)
-    return cond1
-
-constructor = stormpy.make_sparse_model_builder(prism_program, options,stormpy.StateValuationFunctionActionMaskDouble(callback_function))
-interpreter = InterpreterBuilder.build_interpreter(interpreter_config)
-interpreter.interpret()
-```
-
-#### Interpretable Reinforcement Learning
-Interpretable Reinforcement Learning (IRL) focuses on making the decision-making process of reinforcement learning algorithms more transparent and understandable to human experts. It aims to bridge the gap between complex RL models, which can be difficult to interpret and understand, and human decision-making processes, which are often more intuitive and grounded in domain-specific knowledge.
-IRL has a wide range of potential applications, including robotics, autonomous vehicles, healthcare, and many others. It can help to build trust in autonomous systems and facilitate collaboration between humans and machines, which is critical in domains where human expertise is essential.
-
-COOL-MC allows the interpretation of trained RL policies in different ways via the command line argument `--interpreter`.
-This argument is used during the RL model checking, which interpretes the RL policy afer it got model checked.
-We currently support the interpretation of RL policies via decision trees.
-The decision tree is a type of interpretable machine learning method used for classification and regression problems. It is called interpretable because the resulting model is easy to understand and interpret by humans, making it an attractive option for applications where transparency and interpretability are important.
-Users have the possibility to extend COOL-MC with further IRL methods via the `common.interpreter` package.
-
-
-## Setup
+## 🚀 Setup
 This guide will walk you through the setup process for running COOL-MC, including installing Docker and Visual Studio Code, and setting up a local Docker container for the COOL-MC repository.
 
-### 1. Install Docker
+### 1. 🐳 Install Docker
 To install Docker on your system, you'll need to follow these general steps:
 1. Go to the Docker website (https://www.docker.com/) and click on the "Get Docker" button to download the installer for your operating system (Windows, Mac, or Linux).
 2. Run the installer and follow the prompts to complete the installation process.
 3. Once the installation is complete, you can verify that Docker is installed and running by opening a terminal or command prompt and running the command "docker --version". This should display the version of Docker that you have installed.
 
-### 2. Install Visual Studio Code and some of its extensions
+### 2. 💻 Install Visual Studio Code and some of its extensions
 Installing Visual Studio Code (VSCode) is a simple process, and can be done by following these steps:
 
 1. Go to the Visual Studio Code website (https://code.visualstudio.com/) and click on the "Download" button for your operating system (Windows, Mac, or Linux).
 2. Once the download is complete, open the installer and follow the prompts to complete the installation process.
 3. Add VSCode extensions: docker, Visual Studio Code Dev Containers
 
-### 3. Create your local docker container and verify COOL-MC
-Open Remote Explorer, clone repository in container volume, add https://github.com/LAVA-LAB/COOL-MC, write coolmc for each of the prompts.
+### 3. 📦 Create your local docker container and verify COOL-MC
+Open Remote Explorer, clone repository in container volume, add https://github.com/LAVA-LAB/COOL-MC, write coolmc for each of the prompts (docker volume, working space, etc.).
 Afterwards, the docker container will be created (it takes time).
 
-Inside the working directory, install all Python packages `pip install -r requirements.txt`
+Verify that everything works: `python run_tests.py` ✅
 
-Verify that everything works: `python run_tests.py`
+## 🎯 Getting Started
 
-## Example Executions
-For the visualization of the training process start MLFlow server in the background: `mlflow server -h 0.0.0.0 &`.
+For detailed examples, see the `examples` directory which contains bash scripts for running various experiments. A full list of command-line arguments with descriptions is documented in `common/utilities/helper.py`.
 
-![components](https://github.com/LAVA-LAB/COOL-MC/blob/main/images/web_ui.png)
+### 🏋️ Training
 
-The taxi agent has to pick up passengers and transport them to their destination without running out of fuel. The environment terminates as soon as the taxi agent does the predefined number of jobs. After the job is done, a new guest spawns randomly at one of the predefined locations.
+COOL-MC allows you to train a policy in an environment modeled as a Markov Decision Process (MDP), specified in the [PRISM language](https://www.prismmodelchecker.org/manual/ThePRISMLanguage/Introduction). During training, the agent either learns a near-optimal policiy via behavioral cloning or interacts with the environment, selecting actions based on its current policy and receiving rewards. The agent updates its policy to maximize cumulative reward.
+```bash
+python cool_mc.py --task=safe_training \
+    --project_name="my_experiment" \
+    --prism_file_path="transporter.prism" \
+    --prism_dir="../prism_files" \
+    --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" \
+    --prop="Pmax=? [ F jobs_done=2 ]" \
+    --rl_algorithm=dqn_agent \
+    --num_episodes=10000 \
+    --eval_interval=100 \
+    --max_steps=100
+```
 
+Key arguments:
+- `--task`: Set to `safe_training` for training with periodic verification.
+- `--project_name`: Name of your experiment (results are stored under this name in MLflow).
+- `--prism_file_path`: The PRISM file defining your environment.
+- `--constant_definitions`: Constants for your PRISM model, separated by commas.
+- `--prop`: The property to verify, specified in PCTL (e.g., `Pmax=? [ F goal ]`). During training, `Pmax` indicates that COOL-MC should store policies that maximize the specified probability (in this case, the probability of eventually reaching the goal). Conversely, `Pmin` would store policies that minimize the probability. During verification of an induced DTMC,
+- `--rl_algorithm`: The RL algorithm to use (e.g., `dqn_agent`, `reinforce_agent`).
+- `--num_episodes`: Number of training episodes.
+- `--eval_interval`: How often (in episodes) to run verification during training.
 
-Run the following command to train a deep RL policy for the taxi environment:
-`python cool_mc.py --project_name="taxi_experiments" --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" --prism_dir="../prism_files" --prism_file_path="transporter.prism" --seed=128 --layers=4 --neurons=512 --lr=0.0001 --batch_size=32 --num_episodes=200000 --eval_interval=100 --epsilon_dec=0.99999 --epsilon_min=0.1 --gamma=0.99 --epsilon=1 --replace=301 --reward_flag=0 --wrong_action_penalty=0 --prop="Pmax=? [ F jobs_done=2 ]" --max_steps=100 --replay_buffer_size=300000 --replace=304`
+To visualize training progress, start the MLflow server:
+```bash
+mlflow server -h 0.0.0.0 &
+```
 
-## Experiments
-To run the experiments from our papers, use the bash scripts in examples (*_experiments.sh).
+Then open `http://localhost:5000` in your browser. 📊
 
+### ✅ Verification
 
-## PRISM Modeling Tips
-COOL-MC supports PRISM as a modeling language.
-To learn how to model environments via PRISM, we refer to the PRISM documentation (https://www.prismmodelchecker.org/).
-It can be difficult to design your own PRISM environments. Here are some tips on how to make sure that your PRISM environment works correctly with COOL-MC:
+Once a policy is trained, COOL-MC verifies it by incrementally constructing the induced Discrete Time Markov Chain (DTMC). The process works as follows:
 
-- Utilize transition rewards to ensure accurate modeling of your environment.
-- Keep in mind that when the agent reaches a terminal state, the storm simulator will terminate the simulation. As a result, transitions from terminal states will not be executed. Avoid using self-looping terminal states to avoid confusion.
-- To enhance training performance, make all actions available at every state. Failure to do so may result in the agent choosing an unavailable action and receiving a penalty.
-- Before beginning RL training, it's highly recommended to unit test your PRISM environment to ensure it behaves as intended.
+1. **Start from the initial state.** The construction begins at the environment's initial state.
+2. **Query the policy.** For the current state, the trained policy is queried to determine which action it selects.
+3. **Expand successor states.** Only the states reachable under the selected action are added to the model, along with their transition probabilities.
+4. **Repeat.** This process continues for all newly reachable states until no new states are discovered.
 
+The resulting DTMC contains only the states and transitions that the policy actually visits, which is typically much smaller than the full MDP. This induced model is then passed to the [Storm model checker](https://www.stormchecker.org/) to determine whether the policy satisfies the specification.
 
-## Command Line Arguments
-The following list contains all the major COOL-MC command line arguments. It does not contain the arguments which are related to the RL algorithms. For a detailed description, we refer to the common.rl_agents package.
+To verify a previously trained policy:
+```bash
+python cool_mc.py --task=rl_model_checking \
+    --parent_run_id=YOUR_TRAINING_RUN_ID \
+    --prism_file_path="transporter.prism" \
+    --prism_dir="../prism_files" \
+    --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" \
+    --prop="P=? [ F jobs_done=2 ]"
+```
 
-| Argument             | Description                                                                                                                                                                                                                                                                                 | Options                                           | Default Value  |
-|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|----------------|
-| task                 | The type of task do you want to perform.                                                                                                                                                                                                                                                    | safe_training, rl_model_checking | safe_training  |
-| project_name         | The name of your project.                                                                                                                                                                                                                                                                   |                                                   | defaultproject |
-| parent_run_id        | Reference to previous experiment for retraining or verification.                                                                                                                                                                                                                            | EXPERIMENT_ID                                       |                |
-| num_episodes         | The number of training episodes.                                                                                                                                                                                                                                                            | INTEGER NUMBER                                    | 1000           |
-| eval_interval        | Interval for verification while safe_training.                                                                                                                                                                                                                                              | INTEGER NUMBER                                    | 9            |
-| sliding_window_size  | Sliding window size for reward averaging over episodes.                                                                                                                                                                                                                                     | INTEGER NUMBER                                    | 100            |
-| rl_algorithm         | The name of the RL algorithm.                                                                                                                                                                                                                                                               | [SEE common.rl_agents.agent_builder]                               | dqn_agent      |
-| prism_dir            | The directory of the PRISM files.                                                                                                                                                                                                                                                           | PATH                                              | ../prism_files |
-| prism_file_path      | The name of the PRISM file.                                                                                                                                                                                                                                                                 | STR                                               |                |
-| constant_definitions | Constant definitions seperated by a commata.                                                                                                                                                                                                                                                | For example: xMax=4,yMax=4,slickness=0            |                |
-| prop                 | Property Query. **For safe_training:** Pmax tries to save RL policies that have higher probabilities. Pmin tries to save RL policies that have  lower probabilities. **For rl_model_checking:** In the case of induced DTMCs min/max  yield to the same property result (do not remove it). |                                                   |                |
-| max_steps            | Maximal steps in the safe gym environment.                                                                                                                                                                                                                                                  |                                                   | 100            |
-| disabled_features    | Disable features in the state space.                                                                                                                                                                                                                                                        | FEATURES SEPERATED BY A COMMATA                   |                |
-| preprocessor     | Preprocessor configuration (each preprocessor is seperated by an  hashtag)                                                                                                                                                                            |                                                   |                |
-| postprocessor    | Postprocessor configuration.                                                                                                                                                                                       |                                                   |                |
-| wrong_action_penalty | If an action is not available but still chosen by the policy, return a penalty of [DEFINED HERE].                                                                                                                                                                                           |                                                   |                |
-| reward_flag          | If true (1), the agent receives rewards instead of penalties.                                                                                                                                                                                                                               |                                                   | 0              |
-| seed                 | Random seed for PyTorch, Numpy, Python.                                                                                                                                                                                                                                                     | INTEGER NUMBER                                    | None (-1)      |
+Key arguments:
+- `--task`: Set to `rl_model_checking` for verification only.
+- `--parent_run_id`: The MLflow run ID of the trained policy you want to verify.
 
+The verification output indicates whether the policy satisfies or violates the specification, along with the computed probability or expected value.
 
-## Local Installation
-We recommend using the docker container in combination with VSCode.
-However, if you want to use COOL-MC on your local machine, clone this repository.
-Switch subsequently to the repository folder and define environment variable `COOL_MC="$PWD"`
+## 🧩 Core Modules
 
-### (1) Install Storm
-0. `cd $COOL_MC`
-1. `git clone https://github.com/moves-rwth/storm.git`
-2. `cd storm`
-3. `mkdir build`
-4. `cd build`
-5. `cmake ..`
-6. `make -j 1`
+### 1. 🎮 Safe Gym (`common/safe_gym/`)
 
-For more information about building Storm, click [here](https://www.stormchecker.org/documentation/obtain-storm/build.html).
+**Purpose**: Bridge between PRISM probabilistic models and Gymnasium RL interface.
 
-For testing the installation, follow the follow steps [here](https://www.stormchecker.org/documentation/obtain-storm/build.html#test-step-optional).
+**Key Components**:
+- **SafeGym**: OpenAI Gym-compatible wrapper around Storm simulator
+- **StormBridge**: Direct interface to Storm probabilistic model checker
+- **ModelChecker**: Constructs induced DTMCs from RL policies
+- **StateMapper**: Converts PRISM state valuations to numpy arrays
+- **ActionMapper**: Maps action names to integer indices
 
-### (2) Install PyCarl
-0. `cd $COOL_MC`
-1. `git clone https://github.com/moves-rwth/pycarl.git`
-2. `cd pycarl`
-3. `python setup.py build_ext --jobs 1 develop`
+**Workflow**:
+```
+PRISM Model (*.prism)
+  → Storm Simulator
+  → SafeGym (exposes Gymnasium API)
+  → RL Agent can train via standard step(action) interface
+```
 
-If permission problems: `sudo chmod 777 /usr/local/lib/python3.8/dist-packages/` and run third command again.
+### 2. 🤖 Agents (`common/agents/`)
 
+**Supported Algorithms**:
+- **DQN**: Deep Q-Network with experience replay
+- **SARSA Max**: Tabular SARSA
+- **REINFORCE**: Policy gradient method
+- **Hill Climbing**: Evolutionary strategy
+- **Behavioral Cloning**: Supervised learning from demonstrations
+- **Multi-agent**: Cooperative agents, Turn-based N agents
+- ...
 
-### (3) Install Stormpy
-0. `cd $COOL_MC`
-1. `git clone https://github.com/moves-rwth/stormpy.git`
-2. `cd stormpy`
-3. `python setup.py build_ext --storm-dir "${COOL_MC}/build/" --jobs 1 develop`
+**Interface** (defined in `agent.py`):
+- `select_action(state)` - Choose action given state
+- `store_experience(transition)` - Add to replay buffer
+- `step_learn()` - Per-step learning update
+- `episodic_learn()` - End-of-episode learning
+- ...
 
-For more information about the Stormpy installation, click [here](https://moves-rwth.github.io/stormpy/installation.html#installation-steps).
+### 3. 🔧 Preprocessors (`common/preprocessors/`)
 
-For testing the installation, follow the steps [here](https://moves-rwth.github.io/stormpy/installation.html#testing-stormpy-installation).
+**Categories**:
+- **Normalization**: `normalizer`, `rounder`
+- **Adversarial Attacks**: `fgsm`, `deepfool`, `ffgsm`
+- **Defenses**: `rounder` (quantization)
+- **Robustness Testing**: `integer_l1_robustness`
 
-### (4) Install remaining python packages
-0. `cd $COOL_MC`
-1. `pip install -r requirements.txt`
+**Purpose**:
+- Modify states before agent observation
+- Simulate adversarial conditions during training/verification
+- Enable defensive training strategies
+- Chain multiple preprocessors: `normalizer,10#fgsm,0.1`
 
+### 4. 🔄 Postprocessors (`common/postprocessors/`)
 
-## COOL-MC Publications
+**Purpose**:
+- Manipulate experience tuples before storage
+- Simulate data poisoning attacks
+- Research on replay buffer vulnerabilities
 
+### 5. 📚 Behavioral Cloning Dataset (`common/behavioral_cloning_dataset/`)
 
-`@inproceedings{gross2022cool,
-  title={COOL-MC: a comprehensive tool for reinforcement learning and model checking},
-  author={Gross, Dennis and Jansen, Nils and Junges, Sebastian and P{\'e}rez, Guillermo A},
-  booktitle={Dependable Software Engineering. Theories, Tools, and Applications: 8th International Symposium, SETTA 2022, Beijing, China, October 27-29, 2022, Proceedings},
-  pages={41--49},
-  year={2022},
-  organization={Springer}
-}`
+**Purpose**: Generate expert demonstration datasets from optimal policies.
 
+**Key Components**:
+- **BehavioralCloningDataset**: Base class for dataset generation
+- **RawDataset**: Returns unprocessed state-action pairs
+- **BehavioralCloningDatasetBuilder**: Factory for dataset creation
 
-`
-@inproceedings{Gross2023targeted,
-	title = { {Targeted Adversarial Attacks on Deep Reinforcement Learning Policies via Model Checking} },
-	author = {         Gross, Dennis and         Sim{\~a}o, Thiago D. and         Jansen, Nils and         P{\'e}rez, Guillermo A.      },
-	booktitle = { {ICAART} },
-	year = { 2023 },
-	url = { https://arxiv.org/abs/2212.05337 }
-}
-`
+**How it Works**:
+1. Parse PRISM model and property specification
+2. Run Storm model checker to find optimal policy (scheduler)
+3. Extract state-action pairs from the optimal scheduler
+4. Convert states to numpy arrays using StateMapper
+5. Map action names to indices using ActionMapper
+6. Return dataset as `{X_train, y_train, X_test, y_test}`
 
-`
-@inproceedings{Gross2023turn,
-	title = { {Turn-based Multi-Agent Reinforcement Learning Model Checking} },
-	author = {Dennis Gross},
-	booktitle = { {ICAART} },
-	year = { 2023 },
-	url = { }
-}
-`
+**Use Case**: Train behavioral cloning agents by imitating optimal policies computed by Storm, enabling supervised learning as an alternative to RL.
 
-`
-@inproceedings{Gross2023cmarl,
-	title = { {Model Checking for Adversarial Multi-Agent Reinforcement Learning
-with Reactive Defense Methods} },
-	author = {Gross, Dennis and         Christoph Schmidl and         Jansen, Nils and         P{\'e}rez, Guillermo A.      },
-	booktitle = { {ICAPS} },
-	year = { 2023 },
-	url = { }
-}
+### 6. 🔍 Interpreters (`common/interpreter/`)
 
-@inproceedings{DBLP:conf/esann/GrossS24,
-  author       = {Dennis Gross and
-                  Helge Spieker},
-  title        = {Safety-Oriented Pruning and Interpretation of Reinforcement Learning
-                  Policies},
-  booktitle    = {{ESANN}},
-  year         = {2024}
-}
+**Purpose**:
+- Extract interpretable representations from RL policies
+- **Decision Tree Interpreter**: Converts neural network policies to decision trees
+- Provides human-readable policy explanations
 
-@inproceedings{DBLP:conf/icaart/GrossS24,
-  author       = {Dennis Gross and
-                  Helge Spieker},
-  title        = {Probabilistic Model Checking of Stochastic Reinforcement Learning
-                  Policies},
-  booktitle    = {{ICAART} {(3)}},
-  pages        = {438--445},
-  publisher    = {{SCITEPRESS}},
-  year         = {2024}
-}
+### 7. 🛠️ Utilities (`common/utilities/`)
 
-@inproceedings{DBLP:conf/pts/GrossS24,
-  author       = {Dennis Gross and
-                  Helge Spieker},
-  title        = {Enhancing {RL} Safety with Counterfactual {LLM} Reasoning},
-  booktitle    = {{ICTSS}},
-  series       = {Lecture Notes in Computer Science},
-  volume       = {15383},
-  pages        = {23--29},
-  publisher    = {Springer},
-  year         = {2024}
-}
-
-@article{DBLP:journals/corr/abs-2510-06756,
-  author       = {Dennis Gross and
-                  Helge Spieker and
-                  Arnaud Gotlieb},
-  title        = {Verifying Memoryless Sequential Decision-making of Large Language
-                  Models},
-  journal      = {CoRR},
-  volume       = {abs/2510.06756},
-  year         = {2025}
-}
-
-@inproceedings{DBLP:conf/icaart/GrossS25,
-  author       = {Dennis Gross and
-                  Helge Spieker},
-  title        = {Co-Activation Graph Analysis of Safety-Verified and Explainable Deep
-                  Reinforcement Learning Policies},
-  booktitle    = {{ICAART} {(2)}},
-  pages        = {611--621},
-  publisher    = {{SCITEPRESS}},
-  year         = {2025}
-}
-
-@inproceedings{DBLP:conf/sac/GrossS25,
-  author       = {Dennis Gross and
-                  Helge Spieker},
-  title        = {{PCTL} Model Checking for Temporal {RL} Policy Safety Explanations},
-  booktitle    = {{SAC}},
-  pages        = {1514--1521},
-  publisher    = {{ACM}},
-  year         = {2025}
-}
-
-@article{gross2025translating,
-  title={Translating the Rashomon Effect to Sequential Decision-Making Tasks},
-  author={Gross, Dennis and Betten, J{\o}rn Eirik and Spieker, Helge},
-  journal={arXiv preprint arXiv:2512.17470},
-  year={2025}
-}
-
-@article{gross2025formal,
-  title={Formal Verification of Noisy Quantum Reinforcement Learning Policies},
-  author={Gross, Dennis},
-  journal={arXiv preprint arXiv:2512.01502},
-  year={2025}
-}
-`
-
-Do you have any questions or ideas for collaborative work? Contact us via [LinkedIn](https://www.linkedin.com/in/dennis-gro%C3%9F-b25044326/).
+**Key Modules**:
+- **training.py**: Main training loop implementation
+- **project.py**: Project state management, MLflow integration
+- **mlflow_bridge.py**: Experiment tracking wrapper
+- **helper.py**: CLI parsing, random seed management
 
 
-## Contributors
-The main developer of this repository is Dennis Gross.
-For any questions or inquiries related to the repository, write him on [LinkedIn](https://www.linkedin.com/in/dennis-gro%C3%9F-b25044326/).
-This tool is developed with help from Nils Jansen, Sebastian Junges, and Guillermo A. Perez.
+## Publications
+
+If you use COOL-MC in your research, please cite the relevant publication(s):
+
+| Year | Title | Venue | Link |
+|------|-------|-------|------|
+| 2022 | COOL-MC: A Comprehensive Tool for Reinforcement Learning and Model Checking | SETTA | [Paper](https://link.springer.com/chapter/10.1007/978-3-031-21213-0_3) |
+| 2023 | Targeted Adversarial Attacks on Deep Reinforcement Learning Policies via Model Checking | ICAART | [arXiv](https://arxiv.org/abs/2212.05337) |
+| 2023 | Turn-based Multi-Agent Reinforcement Learning Model Checking | ICAART | [arXiv](https://arxiv.org/abs/2501.03187) |
+| 2023 | Model Checking for Adversarial Multi-Agent Reinforcement Learning with Reactive Defense Methods | ICAPS | [Paper](https://ojs.aaai.org/index.php/ICAPS/article/view/27191) |
+| 2024 | Safety-Oriented Pruning and Interpretation of Reinforcement Learning Policies | ESANN | [arXiv](https://arxiv.org/abs/2409.10218) |
+| 2024 | Probabilistic Model Checking of Stochastic Reinforcement Learning Policies | ICAART | [arXiv](https://arxiv.org/abs/2403.18725) |
+| 2024 | Enhancing RL Safety with Counterfactual LLM Reasoning | ICTSS | [arXiv](https://arxiv.org/abs/2409.10188) |
+| 2025 | Co-Activation Graph Analysis of Safety-Verified and Explainable Deep Reinforcement Learning Policies | ICAART | [arXiv](https://arxiv.org/abs/2501.03142) |
+| 2025 | PCTL Model Checking for Temporal RL Policy Safety Explanations | SAC | [Paper](https://web-backend.simula.no/sites/default/files/2025-08/SAC_2025___PCTL_Model_Checking_for_Temporal_RL_Policy_Safety_Explanations.pdf) |
+| 2025 | Translating the Rashomon Effect to Sequential Decision-Making Tasks | arXiv | [arXiv](https://arxiv.org/abs/2512.17470) |
+| 2025 | Formal Verification of Noisy Quantum Reinforcement Learning Policies | arXiv | [arXiv](https://arxiv.org/abs/2512.01502) |
+| 2025 | Verifying Memoryless Sequential Decision-making of Large Language Models | arXiv | [arXiv](https://arxiv.org/abs/2510.06756) |
+
+
+
+</details>
+
+## Collaboration & Contributors
+
+COOL-MC is developed and maintained by [Dennis Gross](https://www.linkedin.com/in/dennis-gro%C3%9F-b25044326/), with contributions from [Nils Jansen](https://www.linkedin.com/in/nils-jansen-48458011a/), [Sebastian Junges](https://www.linkedin.com/in/sebastian-junges/), and [Guillermo A. Pérez](https://gaperez64.github.io/).
+
+We welcome collaboration and are happy to answer questions about COOL-MC. If you are interested in contributing, have ideas for new features, or want to discuss potential research collaborations, feel free to reach out.

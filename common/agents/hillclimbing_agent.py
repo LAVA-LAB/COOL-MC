@@ -4,10 +4,10 @@ import mlflow
 import os
 import shutil
 from typing import List
-from common.rl_agents.agent import Agent
+from common.agents.agent import Agent
 import numpy as np
 import numpy as np
-from common.rl_agents.agent import Agent
+from common.agents.agent import Agent
 import os
 
 class HillClimbingAgent(Agent):

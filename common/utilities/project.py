@@ -1,4 +1,4 @@
-from common.rl_agents.agent_builder import AgentBuilder
+from common.agents.agent_builder import AgentBuilder
 from common.preprocessors.preprocessor_builder import PreprocessorBuilder
 from common.postprocessors.postprocessor_builder import PostprocessorBuilder
 from common.utilities.mlflow_bridge import MlFlowBridge

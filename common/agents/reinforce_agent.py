@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.distributions import Categorical
-from common.rl_agents.agent import Agent
+from common.agents.agent import Agent
 from common.utilities.helper import *
 
 

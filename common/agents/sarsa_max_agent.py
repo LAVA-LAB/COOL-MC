@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 import os
-from common.rl_agents.agent import Agent
+from common.agents.agent import Agent
 import os
 import mlflow
 import shutil

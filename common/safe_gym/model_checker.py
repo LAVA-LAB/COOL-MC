@@ -69,32 +69,32 @@ class ModelChecker():
         assert isinstance(state, np.ndarray)
         return state
 
-    def __get_action_for_state(self, env, agent: common.rl_agents, state: np.array) -> str:
+    def __get_action_for_state(self, env, agent: common.agents, state: np.array) -> str:
         """Get the action name for the current state
 
         Args:
             env (SafeGym): SafeGym
-            agent (common.rl_agents): RL agents
+            agent (common.agents): RL agents
             state (np.array): Numpy state
 
         Returns:
             str: Action name
         """
-        assert str(agent.__class__).find("common.rl_agents") != -1
+        assert str(agent.__class__).find("common.agents") != -1
         assert isinstance(state, np.ndarray)
         action_index = agent.select_action(state, True)
         action_name = env.action_mapper.actions[action_index]
         assert isinstance(action_name, str)
         return action_name
 
-    def induced_markov_chain(self, agent: common.rl_agents, preprocessors, env,
+    def induced_markov_chain(self, agent: common.agents, preprocessors, env,
                              constant_definitions: str,
                              formula_str: str, collect_label_and_states:bool=False) -> Tuple[float, int]:
         """Creates a Markov chain of an MDP induced by a policy
         and applies model checking.py
 
         Args:
-            agent (common.rl_agents): RL policy
+            agent (common.agents): RL policy
             env (SafeGym): SafeGym
             constant_definitions (str): Constant definitions
             formula_str (str): Property query
@@ -102,7 +102,7 @@ class ModelChecker():
         Returns:
             Tuple: Tuple of the property result, model size and performance metrices
         """
-        assert str(agent.__class__).find("common.rl_agents") != -1
+        assert str(agent.__class__).find("common.agents") != -1
         assert isinstance(constant_definitions, str)
         assert isinstance(formula_str, str)
         info = {}
