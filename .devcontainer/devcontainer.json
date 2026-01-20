@@ -12,14 +12,8 @@
 //		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {}
 //	},
     "runArgs": [
-	    "--network=host",
-	    "--gpus=all"
+	    "--network=host"
     ],
-
-    // Host requirements for GPU support (informational comment):
-    // 1. NVIDIA GPU with drivers installed
-    // 2. NVIDIA Container Toolkit installed (nvidia-docker2)
-    // 3. Docker >= 19.03
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
