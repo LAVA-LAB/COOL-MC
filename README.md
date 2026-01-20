@@ -66,7 +66,57 @@ For detailed examples, see the `examples` directory which contains bash scripts 
 
 ### 🏋️ Training
 
-COOL-MC allows you to train a policy in an environment modeled as a Markov Decision Process (MDP), specified in the [PRISM language](https://www.prismmodelchecker.org/manual/ThePRISMLanguage/Introduction). During training, the agent either learns a near-optimal policiy via behavioral cloning or interacts with the environment, selecting actions based on its current policy and receiving rewards. The agent updates its policy to maximize cumulative reward.
+COOL-MC allows you to train a policy in an environment modeled as a Markov Decision Process (MDP), specified in the [PRISM language](https://www.prismmodelchecker.org/manual/ThePRISMLanguage/Introduction). You can train agents using two approaches: behavioral cloning (learning from optimal demonstrations) or reinforcement learning (learning through environment interaction).
+
+To visualize training progress, start the MLflow server:
+```bash
+mlflow server -h 0.0.0.0 &
+```
+
+Then open `http://localhost:5000` in your browser. 📊
+
+#### 🎓 Behavioral Cloning
+
+Behavioral cloning trains agents by imitating an optimal policy computed by the Storm model checker. This is useful when you want to:
+- Train policies on smaller, tractable models and generalize to larger systems
+- Leverage formal verification to generate expert demonstrations
+- Quickly bootstrap policy learning with optimal behavior
+
+To train an agent using behavioral cloning:
+```bash
+python cool_mc.py --task=safe_training \
+    --project_name="bc_experiment" \
+    --prism_file_path="scheduling_task.prism" \
+    --prism_dir="../prism_files" \
+    --constant_definitions="" \
+    --algorithm=bc_nn_agent \
+    --behavioral_cloning="raw_dataset;../prism_files/scheduling_task.prism;Pmax=? [ F \"goal\" ];" \
+    --bc_epochs=100 \
+    --layers=3 \
+    --neurons=128 \
+    --lr=0.001 \
+    --batch_size=32 \
+    --num_episodes=2 \
+    --eval_interval=1
+```
+
+Key arguments for behavioral cloning:
+- `--algorithm=bc_nn_agent`: Use the behavioral cloning neural network agent.
+- `--behavioral_cloning`: Specifies the dataset configuration with format `"dataset_type;prism_file;property;"`. The property defines what optimal behavior to learn.
+- `--bc_epochs`: Number of supervised learning epochs to train the agent.
+- `--num_episodes`: Minimal episodes for environment interaction (usually set to 1-2 for BC).
+
+The behavioral cloning process:
+1. Storm computes the optimal policy (scheduler) for the specified property
+2. State-action pairs are extracted from the optimal policy
+3. A neural network agent is trained via supervised learning to imitate this policy
+4. The trained agent can then generalize to unseen states
+
+#### 🤖 Reinforcement Learning
+
+RL agents learn through trial and error, interacting with the environment and receiving rewards. The agent updates its policy to maximize cumulative reward.
+
+To train an RL agent:
 ```bash
 python cool_mc.py --task=safe_training \
     --project_name="my_experiment" \
@@ -85,17 +135,11 @@ Key arguments:
 - `--project_name`: Name of your experiment (results are stored under this name in MLflow).
 - `--prism_file_path`: The PRISM file defining your environment.
 - `--constant_definitions`: Constants for your PRISM model, separated by commas.
-- `--prop`: The property to verify, specified in PCTL (e.g., `Pmax=? [ F goal ]`). During training, `Pmax` indicates that COOL-MC should store policies that maximize the specified probability (in this case, the probability of eventually reaching the goal). Conversely, `Pmin` would store policies that minimize the probability. During verification of an induced DTMC,
-- `--algorithm`: The agent algorithm to use (e.g., `dqn_agent`, `reinforce_agent`, `bc_nn_agent`).
+- `--prop`: The property to verify, specified in PCTL (e.g., `Pmax=? [ F goal ]`). During training, `Pmax` indicates that COOL-MC should store policies that maximize the specified probability (in this case, the probability of eventually reaching the goal). Conversely, `Pmin` would store policies that minimize the probability.
+- `--algorithm`: The RL algorithm to use (e.g., `dqn_agent`, `reinforce_agent`, `sarsamax`, `hillclimbing`).
 - `--num_episodes`: Number of training episodes.
 - `--eval_interval`: How often (in episodes) to run verification during training.
-
-To visualize training progress, start the MLflow server:
-```bash
-mlflow server -h 0.0.0.0 &
-```
-
-Then open `http://localhost:5000` in your browser. 📊
+- `--max_steps`: Maximum steps per episode.
 
 ### ✅ Verification
 
@@ -122,7 +166,7 @@ Key arguments:
 - `--task`: Set to `rl_model_checking` for verification only.
 - `--parent_run_id`: The MLflow run ID of the trained policy you want to verify.
 
-The verification output indicates whether the policy satisfies or violates the specification, along with the computed probability or expected value.
+The verification output indicates whether the policy satisfies or violates the specification, along with the computed probability or expected value. You can view detailed verification results, metrics, and artifacts in the MLflow UI at `http://localhost:5000`. 📊
 
 ## 🧩 Core Modules
 
