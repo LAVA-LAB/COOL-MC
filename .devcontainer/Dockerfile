@@ -46,6 +46,7 @@ RUN pip install --upgrade pip setuptools wheel
 
 # Copy requirements.txt and install Python dependencies
 # This layer will be cached unless requirements.txt changes
+# Note: Build context is parent directory (..), so requirements.txt is at root of context
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
 
