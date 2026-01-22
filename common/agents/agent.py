@@ -42,6 +42,17 @@ class Agent():
         """
         pass
 
+    def raw_outputs(self, state: np.ndarray) -> np.ndarray:
+        """
+        Get the raw outputs of the agent for a given state.
+
+        Args:
+            state (np.ndarray): The state of the environment.
+        Returns:
+            np.ndarray: The raw outputs of the agent.
+        """
+        pass
+
     def model_checking_learn(self, model_checking_result, model_checking_info, model_checker=None):
         """
         This method is called in after model checking was executed and gets the model checking result passed.

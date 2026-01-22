@@ -282,6 +282,21 @@ class BCNNAgent(Agent):
             action = int(torch.argmax(action_logits).item())
         return action
 
+    def get_raw_outputs(self, state: np.ndarray) -> np.ndarray:
+        """Get raw neural network outputs (logits) for a given state.
+
+        Args:
+            state (np.ndarray): Current state
+
+        Returns:
+            np.ndarray: Raw network outputs (logits before softmax)
+        """
+        self.network.eval()
+        with torch.no_grad():
+            action_logits = self.network.forward(state)
+            # Convert to numpy array and move to CPU if needed
+            return action_logits.cpu().numpy() if action_logits.is_cuda else action_logits.numpy()
+
     def save(self, artifact_path='model'):
         """
         Saves the agent onto the MLFlow Server.
