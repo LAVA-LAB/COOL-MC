@@ -2,6 +2,7 @@ import os
 from common.preprocessors.normalizer import *
 from common.preprocessors.feature_remapping import *
 from common.preprocessors.policy_abstraction import *
+from common.preprocessors.optimal_control import OptimalControl
 # Adversarial Attacks
 from common.preprocessors.single_agent_fgsm import *
 from common.preprocessors.single_agent_deepfool_attack import *
@@ -66,6 +67,10 @@ class PreprocessorBuilder():
                 preprocessors.append(preprocessor)
             elif preprocessor_name == "integer_l1_robustness":
                 preprocessor = IntegerL1Robustness(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "optimal_control":
+                preprocessor = OptimalControl(state_mapper, preprocessor_str, command_line_arguments['task'])
                 preprocessor.load(preprocessor_path)
                 preprocessors.append(preprocessor)
         return preprocessors

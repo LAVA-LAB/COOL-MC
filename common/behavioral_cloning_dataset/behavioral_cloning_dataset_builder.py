@@ -1,5 +1,6 @@
 import os
 from common.behavioral_cloning_dataset.raw_dataset import RawDataset
+from common.behavioral_cloning_dataset.all_optimal_dataset import AllOptimalDataset
 
 '''
 HOW TO ADD MORE INTERPRETERS?
@@ -18,4 +19,6 @@ class BehavioralCloningDatasetBuilder():
         dataset = None
         if behavioral_cloning_dataset_name == "raw_dataset":
             dataset = RawDataset(config)
+        elif behavioral_cloning_dataset_name == "all_optimal_dataset":
+            dataset = AllOptimalDataset(config)
         return dataset

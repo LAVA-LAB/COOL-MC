@@ -66,6 +66,12 @@ if __name__ == '__main__':
     m_project.create_preprocessor(m_project.command_line_arguments, env.observation_space, env.action_space, env.storm_bridge.state_mapper)
     m_project.create_postprocessor(m_project.command_line_arguments, env.observation_space, env.action_space, env.storm_bridge.state_mapper)
 
+    # Initialize preprocessors that need environment access (e.g., optimal_control)
+    if m_project.preprocessors is not None:
+        for preprocessor in m_project.preprocessors:
+            if hasattr(preprocessor, 'init_with_env'):
+                preprocessor.init_with_env(env)
+
     # Prepare property
     m_project.command_line_arguments['prop'], prepared, original_prop = prepare_prop(m_project.command_line_arguments['prop'])
 

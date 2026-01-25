@@ -170,6 +170,15 @@ class ModelChecker():
             if len(available_actions) == 0:
                 return False
 
+            # Check if any preprocessor has should_allow_action method (e.g., optimal_control)
+            # This allows preprocessors to directly control which actions are allowed
+            if preprocessors is not None:
+                for preprocessor in preprocessors:
+                    if hasattr(preprocessor, 'should_allow_action'):
+                        # Use preprocessor's direct action control
+                        return preprocessor.should_allow_action(state, current_action_name)
+
+            # Default behavior: use agent's selected action
             cond1 = False
             selected_action = self.__get_action_for_state(env, agent, state)
             # Check if selected action is available
