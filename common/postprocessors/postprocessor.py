@@ -3,6 +3,7 @@ class Postprocessor:
     def __init__(self, state_mapper, config):
         self.state_mapper = state_mapper
         self.config = config
+        self.env = None
 
     def postprocess_before_step(self, rl_agent, state, action):
         return action

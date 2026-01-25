@@ -143,10 +143,10 @@ class Project():
     def create_postprocessor(self, command_line_arguments, observation_space, number_of_actions, state_mapper):
         postprocessor_path = self.mlflow_bridge.get_agent_path().replace("model", "")
         # Build agent with the model and the hyperparameters
-        self.postprocessor = PostprocessorBuilder.build_postprocessor(postprocessor_path, command_line_arguments, observation_space, number_of_actions, state_mapper)
-        if self.postprocessor != None:
+        self.manipulator = PostprocessorBuilder.build_postprocessor(postprocessor_path, command_line_arguments, observation_space, number_of_actions, state_mapper)
+        if self.manipulator != None:
             print("Postprocessor loaded.")
-        return self.postprocessor
+        return self.manipulator
 
 
     def save(self):

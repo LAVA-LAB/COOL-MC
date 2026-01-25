@@ -24,6 +24,9 @@ def train(project, env, prop_type=''):
 
 
     project.agent.load_env(env)
+    if project.manipulator != None:
+        project.manipulator.env = env
+
     # Behavioral Cloning Dataset
     behavioral_cloning_dataset_builder = BehavioralCloningDatasetBuilder()
     dataset = behavioral_cloning_dataset_builder.build(project.command_line_arguments['behavioral_cloning'])
@@ -60,7 +63,8 @@ def train(project, env, prop_type=''):
                     for preprocessor in project.preprocessors:
                         state = preprocessor.preprocess(project.agent, state, env.action_mapper, "", project.command_line_arguments['deploy'])
                 action = project.agent.select_action(state, project.command_line_arguments['deploy'])
-                action = project.manipulator.postprocess_before_step(project.agent, state, action)
+                if project.manipulator != None:
+                    action = project.manipulator.postprocess_before_step(project.agent, state, action)
                 next_state, reward, done, truncated, info = env.step(action)
                 if next_state.__class__.__name__ == 'int':
                     next_state = [next_state]

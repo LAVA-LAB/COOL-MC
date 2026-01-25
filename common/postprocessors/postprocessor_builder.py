@@ -1,6 +1,7 @@
 import os
 from common.postprocessors.random_done import *
 from common.postprocessors.state_n_state_swapper import *
+from common.postprocessors.post_shielding import *
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class
@@ -28,6 +29,9 @@ class PostprocessorBuilder():
             postprocessor.load(postprocessor_path)
         elif postprocessor_name == "state_nstate_swapper":
             postprocessor = StateNStateSwapper(state_mapper, command_line_arguments['postprocessor'])
+            postprocessor.load(postprocessor_path)
+        elif postprocessor_name == "post_shielding":
+            postprocessor = PostShielding(state_mapper, command_line_arguments['postprocessor'])
             postprocessor.load(postprocessor_path)
 
         return postprocessor
