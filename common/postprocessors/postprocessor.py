@@ -4,8 +4,11 @@ class Postprocessor:
         self.state_mapper = state_mapper
         self.config = config
 
+    def postprocess_before_step(self, rl_agent, state, action):
+        return action
+
     def postprocess_after_step(self, rl_agent, state, action, reward, next_state, done):
-        raise NotImplementedError()
+        return state, action, reward, next_state, done
 
     def save(self):
         """
