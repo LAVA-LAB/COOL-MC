@@ -22,6 +22,10 @@ PRISM_FILES_CONFIG = {
     "navigation.prism": "",  # All constants have defaults
     "pacman.prism": "MAXSTEPS=5",
     "scheduling_task.prism": "",  # All constants have defaults
+    "ski2.prism": "",  # All constants have defaults
+    "freeway.prism": "",  # All constants have defaults
+    "cleaning_system.prism": "",  # All constants have defaults
+    "stock_market.prism": "",  # All constants have defaults
 }
 
 
@@ -53,28 +57,32 @@ class TestActionMapper(unittest.TestCase):
             self.seed
         )
 
-        # Collect actions using analytical approach
-        analytical_mapper = ActionMapper.collect_actions(storm_bridge, analytical=True)
+        # Collect actions using extraction approach
+        extraction_mapper = ActionMapper.collect_actions(storm_bridge, analytical=True)
 
         # Collect actions using simulation-based approach
         simulation_mapper = ActionMapper.collect_actions(storm_bridge, analytical=False)
 
+        # Print actions for both approaches
+        print(f"\n[{prism_filename}] Extraction actions ({extraction_mapper.get_action_count()}): {extraction_mapper.actions}")
+        print(f"[{prism_filename}] Simulation actions ({simulation_mapper.get_action_count()}): {simulation_mapper.actions}")
+
         # Both should have the same actions (sorted)
         self.assertEqual(
-            analytical_mapper.actions,
+            extraction_mapper.actions,
             simulation_mapper.actions,
-            f"[{prism_filename}] Analytical actions {analytical_mapper.actions} != "
+            f"[{prism_filename}] Extraction actions {extraction_mapper.actions} != "
             f"Simulation actions {simulation_mapper.actions}"
         )
 
         # Verify action count matches
         self.assertEqual(
-            analytical_mapper.get_action_count(),
+            extraction_mapper.get_action_count(),
             simulation_mapper.get_action_count(),
             f"[{prism_filename}] Action counts don't match"
         )
 
-        return analytical_mapper.actions
+        return extraction_mapper.actions
 
     def test_transporter(self):
         """Test transporter.prism"""
@@ -112,8 +120,8 @@ class TestActionMapper(unittest.TestCase):
         """Test zeroconf.prism
 
         Note: zeroconf has many states that are hard to reach via random simulation.
-        The analytical approach finds all 14 actions, while simulation may only find ~7.
-        This test verifies that analytical finds a superset of simulation actions.
+        The extraction approach finds all 14 actions, while simulation may only find ~7.
+        This test verifies that extraction finds a superset of simulation actions.
         """
         prism_file_path = os.path.join(self.prism_dir, "zeroconf.prism")
         constant_definitions = PRISM_FILES_CONFIG["zeroconf.prism"]
@@ -127,25 +135,25 @@ class TestActionMapper(unittest.TestCase):
             self.seed
         )
 
-        analytical_mapper = ActionMapper.collect_actions(storm_bridge, analytical=True)
+        extraction_mapper = ActionMapper.collect_actions(storm_bridge, analytical=True)
         simulation_mapper = ActionMapper.collect_actions(storm_bridge, analytical=False)
 
-        print(f"\n[zeroconf] Analytical actions ({analytical_mapper.get_action_count()}): {analytical_mapper.actions}")
+        print(f"\n[zeroconf] Extraction actions ({extraction_mapper.get_action_count()}): {extraction_mapper.actions}")
         print(f"[zeroconf] Simulation actions ({simulation_mapper.get_action_count()}): {simulation_mapper.actions}")
 
-        # Analytical should find at least as many actions as simulation
+        # Extraction should find at least as many actions as simulation
         self.assertGreaterEqual(
-            analytical_mapper.get_action_count(),
+            extraction_mapper.get_action_count(),
             simulation_mapper.get_action_count(),
-            "Analytical should find at least as many actions as simulation"
+            "Extraction should find at least as many actions as simulation"
         )
 
-        # All simulation actions should be in analytical actions (superset check)
+        # All simulation actions should be in extraction actions (superset check)
         for action in simulation_mapper.actions:
             self.assertIn(
                 action,
-                analytical_mapper.actions,
-                f"Simulation action '{action}' not found in analytical actions"
+                extraction_mapper.actions,
+                f"Simulation action '{action}' not found in extraction actions"
             )
 
     def test_csma(self):
@@ -180,19 +188,51 @@ class TestActionMapper(unittest.TestCase):
         )
         self.assertGreater(len(actions), 0)
 
+    def test_ski2(self):
+        """Test ski2.prism"""
+        actions = self._test_extraction_vs_simulation(
+            "ski2.prism",
+            PRISM_FILES_CONFIG["ski2.prism"]
+        )
+        self.assertGreater(len(actions), 0)
+
+    def test_freeway(self):
+        """Test freeway.prism"""
+        actions = self._test_extraction_vs_simulation(
+            "freeway.prism",
+            PRISM_FILES_CONFIG["freeway.prism"]
+        )
+        self.assertGreater(len(actions), 0)
+
+    def test_cleaning_system(self):
+        """Test cleaning_system.prism"""
+        actions = self._test_extraction_vs_simulation(
+            "cleaning_system.prism",
+            PRISM_FILES_CONFIG["cleaning_system.prism"]
+        )
+        self.assertGreater(len(actions), 0)
+
+    def test_stock_market(self):
+        """Test stock_market.prism"""
+        actions = self._test_extraction_vs_simulation(
+            "stock_market.prism",
+            PRISM_FILES_CONFIG["stock_market.prism"]
+        )
+        self.assertGreater(len(actions), 0)
+
     def test_extraction_collect_actions_directly(self):
         """Test that collect_actions_by_extraction works directly with path."""
         prism_file_path = os.path.join(self.prism_dir, "transporter.prism")
-        analytical_mapper = ActionMapper.collect_actions_by_extraction(
+        extraction_mapper = ActionMapper.collect_actions_by_extraction(
             prism_file_path,
             PRISM_FILES_CONFIG["transporter.prism"]
         )
 
         # Should have at least one action
-        self.assertGreater(analytical_mapper.get_action_count(), 0)
+        self.assertGreater(extraction_mapper.get_action_count(), 0)
 
         # Actions should be sorted
-        self.assertEqual(analytical_mapper.actions, sorted(analytical_mapper.actions))
+        self.assertEqual(extraction_mapper.actions, sorted(extraction_mapper.actions))
 
 
 if __name__ == '__main__':

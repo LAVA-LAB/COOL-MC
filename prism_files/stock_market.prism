@@ -1,0 +1,39 @@
+mdp
+
+const int max_price=10;
+const int max_capital=50;
+const int max_stocks=10;
+const int INIT_CAPITAL = floor(max_capital/max_price);
+
+
+module market
+	buy_price : [1..max_price] init 3;
+	sell_price : [0..max_price] init 2;
+
+	[BUY] true -> (0.375) : (buy_price'=min(buy_price+1,max_price)) & (sell_price'=min(sell_price+1,max_price)) + (0.375) : (buy_price'=buy_price) & (sell_price'=sell_price) + (0.25) : (buy_price'=max(buy_price-1,1)) & (sell_price'=max(sell_price-1,0));
+	[SELL] true -> (0.25) : (buy_price'=min(buy_price+1,max_price)) & (sell_price'=min(sell_price+1,max_price)) + (0.375) : (buy_price'=buy_price) & (sell_price'=sell_price) + (0.375) : (buy_price'=max(buy_price-1,1)) & (sell_price'=max(sell_price-1,0));
+	[HOLD] true -> (0.375) : (buy_price'=min(buy_price+1,max_price)) & (sell_price'=min(sell_price+1,max_price)) + (0.25) : (buy_price'=buy_price) & (sell_price'=sell_price) + (0.375) : (buy_price'=max(buy_price-1,1)) & (sell_price'=max(sell_price-1,0));
+	
+endmodule
+
+module trader
+	capital : [0..max_capital] init INIT_CAPITAL;
+	stocks : [0..max_stocks] init 0;
+	last_action_price : [0..max_price] init 0;
+	[BUY] (floor(capital/buy_price) > 0) -> (1) : (stocks'= min(stocks + floor(capital/buy_price), max_stocks)) & (capital'= max(capital - (floor(capital/buy_price)*buy_price),0)) & (last_action_price'=buy_price);
+	[SELL] stocks>0 -> (1) : (stocks'= 0) & (capital'= min(capital + (stocks*sell_price),max_capital)) & (last_action_price'=sell_price);
+	[HOLD] true -> true;
+
+endmodule
+
+
+
+
+rewards
+	[HOLD] true : max(capital - INIT_CAPITAL,0);
+	[BUY] true: max((floor(capital/buy_price)),0);
+	[SELL] true: max((capital+stocks*sell_price) - INIT_CAPITAL,0);
+endrewards
+
+label "success" = (capital=max_capital);
+label "bankruptcy" = (stocks=0) & (capital=0);
