@@ -18,6 +18,10 @@ COOL-MC has been extended to support various research directions, with some feat
 - *Safety-oriented pruning* combines neural network pruning with model checking to quantify the effects of pruning and the impact of neural connections on complex safety properties.
 - *Rashomon effect analysis* uses formal verification to compare multiple policies that exhibit identical behavior but differ in their internal structure, such as feature attributions.
 
+**Safe Learning.** COOL-MC supports safe learning techniques:
+- *Shielding* enforces safety constraints during training and deployment by filtering unsafe actions before execution, ensuring the agent never violates specified safety properties.
+- *Behavioral cloning* trains agents by imitating optimal policies computed via model checking, enabling safe policy learning from formally verified demonstrations.
+
 **Secure AI.** COOL-MC enables security analysis of trained policies:
 - *Targeted adversarial attacks* measure the exact impact of adversarial noise on temporal logic properties and craft optimal attacks against trained policies.
 - *Robustness verification* assesses a policy's robustness against adversarial attacks.
@@ -27,6 +31,7 @@ COOL-MC has been extended to support various research directions, with some feat
 **Policy Debugging.** COOL-MC provides techniques to analyze and debug learned policies:
 - *Permissive policies* abstract features by grouping ("lumping") feature values together, allowing the policy to select multiple actions per state. This yields best- and worst-case bounds on policy performance, helping to identify states where the policy is sensitive to specific feature values.
 - *Feature remapping* transforms feature values before feeding them into the policy, enabling analysis of how policies behave when deployed with different configurations than they were trained on, such as varying sensor capacities.
+
 
 **Quantum Machine Learning.** COOL-MC verifies trained quantum computing policies under quantum noise conditions, including bit-flip, phase-flip, and depolarizing noise. This enables safety verification before deployment on expensive quantum hardware.
 
