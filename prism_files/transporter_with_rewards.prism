@@ -1,0 +1,131 @@
+mdp
+const int MAX_JOBS;
+const int MAX_FUEL;
+//Red Location
+const int red_x = 0;
+const int red_y = 4;
+//Yellow Location
+const int yellow_x = 0;
+const int yellow_y = 0;
+//Green Location
+const int green_x = 4;
+const int green_y = 4;
+//Blue Location
+const int blue_x = 3;
+const int blue_y = 0;
+//Gas Station
+const int gas_x = 1;
+const int gas_y = 2;
+//First Location
+const int passenger_location_x=red_x;
+const int passenger_location_y=red_y;
+const int passenger_destination_x=yellow_x;
+const int passenger_destination_y=yellow_y;
+//At North Border
+formula NORTH_BORDER = (y=4);
+formula NOT_NORTH_BORDER = (NORTH_BORDER=false);
+//At East Border
+formula EAST_BORDER = (x=4);
+formula NOT_EAST_BORDER = (EAST_BORDER=false);
+//At South Border
+formula SOUTH_BORDER = (y=0);
+formula NOT_SOUTH_BORDER = (SOUTH_BORDER=false);
+//At West Border
+formula WEST_BORDER = (x=0);
+formula NOT_WEST_BORDER = (WEST_BORDER=false);
+//At PICK_UP Location?
+formula PICK_UP_LOCATION = (x=passenger_location_x) & (y=passenger_location_y);
+formula NOT_PICK_UP_LOCATION = (PICK_UP_LOCATION = false);
+//Passenger on board?
+formula PASSENGER_ON_BOARD = (passenger = true);
+formula NOT_PASSENGER_ON_BOARD = (PASSENGER_ON_BOARD = false);
+//At DROP LOCATION Location?
+formula DROP_LOCATION = (x=passenger_destination_x) & (y=passenger_destination_y);
+formula NOT_DROP_LOCATION = (DROP_LOCATION = false);
+//Done?
+formula DONE = (jobs_done=MAX_JOBS) | (done=true);
+formula NOT_DONE = (DONE = false);
+//Fuel
+formula OUT_OF_FUEL = (fuel=0);
+formula NOT_OUT_OF_FUEL = (OUT_OF_FUEL = false);
+//Gas Station
+formula ON_GAS_STATION = (gas_x = x) & (gas_y = y);
+formula NOT_ON_GAS_STATION = (ON_GAS_STATION = false);
+
+module taxi
+	//Location
+	x : [0..4] init 2;
+	y : [0..4] init 2;
+	done : bool init false;
+	fuel : [0..MAX_FUEL] init MAX_FUEL;
+	//transportations
+	jobs_done : [0..MAX_JOBS] init 0;
+	//Passenger on board?
+	passenger : bool init false;
+	//Passenger Init Colored Location
+	passenger_loc_x : [0..4] init passenger_location_x;
+	passenger_loc_y : [0..4] init passenger_location_y;
+	//Passenger Destination Colored Location
+	passenger_dest_x : [0..4] init passenger_destination_x;
+	passenger_dest_y : [0..4] init passenger_destination_y;
+	//NORTH actions
+	[NORTH] NORTH_BORDER & NOT_DONE & NOT_OUT_OF_FUEL & NOT_ON_GAS_STATION-> (y'=y) & (fuel'=fuel-1);
+	[NORTH] NOT_NORTH_BORDER & NOT_DONE & NOT_OUT_OF_FUEL & NOT_ON_GAS_STATION-> (y'=y+1) & (fuel'=fuel-1);
+	//EAST actions
+	[EAST] EAST_BORDER & NOT_DONE & NOT_OUT_OF_FUEL & NOT_ON_GAS_STATION -> (x'=x) & (fuel'=fuel-1);
+	[EAST] NOT_EAST_BORDER & NOT_DONE & NOT_OUT_OF_FUEL & NOT_ON_GAS_STATION -> (x'=x+1) & (fuel'=fuel-1);
+	//SOUTH actions
+	[SOUTH] SOUTH_BORDER & NOT_DONE & NOT_OUT_OF_FUEL& NOT_ON_GAS_STATION-> (y'=y) & (fuel'=fuel-1);
+	[SOUTH] NOT_SOUTH_BORDER & NOT_DONE & NOT_OUT_OF_FUEL& NOT_ON_GAS_STATION-> (y'=y-1) & (fuel'=fuel-1);
+	//WEST actions
+	[WEST] WEST_BORDER & NOT_DONE & NOT_OUT_OF_FUEL & NOT_ON_GAS_STATION-> (x'=x) & (fuel'=fuel-1);
+	[WEST] NOT_WEST_BORDER & NOT_DONE & NOT_OUT_OF_FUEL & NOT_ON_GAS_STATION-> (x'=x-1) & (fuel'=fuel-1);
+	//PICK_UP actions
+	[PICK_UP] PICK_UP_LOCATION & NOT_PASSENGER_ON_BOARD & NOT_DONE & NOT_OUT_OF_FUEL & NOT_ON_GAS_STATION -> (passenger'=true) & (fuel'=fuel-1);
+	//DROP actions
+	[DROP] DROP_LOCATION & PASSENGER_ON_BOARD & NOT_DONE & NOT_OUT_OF_FUEL & NOT_ON_GAS_STATION->  1/16: (passenger_loc_x'=red_x) & (passenger_loc_y'=red_y)  & (passenger_dest_x'=red_x) & (passenger_dest_y'=red_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=red_x) & (passenger_loc_y'=red_y)  & (passenger_dest_x'=yellow_x) & (passenger_dest_y'=yellow_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=red_x) & (passenger_loc_y'=red_y)  & (passenger_dest_x'=green_x) & (passenger_dest_y'=green_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=red_x) & (passenger_loc_y'=red_y)  & (passenger_dest_x'=blue_x) & (passenger_dest_y'=blue_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+						    	+ 1/16: (passenger_loc_x'=yellow_x) & (passenger_loc_y'=yellow_y)  & (passenger_dest_x'=red_x) & (passenger_dest_y'=red_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=yellow_x) & (passenger_loc_y'=yellow_y)  & (passenger_dest_x'=yellow_x) & (passenger_dest_y'=yellow_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=yellow_x) & (passenger_loc_y'=yellow_y)  & (passenger_dest_x'=green_x) & (passenger_dest_y'=green_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=yellow_x) & (passenger_loc_y'=yellow_y)  & (passenger_dest_x'=blue_x) & (passenger_dest_y'=blue_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=green_x) & (passenger_loc_y'=green_y)  & (passenger_dest_x'=red_x) & (passenger_dest_y'=red_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=green_x) & (passenger_loc_y'=green_y)  & (passenger_dest_x'=yellow_x) & (passenger_dest_y'=yellow_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=green_x) & (passenger_loc_y'=green_y)  & (passenger_dest_x'=green_x) & (passenger_dest_y'=green_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=green_x) & (passenger_loc_y'=green_y)  & (passenger_dest_x'=blue_x) & (passenger_dest_y'=blue_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=blue_x) & (passenger_loc_y'=blue_y)  & (passenger_dest_x'=red_x) & (passenger_dest_y'=red_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=blue_x) & (passenger_loc_y'=blue_y)  & (passenger_dest_x'=yellow_x) & (passenger_dest_y'=yellow_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=blue_x) & (passenger_loc_y'=blue_y)  & (passenger_dest_x'=green_x) & (passenger_dest_y'=green_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1)
+							+ 1/16: (passenger_loc_x'=blue_x) & (passenger_loc_y'=blue_y)  & (passenger_dest_x'=blue_x) & (passenger_dest_y'=blue_y)  & (passenger'=false) & (jobs_done'=jobs_done+1) & (fuel'=fuel-1);
+
+	[NORTH] OUT_OF_FUEL & NOT_ON_GAS_STATION-> (done'=true);
+	[EAST] OUT_OF_FUEL & NOT_ON_GAS_STATION -> (done'=true);
+	[SOUTH] OUT_OF_FUEL & NOT_ON_GAS_STATION -> (done'=true);
+	[WEST] OUT_OF_FUEL & NOT_ON_GAS_STATION -> (done'=true);
+	[PICK_UP] OUT_OF_FUEL & NOT_ON_GAS_STATION -> (done'=true);
+	[DROP] OUT_OF_FUEL & NOT_ON_GAS_STATION-> (done'=true);
+
+	//NORTH actions
+	[NORTH] ON_GAS_STATION-> (y'=y+1) & (fuel'=MAX_FUEL);
+	//EAST actions
+	[EAST] ON_GAS_STATION -> (x'=x+1) & (fuel'=MAX_FUEL);
+	//SOUTH actions
+	[SOUTH] ON_GAS_STATION-> (y'=y-1) & (fuel'=MAX_FUEL);
+	//WEST actions
+	[WEST] ON_GAS_STATION-> (x'=x-1) & (fuel'=MAX_FUEL);
+
+endmodule
+
+
+rewards
+	//Passenger arrived
+	[DROP] DROP_LOCATION & PASSENGER_ON_BOARD : 2;
+	//Pick up Passenger
+	[PICK_UP] NOT_PASSENGER_ON_BOARD & PICK_UP_LOCATION : 1;
+endrewards
+
+
+label "empty" = (OUT_OF_FUEL & NOT_ON_GAS_STATION);
+

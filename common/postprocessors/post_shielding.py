@@ -24,8 +24,8 @@ class PostShielding(Postprocessor):
             optimal_actions = self.dataset.y[matching_indices]
             # Check if action is in optimal actions
             if action not in optimal_actions:
-                # Replace with first optimal action from dataset
-                action = int(optimal_actions[0])
+                # Replace with random optimal action from dataset
+                action = int(np.random.choice(optimal_actions))
 
         return action
 

@@ -26,6 +26,10 @@ def train(project, env, prop_type=''):
     project.agent.load_env(env)
     if project.manipulator != None:
         project.manipulator.env = env
+        # Enable shielded training mode if using a shielding postprocessor
+        if hasattr(project.agent, 'shielded_training'):
+            project.agent.shielded_training = True
+            print("Shielded training mode enabled")
 
     # Behavioral Cloning Dataset
     behavioral_cloning_dataset_builder = BehavioralCloningDatasetBuilder()
