@@ -89,7 +89,8 @@ class ModelChecker():
 
     def induced_markov_chain(self, agent: common.agents, preprocessors, env,
                              constant_definitions: str,
-                             formula_str: str, collect_label_and_states:bool=False) -> Tuple[float, int]:
+                             formula_str: str, collect_label_and_states:bool=False,
+                             state_labelers=None) -> Tuple[float, int]:
         """Creates a Markov chain of an MDP induced by a policy
         and applies model checking.py
 
@@ -123,9 +124,24 @@ class ModelChecker():
 
         prism_program = prism_program.label_unlabelled_commands(suggestions)
 
-        properties = stormpy.parse_properties(formula_str, prism_program)
-        options = stormpy.BuilderOptions([p.raw_formula for p in properties])
-        #options = stormpy.BuilderOptions()
+        # Check if state labelers will add custom labels
+        # If so, we need to use empty BuilderOptions to avoid validation errors
+        custom_labels = []
+        if state_labelers is not None:
+            for labeler in state_labelers:
+                custom_labels.extend(labeler.get_label_names())
+
+        # Check if formula contains any custom labels
+        uses_custom_labels = any(label in formula_str for label in custom_labels)
+
+        if uses_custom_labels:
+            # Use empty BuilderOptions - custom labels will be added after model building
+            options = stormpy.BuilderOptions()
+        else:
+            # Standard approach - parse properties for BuilderOptions
+            properties = stormpy.parse_properties(formula_str, prism_program)
+            options = stormpy.BuilderOptions([p.raw_formula for p in properties])
+
         options.set_build_state_valuations()
         options.set_build_choice_labels(True)
 
@@ -154,10 +170,30 @@ class ModelChecker():
                 state_valuation.to_json(), env.storm_bridge.state_json_example)
             state = self.__get_numpy_state(env, state)
 
+
+            # TOOD: CHECK IF POLICY IS STOCHASTIC - IF SO, ALLOW ALL ACTIONS WITH PROB>0 and RETURN TRUE STRAIGHT AWAY IF CURRENT ACTION IN THAT SET
+            # (WE CAN CHECK THAT BY CHECKING IF AGENT IS OF INSTANCE StochasticAgent)
+
+
+
+
+            # Get state JSON for labeler identification
+            state_json_for_labeler = str(state_valuation.to_json())
+
+            # Mark state for labelers BEFORE preprocessing
+            if state_labelers is not None:
+                for labeler in state_labelers:
+                    labeler.mark_state_before_preprocessing(state, agent, state_json_for_labeler)
+
             # Preprocess state
             if preprocessors!=None:
                 for preprocessor in preprocessors:
                     state = preprocessor.preprocess(agent, state, env.action_mapper, current_action_name, True)
+
+            # Mark state for labelers AFTER preprocessing
+            if state_labelers is not None:
+                for labeler in state_labelers:
+                    labeler.mark_state_after_preprocessing(state, agent, state_json_for_labeler)
 
             # Collect states and actions if wanted
             if collect_label_and_states:
@@ -204,7 +240,18 @@ class ModelChecker():
         model_transitions = model.nr_transitions
         model_checking_start_time = time.time()
 
-        properties = stormpy.parse_properties(formula_str, prism_program)
+        # Apply state labelers to add custom labels to the model
+        if state_labelers is not None:
+            for labeler in state_labelers:
+                labeler.label_states(model, env, agent)
+
+        # Parse properties - use context-free parsing if custom labels are used
+        if uses_custom_labels:
+            properties = stormpy.parse_properties_without_context(formula_str)
+        else:
+            properties = stormpy.parse_properties(formula_str, prism_program)
+
+        # TOOD: IF StochasticAgent, convert induced MDP to induced DTMC.
 
         result = stormpy.model_checking(model, properties[0])
 

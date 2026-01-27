@@ -1,6 +1,7 @@
 from common.agents.agent_builder import AgentBuilder
 from common.preprocessors.preprocessor_builder import PreprocessorBuilder
 from common.postprocessors.postprocessor_builder import PostprocessorBuilder
+from common.state_labelers.state_labeler_builder import StateLabelerBuilder
 from common.utilities.mlflow_bridge import MlFlowBridge
 
 class Project():
@@ -11,6 +12,7 @@ class Project():
         self.agent = None
         self.preprocessors = None
         self.manipulator = None
+        self.state_labelers = None
 
 
     def init_mlflow_bridge(self, project_name, task, parent_run_id):
@@ -105,6 +107,12 @@ class Project():
                     del saved_command_line_arguments['postprocessor']
                 except:
                     pass
+            if self.command_line_arguments.get('state_labeler', '') != '':
+                # Only delete it if it is not set by the command line (in this case take new one)
+                try:
+                    del saved_command_line_arguments['state_labeler']
+                except:
+                    pass
             try:
                 del saved_command_line_arguments['range_plotting']
             except:
@@ -148,6 +156,20 @@ class Project():
             print("Postprocessor loaded.")
         return self.manipulator
 
+    def create_state_labelers(self, command_line_arguments):
+        """Create state labelers from command line arguments.
+
+        Args:
+            command_line_arguments: Dictionary with command line arguments
+
+        Returns:
+            List of StateLabeler instances or None
+        """
+        state_labeler_config = command_line_arguments.get('state_labeler', '')
+        self.state_labelers = StateLabelerBuilder.build_state_labelers(state_labeler_config)
+        if self.state_labelers is not None:
+            print(f"State labelers: {command_line_arguments['state_labeler']}")
+        return self.state_labelers
 
     def save(self):
         # Agent

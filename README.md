@@ -252,14 +252,31 @@ PRISM Model (*.prism)
 
 **Use Case**: Train behavioral cloning agents by imitating optimal policies computed by Storm, enabling supervised learning as an alternative to RL.
 
-### 6. 🔍 Interpreters (`common/interpreter/`)
+### 6. 🏷️ State Labelers (`common/state_labelers/`)
+
+**Purpose**: Add custom labels to states in the Storm model after incremental building completes, enabling property specifications over agent behavior (e.g., `P=? ["critical" U "goal"]`).
+
+**Key Components**:
+- **StateLabeler**: Base class defining the labeling interface
+- **CriticalStateLabeler**: Labels states based on Q-value spread (max - min)
+- **TopTwoGapLabeler**: Labels states based on gap between top two Q-values
+- **StateLabelerBuilder**: Factory for building labelers from configuration strings
+
+**Available Labelers**:
+- `critical_state;threshold=<float>`: Labels states as `critical` (uncertain) when the gap between max and min Q-values is below the threshold, or `non_critical` (confident) otherwise
+- `top_two_gap;threshold=<float>`: Labels states as `confident` when the gap between the highest and second-highest Q-values is above the threshold, or `not_confident` otherwise
+- ...
+
+**Use Case**: AI Explainability over time.
+
+### 7. 🔍 Interpreters (`common/interpreter/`)
 
 **Purpose**:
 - Extract interpretable representations from RL policies
 - **Decision Tree Interpreter**: Converts neural network policies to decision trees
 - Provides human-readable policy explanations
 
-### 7. 🛠️ Utilities (`common/utilities/`)
+### 8. 🛠️ Utilities (`common/utilities/`)
 
 **Key Modules**:
 - **training.py**: Main training loop implementation

@@ -65,6 +65,7 @@ if __name__ == '__main__':
     m_project.agent.load_env(env)
     m_project.create_preprocessor(m_project.command_line_arguments, env.observation_space, env.action_space, env.storm_bridge.state_mapper)
     m_project.create_postprocessor(m_project.command_line_arguments, env.observation_space, env.action_space, env.storm_bridge.state_mapper)
+    m_project.create_state_labelers(command_line_arguments)
 
     # Initialize preprocessors that need environment access (e.g., optimal_control)
     if m_project.preprocessors is not None:
@@ -79,7 +80,11 @@ if __name__ == '__main__':
     m_project.mlflow_bridge.set_property_query_as_run_name(original_prop + " for " + command_line_arguments['constant_definitions'])
 
     # Model checking
-    mdp_reward_result, model_checking_info = env.storm_bridge.model_checker.induced_markov_chain(m_project.agent, m_project.preprocessors, env, m_project.command_line_arguments['constant_definitions'], m_project.command_line_arguments['prop'], collect_label_and_states)
+    mdp_reward_result, model_checking_info = env.storm_bridge.model_checker.induced_markov_chain(
+        m_project.agent, m_project.preprocessors, env,
+        m_project.command_line_arguments['constant_definitions'],
+        m_project.command_line_arguments['prop'], collect_label_and_states,
+        state_labelers=m_project.state_labelers)
     m_project.mlflow_bridge.log_result(mdp_reward_result)
 
     run_id = m_project.mlflow_bridge.get_run_id()

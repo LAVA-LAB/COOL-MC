@@ -73,6 +73,9 @@ def get_arguments() -> Dict[str, Any]:
     arg_parser.add_argument('--interpreter', help='Interpreter configuration string.', type=str,
                             default='')
 
+    # State Labeler
+    arg_parser.add_argument('--state_labeler', help='State labeler configuration string (e.g., "critical_state;min=0.3;max=0.7").', type=str,
+                            default='')
 
     # Model Checking
     arg_parser.add_argument('--prop', help='Property Specification.', type=str,
