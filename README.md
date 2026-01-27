@@ -28,7 +28,7 @@ COOL-MC has been extended to support various research directions, with some feat
 - *Adversarial multi-agent verification* verifies cooperative multi-agent agents in settings with or without adversarial attacks or denoisers.
 - *Turn-based multi-agent verification* verifies turn-based multi-agent agents in stochastic multiplayer games.
 
-**Policy Debugging.** COOL-MC provides techniques to analyze and debug learned policies:
+**Policy Debugging.** COOL-MC provides techniques to analyze and debug learned deterministic and stochastic memoryless policies:
 - *Permissive policies* abstract features by grouping ("lumping") feature values together, allowing the policy to select multiple actions per state. This yields best- and worst-case bounds on policy performance, helping to identify states where the policy is sensitive to specific feature values.
 - *Feature remapping* transforms feature values before feeding them into the policy, enabling analysis of how policies behave when deployed with different configurations than they were trained on, such as varying sensor capacities.
 

@@ -7,6 +7,7 @@ from common.agents.sarsa_max_agent import *
 from common.agents.reinforce_agent import *
 from common.agents.bc_nn_agent import *
 from common.agents.ppo_agent import *
+from common.agents.stochastic_ppo_agent import *
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class
@@ -70,6 +71,11 @@ class AgentBuilder():
         elif command_line_arguments['algorithm'] == 'ppo_agent':
             number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'], command_line_arguments['neurons'])
             agent = PPOAgent(state_dimension, number_of_neurons, action_space.n, gamma=command_line_arguments['gamma'], lr=command_line_arguments['lr'], batch_size=command_line_arguments['batch_size'])
+            if model_root_folder_path != None:
+                agent.load(model_root_folder_path)
+        elif command_line_arguments['algorithm'] == 'stochastic_ppo_agent':
+            number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'], command_line_arguments['neurons'])
+            agent = StochasticPPOAgent(state_dimension, number_of_neurons, action_space.n, gamma=command_line_arguments['gamma'], lr=command_line_arguments['lr'], batch_size=command_line_arguments['batch_size'])
             if model_root_folder_path != None:
                 agent.load(model_root_folder_path)
         return agent
