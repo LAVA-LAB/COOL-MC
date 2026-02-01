@@ -117,14 +117,14 @@ class ModelChecker():
 
         # Iterate through all states
         for state_id in range(num_states):
-            # Get state valuation
+            # Get state valuation and convert to consistent key format
             if hasattr(model, 'state_valuations'):
-                state_valuation = model.state_valuations.get_json(state_id)
+                state_valuation_json = model.state_valuations.get_json(state_id)
+                # Convert to dict and use json.dumps with sorted keys for consistent format
+                state_dict = json.loads(str(state_valuation_json))
+                state_key = json.dumps(state_dict, sort_keys=True)
             else:
-                state_valuation = None
-
-            # Get state key for lookup
-            state_key = str(state_valuation) if state_valuation else None
+                state_key = None
 
             # Get action probabilities for this state
             if state_key and state_key in self.state_to_action_probs:
@@ -285,14 +285,14 @@ class ModelChecker():
             available_actions = sorted(simulator.available_actions())
             current_action_name = prism_program.get_action_name(action_index)
             # conditions on the action
-            state = self.__get_clean_state_dict(
+            state_dict = self.__get_clean_state_dict(
                 state_valuation.to_json(), env.storm_bridge.state_json_example)
-            state = self.__get_numpy_state(env, state)
+            state = self.__get_numpy_state(env, state_dict)
 
             # Check if policy is stochastic - if so, allow all actions with prob > 0
             if isinstance(agent, StochasticAgent):
-                # Get state JSON as unique key
-                state_key = str(state_valuation.to_json())
+                # Get state JSON as unique key (use cleaned state dict for consistent format)
+                state_key = json.dumps(state_dict, sort_keys=True)
 
                 # Check if we've already processed this state
                 if state_key not in self.state_to_actions_map:
@@ -305,11 +305,6 @@ class ModelChecker():
 
                     # Get action probability distribution
                     action_probs = agent.action_probability_distribution(preprocessed_state)
-
-                    # DEBUG: Print first few probability distributions
-                    if self.counter < 5:
-                        print(f"[DEBUG] State {self.counter}: action_probs = {action_probs}, max = {np.max(action_probs):.6f}")
-                        self.counter += 1
 
                     # Find all actions with probability > 0 that are also available
                     actions_with_prob = []
@@ -444,5 +439,4 @@ class ModelChecker():
         mdp_result = result.at(initial_state)
 
         info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
-        print(self.counter)
         return mdp_result, info

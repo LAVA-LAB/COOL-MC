@@ -109,7 +109,7 @@ Key arguments for behavioral cloning:
 - `--algorithm=bc_nn_agent`: Use the behavioral cloning neural network agent.
 - `--behavioral_cloning`: Specifies the dataset configuration with format `"dataset_type;prism_file;property;"`. The property defines what optimal behavior to learn.
 - `--bc_epochs`: Number of supervised learning epochs to train the agent.
-- `--num_episodes`: Minimal episodes for environment interaction (usually set to 1-2 for BC).
+- `--num_episodes`: Minimal episodes for environment interaction.
 
 The behavioral cloning process:
 1. Storm computes the optimal policy (scheduler) for the specified property
