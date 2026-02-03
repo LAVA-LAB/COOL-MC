@@ -6,6 +6,7 @@ from common.agents.hillclimbing_agent import *
 from common.agents.sarsa_max_agent import *
 from common.agents.reinforce_agent import *
 from common.agents.bc_nn_agent import *
+from common.agents.bc_decision_tree_agent import *
 from common.agents.ppo_agent import *
 from common.agents.stochastic_ppo_agent import *
 '''
@@ -67,6 +68,17 @@ class AgentBuilder():
             number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'],command_line_arguments['neurons'])
             agent = BCNNAgent(state_dimension, number_of_neurons, action_space.n, learning_rate=command_line_arguments['lr'], batch_size=command_line_arguments['batch_size'])
             if model_root_folder_path!= None:
+                agent.load(model_root_folder_path)
+        elif command_line_arguments['algorithm'] == 'bc_decision_tree_agent':
+            # Decision tree uses 'layers' as max_depth (None if 0) and 'neurons' as min_samples_leaf
+            max_depth = command_line_arguments.get('layers', None)
+            if max_depth == 0:
+                max_depth = None  # Unlimited depth
+            min_samples_leaf = command_line_arguments.get('neurons', 1)
+            if min_samples_leaf < 1:
+                min_samples_leaf = 1
+            agent = BCDecisionTreeAgent(state_dimension, action_space.n, max_depth=max_depth, min_samples_leaf=min_samples_leaf)
+            if model_root_folder_path != None:
                 agent.load(model_root_folder_path)
         elif command_line_arguments['algorithm'] == 'ppo_agent':
             number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'], command_line_arguments['neurons'])

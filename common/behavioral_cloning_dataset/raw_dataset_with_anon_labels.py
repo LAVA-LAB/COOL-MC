@@ -1,24 +1,31 @@
 from common.behavioral_cloning_dataset.dataset import *
 
 
-class RawDataset(BehavioralCloningDataset):
+class RawDatasetWithAnonLabels(BehavioralCloningDataset):
+    """
+    Behavioral cloning dataset that includes ALL states, including those with
+    unlabeled/anonymous actions (tau_X).
 
+    This dataset properly labels unlabeled commands AFTER preprocessing to ensure
+    consistency with the action_mapper. This is important for models like zeroconf
+    where goal states have unlabeled self-loops like `[] l=4 -> true;`
+    """
 
     def create(self, env):
         prism_program = stormpy.parse_prism_program(self.prism_file)
 
-        # Preprocess FIRST, then build suggestions (consistent with storm_bridge.py)
+        # Preprocess with constant definitions FIRST (like action_mapper does)
         prism_program = stormpy.preprocess_symbolic_input(
             prism_program, [], self.constant_definitions)[0].as_prism_program()
 
-        # Label unlabelled commands AFTER preprocessing
+        # Label unlabelled commands AFTER preprocessing (consistent with action_mapper)
         suggestions = dict()
-        i = 0
+        tau_counter = 0
         for module in prism_program.modules:
             for command in module.commands:
                 if not command.is_labeled:
-                    suggestions[command.global_index] = "tau_" + str(i)
-                    i += 1
+                    suggestions[command.global_index] = f"tau_{tau_counter}"
+                    tau_counter += 1
 
         prism_program = prism_program.label_unlabelled_commands(suggestions)
 
@@ -54,6 +61,12 @@ class RawDataset(BehavioralCloningDataset):
         # Extract optimal state-action pairs
         states = []
         actions = []
+        stats = {
+            'labeled': 0,
+            'tau_mapped': 0,
+            'fallback_first_available': 0,
+            'skipped': 0
+        }
 
         # Get state mapper for consistent state representation
         state_mapper = env.storm_bridge.state_mapper
@@ -69,34 +82,52 @@ class RawDataset(BehavioralCloningDataset):
             # Get the choice index and action labels
             choice_index = model.get_choice_index(state, chosen_action_index)
             action_labels = model.choice_labeling.get_labels_of_choice(choice_index)
-            action_name = list(action_labels)[0] if action_labels else f"action_{chosen_action_index}"
+            action_name = list(action_labels)[0] if action_labels else None
 
-            # Skip deadlock states with dummy action
-            if action_name == f"action_{chosen_action_index}":
-                continue
+            action_idx = None
 
-            # Map action name to action index
-            # Skip this state-action pair if the action is not in the action_mapper
-            action_idx = env.action_mapper.action_name_to_action_index(action_name)
+            # Try to map the action by name
+            if action_name:
+                # First, try direct mapping (works for labeled actions and tau_X)
+                action_idx = env.action_mapper.action_name_to_action_index(action_name)
+                if action_idx is not None:
+                    if action_name.startswith("tau_"):
+                        stats['tau_mapped'] += 1
+                    else:
+                        stats['labeled'] += 1
+
+            # If action_name was None or mapping failed, try alternatives
             if action_idx is None:
-                continue
+                # Check if this is an unlabeled action that should be tau_X
+                # The chosen_action_index might correspond to a tau action
+                tau_name = f"tau_{chosen_action_index}"
+                action_idx = env.action_mapper.action_name_to_action_index(tau_name)
+                if action_idx is not None:
+                    stats['tau_mapped'] += 1
+
+            # If still no match, use first available action as last resort
+            # This handles absorbing states where action doesn't matter
+            if action_idx is None:
+                if env.action_mapper.get_action_count() > 0:
+                    action_idx = 0
+                    stats['fallback_first_available'] += 1
+                else:
+                    stats['skipped'] += 1
+                    continue
 
             # Get state valuation in JSON format
             state_valuation = model.state_valuations.get_json(state.id)
             raw_state_dict = json.loads(str(state_valuation))
 
             # Filter and reorder state dict to match state_json_example order
-            # This ensures consistency with parse_state which iterates JSON keys in order
             state_dict = {k: raw_state_dict[k] for k in example_keys_ordered if k in raw_state_dict}
 
             # Parse state to numpy array EXACTLY matching StormBridge.parse_state
             arr = []
             for k in state_dict:
                 value = state_dict[k]
-                # Convert booleans to 0/1 first
                 if isinstance(value, bool):
                     value = 1 if value else 0
-                # Then convert everything to int
                 arr.append(int(value))
             state_np = np.array(arr, dtype=np.int32)
 
@@ -105,7 +136,14 @@ class RawDataset(BehavioralCloningDataset):
 
             states.append(state_np)
             actions.append(action_idx)
-        
+
+        print(f"Dataset created: {len(states)} state-action pairs")
+        print(f"  - Labeled actions: {stats['labeled']}")
+        print(f"  - Tau actions mapped: {stats['tau_mapped']}")
+        if stats['fallback_first_available'] > 0:
+            print(f"  - Fallback to first action: {stats['fallback_first_available']}")
+        if stats['skipped'] > 0:
+            print(f"  - Skipped (no valid action): {stats['skipped']}")
 
         # Convert to numpy arrays
         self.X = np.array(states)

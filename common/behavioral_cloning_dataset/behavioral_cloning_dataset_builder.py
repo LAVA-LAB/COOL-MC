@@ -1,5 +1,6 @@
 import os
 from common.behavioral_cloning_dataset.raw_dataset import RawDataset
+from common.behavioral_cloning_dataset.raw_dataset_with_anon_labels import RawDatasetWithAnonLabels
 from common.behavioral_cloning_dataset.all_optimal_dataset import AllOptimalDataset
 from common.behavioral_cloning_dataset.induced_dataset import InducedDataset
 
@@ -20,6 +21,8 @@ class BehavioralCloningDatasetBuilder():
         dataset = None
         if behavioral_cloning_dataset_name == "raw_dataset":
             dataset = RawDataset(config)
+        elif behavioral_cloning_dataset_name == "raw_dataset_with_anon_labels":
+            dataset = RawDatasetWithAnonLabels(config)
         elif behavioral_cloning_dataset_name == "all_optimal_dataset":
             dataset = AllOptimalDataset(config)
         elif behavioral_cloning_dataset_name == "induced_dataset":

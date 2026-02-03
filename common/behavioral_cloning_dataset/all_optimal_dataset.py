@@ -25,7 +25,11 @@ class AllOptimalDataset(BehavioralCloningDataset):
         """
         prism_program = stormpy.parse_prism_program(self.prism_file)
 
-        # Label unlabelled commands
+        # Preprocess FIRST, then build suggestions (consistent with storm_bridge.py)
+        prism_program = stormpy.preprocess_symbolic_input(
+            prism_program, [], self.constant_definitions)[0].as_prism_program()
+
+        # Label unlabelled commands AFTER preprocessing
         suggestions = dict()
         i = 0
         for module in prism_program.modules:
@@ -34,9 +38,6 @@ class AllOptimalDataset(BehavioralCloningDataset):
                     suggestions[command.global_index] = "tau_" + str(i)
                     i += 1
 
-        # Preprocess with constant definitions
-        prism_program = stormpy.preprocess_symbolic_input(
-            prism_program, [], self.constant_definitions)[0].as_prism_program()
         prism_program = prism_program.label_unlabelled_commands(suggestions)
 
         # Parse property

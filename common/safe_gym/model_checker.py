@@ -48,13 +48,11 @@ class ModelChecker():
         assert isinstance(example_json, str)
         state_valuation_json = json.loads(str(state_valuation_json))
         state = {}
-        # print(state_valuation_json)
-        # print(example_json)
         example_json = json.loads(example_json)
-        for key in state_valuation_json.keys():
-            for _key in example_json.keys():
-                if key == _key:
-                    state[key] = state_valuation_json[key]
+        # Use example_json key order (consistent with storm_bridge.state_json_example)
+        for key in example_json.keys():
+            if key in state_valuation_json:
+                state[key] = state_valuation_json[key]
 
         assert isinstance(state, dict)
         return state
@@ -229,6 +227,11 @@ class ModelChecker():
         self.state_to_actions_map.clear()
         self.state_to_action_probs.clear()
         prism_program = stormpy.parse_prism_program(env.storm_bridge.path)
+
+        # Preprocess FIRST, then build suggestions (consistent with storm_bridge.py)
+        prism_program = stormpy.preprocess_symbolic_input(
+            prism_program, [], constant_definitions)[0].as_prism_program()
+
         suggestions = dict()
         i = 0
         for module in prism_program.modules:
@@ -237,9 +240,6 @@ class ModelChecker():
                     suggestions[command.global_index] = "tau_" + \
                         str(i)  # str(m.name)
                     i += 1
-
-        prism_program = stormpy.preprocess_symbolic_input(
-            prism_program, [], constant_definitions)[0].as_prism_program()
 
         prism_program = prism_program.label_unlabelled_commands(suggestions)
 
@@ -388,10 +388,10 @@ class ModelChecker():
             # Default behavior: use agent's selected action
             cond1 = False
             selected_action = self.__get_action_for_state(env, agent, state)
+
             # Check if selected action is available
             if (selected_action in available_actions) is not True:
                 selected_action = available_actions[0]
-
 
             cond1 = (current_action_name == selected_action)
             assert isinstance(cond1, bool)
@@ -409,6 +409,13 @@ class ModelChecker():
         model = constructor.build()
         model_size = len(model.states)
         model_transitions = model.nr_transitions
+
+        # Check for nondeterminism in induced model (can cause P=? to differ from Pmax=?)
+        multi_choice_states = sum(1 for s in model.states if len(s.actions) > 1)
+        if multi_choice_states > 0:
+            print(f"\nNote: Induced model has {multi_choice_states} state(s) with nondeterminism.")
+            print(f"  Using Pmax=? for verification is recommended for deterministic policies.")
+
         model_checking_start_time = time.time()
 
         # If stochastic agent, convert induced MDP to induced DTMC
