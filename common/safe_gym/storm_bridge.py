@@ -56,7 +56,7 @@ class StormBridge:
         self.path = path
         json_path = os.path.splitext(self.path)[0]+'.json'
         self.state_mapper = StateMapper(
-            json_path, self.state_json_example, self.disabled_features)
+            self.path, json_path, self.state_json_example, self.disabled_features)
         self.model_checker = ModelChecker(self.state_mapper)
 
     def __preprocess_state_json_example(self, json_example: JsonContainerDouble) -> str:
@@ -193,6 +193,18 @@ class StormBridge:
         state = np.array(arr, dtype=np.int32)
         # Mapping and deleting disabled features
         state = self.state_mapper.map(state)
-        state = np.array(state, dtype=np.int32)
+
+        # Check if compressed state representation is available
+        if self.state_mapper.has_compressed_state_representation():
+            try:
+                # Convert mapped state to string representation
+                state_str = self.state_mapper.state_to_str(state)
+                # Load decompressed state from file
+                state = self.state_mapper.decompress_state(state_str)
+            except (FileNotFoundError, ValueError) as e:
+                # If decompressed state not found, fall back to mapped state
+                # Keep the mapped state as is (could be int or float)
+                pass
+
         assert isinstance(state, np.ndarray)
         return state

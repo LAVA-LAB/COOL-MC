@@ -134,6 +134,17 @@ class RawDatasetWithAnonLabels(BehavioralCloningDataset):
             # Map state using state_mapper (applies disabled features filtering)
             state_np = state_mapper.map(state_np)
 
+            # Check if compressed state representation is available
+            if state_mapper.has_compressed_state_representation():
+                try:
+                    # Convert mapped state to string representation
+                    state_str = state_mapper.state_to_str(state_np)
+                    # Load decompressed state from file
+                    state_np = state_mapper.decompress_state(state_str)
+                except (FileNotFoundError, ValueError):
+                    # If decompressed state not found, use mapped state
+                    pass
+
             states.append(state_np)
             actions.append(action_idx)
 

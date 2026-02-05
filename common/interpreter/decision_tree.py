@@ -36,6 +36,16 @@ class DecisionTreeInterpreter(Interpreter):
 
         # Plot the decision tree using Matplotlib
         fig, ax = plt.subplots(figsize=(30,15), dpi=300)
-        tree.plot_tree(clf, filled=True, class_names=action_labels, feature_names=env.storm_bridge.state_mapper.get_feature_names())
+
+        # Use compressed feature names if available, otherwise use regular feature names
+        state_mapper = env.storm_bridge.state_mapper
+        if state_mapper.has_compressed_state_representation():
+            feature_names = state_mapper.get_compressed_feature_names()
+            if feature_names is None:
+                feature_names = state_mapper.get_feature_names()
+        else:
+            feature_names = state_mapper.get_feature_names()
+
+        tree.plot_tree(clf, filled=True, class_names=action_labels, feature_names=feature_names)
         plt.title("Decision Tree")
         plt.savefig('interpretion_plot.png')

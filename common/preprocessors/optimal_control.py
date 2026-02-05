@@ -86,7 +86,8 @@ class OptimalControl(Preprocessor):
 
         self.optimal_actions = {}
         for state, action_idx in zip(X_train, y_train):
-            state_tuple = tuple(state.astype(np.int32))
+            # Convert to tuple, preserving dtype (works for both int and float)
+            state_tuple = tuple(state)
             action_name = self.action_mapper.action_index_to_action_name(int(action_idx))
 
             if state_tuple not in self.optimal_actions:
@@ -106,7 +107,7 @@ class OptimalControl(Preprocessor):
         Returns:
             Set of optimal action names, or empty set if state not found
         """
-        state_tuple = tuple(np.array(state).astype(np.int32))
+        state_tuple = tuple(np.array(state))
         return self.optimal_actions.get(state_tuple, set())
 
     def is_action_optimal(self, state: np.ndarray, action_name: str) -> bool:
@@ -141,7 +142,7 @@ class OptimalControl(Preprocessor):
         Returns:
             A state where agent selects target_action_name, or original_state if not found
         """
-        state_tuple = tuple(np.array(original_state).astype(np.int32))
+        state_tuple = tuple(np.array(original_state))
         cache_key = (state_tuple, target_action_name)
 
         # Check cache first
