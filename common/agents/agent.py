@@ -53,18 +53,38 @@ class Agent():
         """
         pass
 
+    def get_ensemble_actions(self, state: np.ndarray) -> list[int]:
+        """
+        Get individual actions from all ensemble members for a given state.
+
+        For ensemble agents (e.g., Random Forest, Decision Tree Ensemble),
+        this returns the action selected by each individual policy/tree.
+
+        Args:
+            state (np.ndarray): The state of the environment.
+
+        Returns:
+            list[int]: List of actions from each ensemble member.
+
+        Raises:
+            NotImplementedError: If the agent is not an ensemble agent.
+        """
+        raise NotImplementedError("This agent does not support ensemble actions.")
+
     def model_checking_learn(self, model_checking_result, model_checking_info, model_checker=None):
         """
         This method is called in after model checking was executed and gets the model checking result passed.
         """
         pass
 
-    def behavioral_cloning(self, env, data: dict, epochs: int = 100) -> tuple[int | None, float | None, float | None, float | None, float | None]:
+    def behavioral_cloning(self, env, data: dict, epochs: int = 100, accuracy_threshold: float = 100.0) -> tuple[int | None, float | None, float | None, float | None, float | None]:
         """
         Perform supervised training on a behavioral cloning dataset.
 
         Args:
             data: The behavioral cloning dataset.
+            epochs: Number of training epochs.
+            accuracy_threshold: Stop training early when accuracy reaches this threshold (in percent).
 
         Returns:
             A tuple of (training_epoch, train_accuracy, test_accuracy, train_loss, test_loss).

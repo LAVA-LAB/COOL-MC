@@ -11,6 +11,7 @@ from common.preprocessors.single_agent_ffgsm import *
 from common.preprocessors.rounder import *
 # Robustness
 from common.preprocessors.integer_l1_robustness import *
+from common.preprocessors.permissive_ensemble import PermissiveEnsemble
 
 '''
 HOW TO ADD MORE AGENTS?
@@ -71,6 +72,10 @@ class PreprocessorBuilder():
                 preprocessors.append(preprocessor)
             elif preprocessor_name == "optimal_control":
                 preprocessor = OptimalControl(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "permissive_ensemble":
+                preprocessor = PermissiveEnsemble(state_mapper, preprocessor_str, command_line_arguments['task'])
                 preprocessor.load(preprocessor_path)
                 preprocessors.append(preprocessor)
         return preprocessors

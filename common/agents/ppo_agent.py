@@ -303,7 +303,7 @@ class PPOAgent(Agent):
         """Called after each step. PPO uses episodic learning, so this is a no-op."""
         pass
 
-    def behavioral_cloning(self, env, data: dict, epochs: int = 100):
+    def behavioral_cloning(self, env, data: dict, epochs: int = 100, accuracy_threshold: float = 100.0):
         """
         Pre-train the PPO policy using behavioral cloning (supervised learning).
 

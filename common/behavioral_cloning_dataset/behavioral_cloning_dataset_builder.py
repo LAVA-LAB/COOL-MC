@@ -3,6 +3,9 @@ from common.behavioral_cloning_dataset.raw_dataset import RawDataset
 from common.behavioral_cloning_dataset.raw_dataset_with_anon_labels import RawDatasetWithAnonLabels
 from common.behavioral_cloning_dataset.all_optimal_dataset import AllOptimalDataset
 from common.behavioral_cloning_dataset.induced_dataset import InducedDataset
+from common.behavioral_cloning_dataset.induced_ensemble_mdp_dataset import InducedEnsembleMDPDataset
+from common.behavioral_cloning_dataset.induced_ensemble_optimal_dataset import InducedEnsembleOptimalDataset
+from common.behavioral_cloning_dataset.induced_ensemble_optimal_accumulated_dataset import InducedEnsembleOptimalAccumulatedDataset
 
 '''
 HOW TO ADD MORE INTERPRETERS?
@@ -27,4 +30,10 @@ class BehavioralCloningDatasetBuilder():
             dataset = AllOptimalDataset(config)
         elif behavioral_cloning_dataset_name == "induced_dataset":
             dataset = InducedDataset(config)
+        elif behavioral_cloning_dataset_name == "induced_ensemble_mdp":
+            dataset = InducedEnsembleMDPDataset(config)
+        elif behavioral_cloning_dataset_name == "induced_ensemble_optimal":
+            dataset = InducedEnsembleOptimalDataset(config)
+        elif behavioral_cloning_dataset_name == "induced_ensemble_optimal_accumulated":
+            dataset = InducedEnsembleOptimalAccumulatedDataset(config)
         return dataset

@@ -58,6 +58,8 @@ def get_arguments() -> Dict[str, Any]:
     # Behavioral Cloning
     arg_parser.add_argument('--bc_epochs', help='What is the number of training epochs for behavioral cloning?', type=int,
                             default=100)
+    arg_parser.add_argument('--accuracy_threshold', help='Stop behavioral cloning early when ensemble accuracy reaches this threshold (in percent).', type=float,
+                            default=100.0)
     arg_parser.add_argument('--behavioral_cloning', help='Preprocessor configuration string.', type=str,
                             default='')
 
