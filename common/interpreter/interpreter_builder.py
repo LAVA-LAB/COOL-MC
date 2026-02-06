@@ -1,5 +1,6 @@
 import os
 from common.interpreter.decision_tree import *
+from common.interpreter.feature_importance_ranking import *
 
 '''
 HOW TO ADD MORE INTERPRETERS?
@@ -18,4 +19,6 @@ class InterpreterBuilder():
         interpreter = None
         if interpreter_name == "decision_tree":
             interpreter = DecisionTreeInterpreter(interpreter_string)
+        elif interpreter_name == "feature_importance_ranking":
+            interpreter = FeatureImportanceRankingInterpreter(interpreter_string)
         return interpreter
