@@ -2341,31 +2341,7 @@ module icu_sepsis
 	[f4_v4] s=715 -> 1 : (s'=715);
 endmodule
 rewards "r"
-	[f0_v0] true : 1;
-	[f0_v1] true : 1;
-	[f0_v2] true : 1;
-	[f0_v3] true : 1;
-	[f0_v4] true : 1;
-	[f1_v0] true : 1;
-	[f1_v1] true : 1;
-	[f1_v2] true : 1;
-	[f1_v3] true : 1;
-	[f1_v4] true : 1;
-	[f2_v0] true : 1;
-	[f2_v1] true : 1;
-	[f2_v2] true : 1;
-	[f2_v3] true : 1;
-	[f2_v4] true : 1;
-	[f3_v0] true : 1;
-	[f3_v1] true : 1;
-	[f3_v2] true : 1;
-	[f3_v3] true : 1;
-	[f3_v4] true : 1;
-	[f4_v0] true : 1;
-	[f4_v1] true : 1;
-	[f4_v2] true : 1;
-	[f4_v3] true : 1;
-	[f4_v4] true : 1;
+	s=714 : 1;
 endrewards
 label "death" = (s=713);
 label "survival" = (s=714);
