@@ -32,6 +32,10 @@ class ModelChecker():
         self.state_to_actions_map = {}  # Maps state valuation JSON to list of enabled actions
         self.state_to_action_probs = {}  # Maps state valuation JSON to action probability array
 
+        # Single-entry cache for incremental building (Storm visits all actions for a state consecutively)
+        self._cached_state_key = None
+        self._cached_allowed_actions = None
+
 
     def __get_clean_state_dict(self, state_valuation_json: JsonContainerRational,
                                example_json: str) -> dict:
@@ -226,6 +230,8 @@ class ModelChecker():
         # Clear tracking data structures for fresh run
         self.state_to_actions_map.clear()
         self.state_to_action_probs.clear()
+        self._cached_state_key = None
+        self._cached_allowed_actions = None
         prism_program = stormpy.parse_prism_program(env.storm_bridge.path)
 
         # Preprocess FIRST, then build suggestions (consistent with storm_bridge.py)
@@ -268,6 +274,9 @@ class ModelChecker():
         collected_action_idizes = []
         collected_action_names = []
 
+        # Only cache when deterministic agent and no preprocessors (safe, no side effects)
+        use_state_cache = (not isinstance(agent, StochasticAgent)
+                           and (preprocessors is None or len(preprocessors) == 0))
 
         def incremental_building(state_valuation: SimpleValuation, action_index: int) -> bool:
             """Whether for the given state and action, the action should be allowed in the model.
@@ -281,9 +290,17 @@ class ModelChecker():
             """
             assert isinstance(state_valuation, SimpleValuation)
             assert isinstance(action_index, int)
+            current_action_name = prism_program.get_action_name(action_index)
+
+            # Fast path: single-entry cache for deterministic agent without preprocessors.
+            # Storm visits all actions for a state consecutively, so we only keep the last state.
+            if use_state_cache:
+                state_cache_key = str(state_valuation.to_json())
+                if state_cache_key == self._cached_state_key:
+                    return current_action_name in self._cached_allowed_actions
+
             simulator.restart(state_valuation)
             available_actions = sorted(simulator.available_actions())
-            current_action_name = prism_program.get_action_name(action_index)
             # conditions on the action
             state_dict = self.__get_clean_state_dict(
                 state_valuation.to_json(), env.storm_bridge.state_json_example)
@@ -392,6 +409,11 @@ class ModelChecker():
             # Check if selected action is available
             if (selected_action in available_actions) is not True:
                 selected_action = available_actions[0]
+
+            # Update single-entry cache so remaining actions for this state are O(1)
+            if use_state_cache:
+                self._cached_state_key = state_cache_key
+                self._cached_allowed_actions = {selected_action}
 
             cond1 = (current_action_name == selected_action)
             assert isinstance(cond1, bool)
