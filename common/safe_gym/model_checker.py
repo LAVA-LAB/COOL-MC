@@ -256,8 +256,9 @@ class ModelChecker():
             for labeler in state_labelers:
                 custom_labels.extend(labeler.get_label_names())
 
-        # Check if formula contains any custom labels
-        uses_custom_labels = any(label in formula_str for label in custom_labels)
+        # Check if formula contains any custom labels or if labelers have dynamic labels
+        has_dynamic = any(labeler.has_dynamic_labels() for labeler in (state_labelers or []))
+        uses_custom_labels = has_dynamic or any(label in formula_str for label in custom_labels)
 
         if uses_custom_labels:
             # Use empty BuilderOptions - custom labels will be added after model building
@@ -367,6 +368,11 @@ class ModelChecker():
 
             # Get state JSON for labeler identification
             state_json_for_labeler = str(state_valuation.to_json())
+
+            # Pass available actions to labelers
+            if state_labelers is not None:
+                for labeler in state_labelers:
+                    labeler.collect_available_actions(available_actions)
 
             # Mark state for labelers BEFORE preprocessing
             if state_labelers is not None:

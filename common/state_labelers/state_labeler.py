@@ -17,6 +17,7 @@ class StateLabeler:
         """
         self.config_str = config_str
         self.collected_data = {}  # Store data during incremental building
+        self.available_actions = None  # Current state's available actions (set by collect_available_actions)
         self.parse_config(config_str)
 
     def parse_config(self, config_str: str) -> None:
@@ -27,11 +28,25 @@ class StateLabeler:
         """
         pass
 
+    def collect_available_actions(self, available_actions: list) -> None:
+        """Store the available actions for the current state being processed.
+
+        Called during incremental building before mark_state_before_preprocessing
+        and mark_state_after_preprocessing. The available_actions attribute holds
+        the sorted list of action name strings from simulator.available_actions()
+        for the state currently being visited.
+
+        Args:
+            available_actions: Sorted list of available action name strings
+        """
+        self.available_actions = available_actions
+
     def mark_state_before_preprocessing(self, state: np.ndarray, agent, state_json: str) -> None:
         """Called during incremental building BEFORE preprocessing.
 
         Use this to collect information about the raw state before any
-        transformations are applied.
+        transformations are applied. self.available_actions contains the
+        actions available at this state.
 
         Args:
             state: The raw state as numpy array (before preprocessing)
@@ -45,6 +60,7 @@ class StateLabeler:
 
         Use this to collect information about the preprocessed state.
         This is typically where you compute agent outputs for labeling.
+        self.available_actions contains the actions available at this state.
 
         Args:
             state: The preprocessed state as numpy array
@@ -74,3 +90,15 @@ class StateLabeler:
             List of label name strings
         """
         return []
+
+    def has_dynamic_labels(self) -> bool:
+        """Whether this labeler adds labels only known at build time.
+
+        Override to return True if the label names are not known at init
+        (e.g., collected during incremental building). The model checker
+        uses this to force context-free property parsing.
+
+        Returns:
+            True if labels are determined dynamically during building
+        """
+        return False

@@ -54,6 +54,7 @@ def train(project, env, prop_type=''):
                 project.mlflow_bridge.log_property(test_loss, "Behavioral Cloning Test Loss", training_epoch)
             # Save the trained BC model immediately after training
             project.save()
+            print("Behavioral cloning completed in", training_epoch, "epochs. Training Accuracy:", train_accuracy, "Test Accuracy:", test_accuracy)
 
 
 

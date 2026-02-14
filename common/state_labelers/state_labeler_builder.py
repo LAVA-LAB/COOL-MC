@@ -2,6 +2,10 @@ from typing import List, Optional
 from common.state_labelers.state_labeler import StateLabeler
 from common.state_labelers.critical_state_labeler import CriticalStateLabeler
 from common.state_labelers.top_two_gap_labeler import TopTwoGapLabeler
+from common.state_labelers.action_overlap_labeler import ActionOverlapLabeler
+from common.state_labelers.action_label_labeler import ActionLabelLabeler
+from common.state_labelers.feature_range_labeler import FeatureRangeLabeler
+from common.state_labelers.permutation_importance_labeler import PermutationImportanceLabeler
 
 
 class StateLabelerBuilder:
@@ -40,6 +44,18 @@ class StateLabelerBuilder:
                 labelers.append(labeler)
             elif labeler_name == "top_two_gap":
                 labeler = TopTwoGapLabeler(labeler_str)
+                labelers.append(labeler)
+            elif labeler_name == "action_overlap":
+                labeler = ActionOverlapLabeler(labeler_str)
+                labelers.append(labeler)
+            elif labeler_name == "action_label":
+                labeler = ActionLabelLabeler(labeler_str)
+                labelers.append(labeler)
+            elif labeler_name == "feature_range":
+                labeler = FeatureRangeLabeler(labeler_str)
+                labelers.append(labeler)
+            elif labeler_name == "permutation_importance":
+                labeler = PermutationImportanceLabeler(labeler_str)
                 labelers.append(labeler)
             elif labeler_name != "":
                 print(f"Warning: Unknown state labeler '{labeler_name}'")

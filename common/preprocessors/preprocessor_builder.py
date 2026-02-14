@@ -12,6 +12,8 @@ from common.preprocessors.rounder import *
 # Robustness
 from common.preprocessors.integer_l1_robustness import *
 from common.preprocessors.permissive_ensemble import PermissiveEnsemble
+from common.preprocessors.allow_all_actions import AllowAllActions
+from common.preprocessors.allow_no_actions import AllowNoActions
 
 '''
 HOW TO ADD MORE AGENTS?
@@ -76,6 +78,14 @@ class PreprocessorBuilder():
                 preprocessors.append(preprocessor)
             elif preprocessor_name == "permissive_ensemble":
                 preprocessor = PermissiveEnsemble(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "allow_all_actions":
+                preprocessor = AllowAllActions(state_mapper, preprocessor_str, command_line_arguments['task'])
+                preprocessor.load(preprocessor_path)
+                preprocessors.append(preprocessor)
+            elif preprocessor_name == "allow_no_actions":
+                preprocessor = AllowNoActions(state_mapper, preprocessor_str, command_line_arguments['task'])
                 preprocessor.load(preprocessor_path)
                 preprocessors.append(preprocessor)
         return preprocessors
