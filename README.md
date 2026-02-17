@@ -299,10 +299,11 @@ If you use COOL-MC in your research, please cite the relevant publication(s):
 | 2024 | Probabilistic Model Checking of Stochastic Reinforcement Learning Policies | ICAART | [arXiv](https://arxiv.org/abs/2403.18725) |
 | 2024 | Enhancing RL Safety with Counterfactual LLM Reasoning | ICTSS | [arXiv](https://arxiv.org/abs/2409.10188) |
 | 2025 | Co-Activation Graph Analysis of Safety-Verified and Explainable Deep Reinforcement Learning Policies | ICAART | [arXiv](https://arxiv.org/abs/2501.03142) |
+| 2025 | Formal Verification of Noisy Quantum Reinforcement Learning Policies | arXiv | [arXiv](https://arxiv.org/abs/2512.01502) |
 | 2025 | PCTL Model Checking for Temporal RL Policy Safety Explanations | SAC | [Paper](https://web-backend.simula.no/sites/default/files/2025-08/SAC_2025___PCTL_Model_Checking_for_Temporal_RL_Policy_Safety_Explanations.pdf) |
 | 2025 | Translating the Rashomon Effect to Sequential Decision-Making Tasks | arXiv | [arXiv](https://arxiv.org/abs/2512.17470) |
-| 2025 | Formal Verification of Noisy Quantum Reinforcement Learning Policies | arXiv | [arXiv](https://arxiv.org/abs/2512.01502) |
 | 2025 | Verifying Memoryless Sequential Decision-making of Large Language Models | OVERLAY | [arXiv](https://arxiv.org/abs/2510.06756) |
+| 2026 | Formally Verifying and Explaining Sepsis Treatment Policies with COOL-MC | arXiv | [arXiv](https://arxiv.org/abs/2510.06756) |
 
 
 
