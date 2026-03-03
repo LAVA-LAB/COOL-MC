@@ -127,7 +127,7 @@ class PPOAgent(Agent):
             self._last_state = state
             self._last_log_prob = log_prob
             self._last_action = action
-        return action
+        return self.apply_action_replacement(action)
 
     def store_experience(self, state: np.ndarray, action: int, reward: float, next_state: np.ndarray, terminal: bool):
         """

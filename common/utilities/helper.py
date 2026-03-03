@@ -82,6 +82,12 @@ def get_arguments() -> Dict[str, Any]:
     # Model Checking
     arg_parser.add_argument('--prop', help='Property Specification.', type=str,
                             default='')
+    arg_parser.add_argument('--action_replace',
+                            help='Replace a policy action during model checking. '
+                                 'Format: "from_action:to_action" using PRISM action names. '
+                                 'E.g. --action_replace="pr5:pr10" forces the agent to order '
+                                 '10 units whenever it would have ordered 5.',
+                            type=str, default='')
     arg_parser.add_argument('--range_plotting', help='Range Plotting Flag.', type=int,
                             default=1)
 

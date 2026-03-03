@@ -1,0 +1,490 @@
+// =============================================================
+// Blood Platelet Inventory MDP — full per-age, PARAMETERIZED
+// Haijema et al. (2009), Int. J. Production Economics 121
+// Shelf life M=5, scale=4x
+//
+// All parameters are PRISM constants — change them below
+// or override via:  prism model.nm props.pctl -const lam0=7.0
+// =============================================================
+
+mdp
+
+// ===== Tuneable parameters (change here or via prism -const) =====
+
+const int MAXS;             // max total inventory (agg. units) — supply via -const MAXS=30
+const int KMAX = 20;        // max demand realisation
+
+const double CS = 5.0;       // shortage cost per unit
+const double CO = 1.0;       // outdating cost per unit
+
+const double lam0 = 6.5;   // Mon: 26 pools / 4
+const double lam1 = 5.0;   // Tue: 20 pools / 4
+const double lam2 = 8.0;   // Wed: 32 pools / 4
+const double lam3 = 5.0;   // Thu: 20 pools / 4
+const double lam4 = 6.5;   // Fri: 26 pools / 4
+const double lam5 = 1.75;   // Sat: 7 pools / 4
+const double lam6 = 3.25;   // Sun: 13 pools / 4
+
+// ===== Poisson machinery (do not edit) =====
+
+// Select demand rate for current day
+formula lam = (d=0 ? lam0 : (d=1 ? lam1 : (d=2 ? lam2 : (d=3 ? lam3 : (d=4 ? lam4 : (d=5 ? lam5 : lam6))))));
+
+// Factorials (constant-folded by PRISM)
+formula fact0 = 1.0;
+formula fact1 = 1.0;
+formula fact2 = 2.0;
+formula fact3 = 6.0;
+formula fact4 = 24.0;
+formula fact5 = 120.0;
+formula fact6 = 720.0;
+formula fact7 = 5040.0;
+formula fact8 = 40320.0;
+formula fact9 = 362880.0;
+formula fact10 = 3628800.0;
+formula fact11 = 39916800.0;
+formula fact12 = 479001600.0;
+formula fact13 = 6227020800.0;
+formula fact14 = 87178291200.0;
+formula fact15 = 1307674368000.0;
+formula fact16 = 20922789888000.0;
+formula fact17 = 355687428096000.0;
+formula fact18 = 6402373705728000.0;
+formula fact19 = 121645100408832000.0;
+formula fact20 = 2432902008176640000.0;
+
+// Unnormalised Poisson weights: w_k = pow(lam, k) / k!
+formula w0 = pow(lam, 0) / fact0;
+formula w1 = pow(lam, 1) / fact1;
+formula w2 = pow(lam, 2) / fact2;
+formula w3 = pow(lam, 3) / fact3;
+formula w4 = pow(lam, 4) / fact4;
+formula w5 = pow(lam, 5) / fact5;
+formula w6 = pow(lam, 6) / fact6;
+formula w7 = pow(lam, 7) / fact7;
+formula w8 = pow(lam, 8) / fact8;
+formula w9 = pow(lam, 9) / fact9;
+formula w10 = pow(lam, 10) / fact10;
+formula w11 = pow(lam, 11) / fact11;
+formula w12 = pow(lam, 12) / fact12;
+formula w13 = pow(lam, 13) / fact13;
+formula w14 = pow(lam, 14) / fact14;
+formula w15 = pow(lam, 15) / fact15;
+formula w16 = pow(lam, 16) / fact16;
+formula w17 = pow(lam, 17) / fact17;
+formula w18 = pow(lam, 18) / fact18;
+formula w19 = pow(lam, 19) / fact19;
+formula w20 = pow(lam, 20) / fact20;
+
+// Normalising constant (ensures probabilities sum to 1)
+formula wtotal = w0 + w1 + w2 + w3 + w4 + w5 + w6 + w7 + w8 + w9 + w10 + w11 + w12 + w13 + w14 + w15 + w16 + w17 + w18 + w19 + w20;
+
+// Normalised Poisson probabilities: p_k = w_k / wtotal
+formula p0 = w0 / wtotal;
+formula p1 = w1 / wtotal;
+formula p2 = w2 / wtotal;
+formula p3 = w3 / wtotal;
+formula p4 = w4 / wtotal;
+formula p5 = w5 / wtotal;
+formula p6 = w6 / wtotal;
+formula p7 = w7 / wtotal;
+formula p8 = w8 / wtotal;
+formula p9 = w9 / wtotal;
+formula p10 = w10 / wtotal;
+formula p11 = w11 / wtotal;
+formula p12 = w12 / wtotal;
+formula p13 = w13 / wtotal;
+formula p14 = w14 / wtotal;
+formula p15 = w15 / wtotal;
+formula p16 = w16 / wtotal;
+formula p17 = w17 / wtotal;
+formula p18 = w18 / wtotal;
+formula p19 = w19 / wtotal;
+formula p20 = w20 / wtotal;
+
+// ===== State variables =====
+
+formula tinv = x1+x2+x3+x4+x5;
+
+module bloodbank
+
+  d    : [0..6] init 0;     // day of week (0=Mon)
+  x1   : [0..MAXS] init 8;  // stock with 1 day left
+  x2   : [0..MAXS] init 4;  // stock with 2 days left
+  x3   : [0..MAXS] init 6;  // stock with 3 days left
+  x4   : [0..MAXS] init 7;  // stock with 4 days left
+  x5   : [0..MAXS] init 4;  // stock with 5 days left
+  pend : [0..MAXS] init 3;  // pending production (avail. next day)
+  ph   : [0..1] init 0;     // 0=produce, 1=demand
+
+  // --- Phase 0: nondeterministic production decision ---
+  // Mon
+  [pr0] ph=0 & d=0 & tinv+0<=MAXS -> (ph'=1) & (pend'=0);
+  [pr1] ph=0 & d=0 & tinv+1<=MAXS -> (ph'=1) & (pend'=1);
+  [pr2] ph=0 & d=0 & tinv+2<=MAXS -> (ph'=1) & (pend'=2);
+  [pr3] ph=0 & d=0 & tinv+3<=MAXS -> (ph'=1) & (pend'=3);
+  [pr4] ph=0 & d=0 & tinv+4<=MAXS -> (ph'=1) & (pend'=4);
+  [pr5] ph=0 & d=0 & tinv+5<=MAXS -> (ph'=1) & (pend'=5);
+  [pr6] ph=0 & d=0 & tinv+6<=MAXS -> (ph'=1) & (pend'=6);
+  [pr7] ph=0 & d=0 & tinv+7<=MAXS -> (ph'=1) & (pend'=7);
+  [pr8] ph=0 & d=0 & tinv+8<=MAXS -> (ph'=1) & (pend'=8);
+  [pr9] ph=0 & d=0 & tinv+9<=MAXS -> (ph'=1) & (pend'=9);
+  [pr10] ph=0 & d=0 & tinv+10<=MAXS -> (ph'=1) & (pend'=10);
+  [pr11] ph=0 & d=0 & tinv+11<=MAXS -> (ph'=1) & (pend'=11);
+  [pr12] ph=0 & d=0 & tinv+12<=MAXS -> (ph'=1) & (pend'=12);
+  [pr13] ph=0 & d=0 & tinv+13<=MAXS -> (ph'=1) & (pend'=13);
+  [pr14] ph=0 & d=0 & tinv+14<=MAXS -> (ph'=1) & (pend'=14);
+  [pr15] ph=0 & d=0 & tinv+15<=MAXS -> (ph'=1) & (pend'=15);
+  [pr16] ph=0 & d=0 & tinv+16<=MAXS -> (ph'=1) & (pend'=16);
+  [pr17] ph=0 & d=0 & tinv+17<=MAXS -> (ph'=1) & (pend'=17);
+  [pr18] ph=0 & d=0 & tinv+18<=MAXS -> (ph'=1) & (pend'=18);
+  [pr19] ph=0 & d=0 & tinv+19<=MAXS -> (ph'=1) & (pend'=19);
+  [pr20] ph=0 & d=0 & tinv+20<=MAXS -> (ph'=1) & (pend'=20);
+  [pr21] ph=0 & d=0 & tinv+21<=MAXS -> (ph'=1) & (pend'=21);
+  [pr22] ph=0 & d=0 & tinv+22<=MAXS -> (ph'=1) & (pend'=22);
+  [pr23] ph=0 & d=0 & tinv+23<=MAXS -> (ph'=1) & (pend'=23);
+  [pr24] ph=0 & d=0 & tinv+24<=MAXS -> (ph'=1) & (pend'=24);
+  [pr25] ph=0 & d=0 & tinv+25<=MAXS -> (ph'=1) & (pend'=25);
+  [pr26] ph=0 & d=0 & tinv+26<=MAXS -> (ph'=1) & (pend'=26);
+  [pr27] ph=0 & d=0 & tinv+27<=MAXS -> (ph'=1) & (pend'=27);
+  [pr28] ph=0 & d=0 & tinv+28<=MAXS -> (ph'=1) & (pend'=28);
+  [pr29] ph=0 & d=0 & tinv+29<=MAXS -> (ph'=1) & (pend'=29);
+  [pr30] ph=0 & d=0 & tinv+30<=MAXS -> (ph'=1) & (pend'=30);
+  // Tue
+  [pr0] ph=0 & d=1 & tinv+0<=MAXS -> (ph'=1) & (pend'=0);
+  [pr1] ph=0 & d=1 & tinv+1<=MAXS -> (ph'=1) & (pend'=1);
+  [pr2] ph=0 & d=1 & tinv+2<=MAXS -> (ph'=1) & (pend'=2);
+  [pr3] ph=0 & d=1 & tinv+3<=MAXS -> (ph'=1) & (pend'=3);
+  [pr4] ph=0 & d=1 & tinv+4<=MAXS -> (ph'=1) & (pend'=4);
+  [pr5] ph=0 & d=1 & tinv+5<=MAXS -> (ph'=1) & (pend'=5);
+  [pr6] ph=0 & d=1 & tinv+6<=MAXS -> (ph'=1) & (pend'=6);
+  [pr7] ph=0 & d=1 & tinv+7<=MAXS -> (ph'=1) & (pend'=7);
+  [pr8] ph=0 & d=1 & tinv+8<=MAXS -> (ph'=1) & (pend'=8);
+  [pr9] ph=0 & d=1 & tinv+9<=MAXS -> (ph'=1) & (pend'=9);
+  [pr10] ph=0 & d=1 & tinv+10<=MAXS -> (ph'=1) & (pend'=10);
+  [pr11] ph=0 & d=1 & tinv+11<=MAXS -> (ph'=1) & (pend'=11);
+  [pr12] ph=0 & d=1 & tinv+12<=MAXS -> (ph'=1) & (pend'=12);
+  [pr13] ph=0 & d=1 & tinv+13<=MAXS -> (ph'=1) & (pend'=13);
+  [pr14] ph=0 & d=1 & tinv+14<=MAXS -> (ph'=1) & (pend'=14);
+  [pr15] ph=0 & d=1 & tinv+15<=MAXS -> (ph'=1) & (pend'=15);
+  [pr16] ph=0 & d=1 & tinv+16<=MAXS -> (ph'=1) & (pend'=16);
+  [pr17] ph=0 & d=1 & tinv+17<=MAXS -> (ph'=1) & (pend'=17);
+  [pr18] ph=0 & d=1 & tinv+18<=MAXS -> (ph'=1) & (pend'=18);
+  [pr19] ph=0 & d=1 & tinv+19<=MAXS -> (ph'=1) & (pend'=19);
+  [pr20] ph=0 & d=1 & tinv+20<=MAXS -> (ph'=1) & (pend'=20);
+  [pr21] ph=0 & d=1 & tinv+21<=MAXS -> (ph'=1) & (pend'=21);
+  [pr22] ph=0 & d=1 & tinv+22<=MAXS -> (ph'=1) & (pend'=22);
+  [pr23] ph=0 & d=1 & tinv+23<=MAXS -> (ph'=1) & (pend'=23);
+  [pr24] ph=0 & d=1 & tinv+24<=MAXS -> (ph'=1) & (pend'=24);
+  [pr25] ph=0 & d=1 & tinv+25<=MAXS -> (ph'=1) & (pend'=25);
+  [pr26] ph=0 & d=1 & tinv+26<=MAXS -> (ph'=1) & (pend'=26);
+  [pr27] ph=0 & d=1 & tinv+27<=MAXS -> (ph'=1) & (pend'=27);
+  [pr28] ph=0 & d=1 & tinv+28<=MAXS -> (ph'=1) & (pend'=28);
+  [pr29] ph=0 & d=1 & tinv+29<=MAXS -> (ph'=1) & (pend'=29);
+  [pr30] ph=0 & d=1 & tinv+30<=MAXS -> (ph'=1) & (pend'=30);
+  // Wed
+  [pr0] ph=0 & d=2 & tinv+0<=MAXS -> (ph'=1) & (pend'=0);
+  [pr1] ph=0 & d=2 & tinv+1<=MAXS -> (ph'=1) & (pend'=1);
+  [pr2] ph=0 & d=2 & tinv+2<=MAXS -> (ph'=1) & (pend'=2);
+  [pr3] ph=0 & d=2 & tinv+3<=MAXS -> (ph'=1) & (pend'=3);
+  [pr4] ph=0 & d=2 & tinv+4<=MAXS -> (ph'=1) & (pend'=4);
+  [pr5] ph=0 & d=2 & tinv+5<=MAXS -> (ph'=1) & (pend'=5);
+  [pr6] ph=0 & d=2 & tinv+6<=MAXS -> (ph'=1) & (pend'=6);
+  [pr7] ph=0 & d=2 & tinv+7<=MAXS -> (ph'=1) & (pend'=7);
+  [pr8] ph=0 & d=2 & tinv+8<=MAXS -> (ph'=1) & (pend'=8);
+  [pr9] ph=0 & d=2 & tinv+9<=MAXS -> (ph'=1) & (pend'=9);
+  [pr10] ph=0 & d=2 & tinv+10<=MAXS -> (ph'=1) & (pend'=10);
+  [pr11] ph=0 & d=2 & tinv+11<=MAXS -> (ph'=1) & (pend'=11);
+  [pr12] ph=0 & d=2 & tinv+12<=MAXS -> (ph'=1) & (pend'=12);
+  [pr13] ph=0 & d=2 & tinv+13<=MAXS -> (ph'=1) & (pend'=13);
+  [pr14] ph=0 & d=2 & tinv+14<=MAXS -> (ph'=1) & (pend'=14);
+  [pr15] ph=0 & d=2 & tinv+15<=MAXS -> (ph'=1) & (pend'=15);
+  [pr16] ph=0 & d=2 & tinv+16<=MAXS -> (ph'=1) & (pend'=16);
+  [pr17] ph=0 & d=2 & tinv+17<=MAXS -> (ph'=1) & (pend'=17);
+  [pr18] ph=0 & d=2 & tinv+18<=MAXS -> (ph'=1) & (pend'=18);
+  [pr19] ph=0 & d=2 & tinv+19<=MAXS -> (ph'=1) & (pend'=19);
+  [pr20] ph=0 & d=2 & tinv+20<=MAXS -> (ph'=1) & (pend'=20);
+  [pr21] ph=0 & d=2 & tinv+21<=MAXS -> (ph'=1) & (pend'=21);
+  [pr22] ph=0 & d=2 & tinv+22<=MAXS -> (ph'=1) & (pend'=22);
+  [pr23] ph=0 & d=2 & tinv+23<=MAXS -> (ph'=1) & (pend'=23);
+  [pr24] ph=0 & d=2 & tinv+24<=MAXS -> (ph'=1) & (pend'=24);
+  [pr25] ph=0 & d=2 & tinv+25<=MAXS -> (ph'=1) & (pend'=25);
+  [pr26] ph=0 & d=2 & tinv+26<=MAXS -> (ph'=1) & (pend'=26);
+  [pr27] ph=0 & d=2 & tinv+27<=MAXS -> (ph'=1) & (pend'=27);
+  [pr28] ph=0 & d=2 & tinv+28<=MAXS -> (ph'=1) & (pend'=28);
+  [pr29] ph=0 & d=2 & tinv+29<=MAXS -> (ph'=1) & (pend'=29);
+  [pr30] ph=0 & d=2 & tinv+30<=MAXS -> (ph'=1) & (pend'=30);
+  // Thu
+  [pr0] ph=0 & d=3 & tinv+0<=MAXS -> (ph'=1) & (pend'=0);
+  [pr1] ph=0 & d=3 & tinv+1<=MAXS -> (ph'=1) & (pend'=1);
+  [pr2] ph=0 & d=3 & tinv+2<=MAXS -> (ph'=1) & (pend'=2);
+  [pr3] ph=0 & d=3 & tinv+3<=MAXS -> (ph'=1) & (pend'=3);
+  [pr4] ph=0 & d=3 & tinv+4<=MAXS -> (ph'=1) & (pend'=4);
+  [pr5] ph=0 & d=3 & tinv+5<=MAXS -> (ph'=1) & (pend'=5);
+  [pr6] ph=0 & d=3 & tinv+6<=MAXS -> (ph'=1) & (pend'=6);
+  [pr7] ph=0 & d=3 & tinv+7<=MAXS -> (ph'=1) & (pend'=7);
+  [pr8] ph=0 & d=3 & tinv+8<=MAXS -> (ph'=1) & (pend'=8);
+  [pr9] ph=0 & d=3 & tinv+9<=MAXS -> (ph'=1) & (pend'=9);
+  [pr10] ph=0 & d=3 & tinv+10<=MAXS -> (ph'=1) & (pend'=10);
+  [pr11] ph=0 & d=3 & tinv+11<=MAXS -> (ph'=1) & (pend'=11);
+  [pr12] ph=0 & d=3 & tinv+12<=MAXS -> (ph'=1) & (pend'=12);
+  [pr13] ph=0 & d=3 & tinv+13<=MAXS -> (ph'=1) & (pend'=13);
+  [pr14] ph=0 & d=3 & tinv+14<=MAXS -> (ph'=1) & (pend'=14);
+  [pr15] ph=0 & d=3 & tinv+15<=MAXS -> (ph'=1) & (pend'=15);
+  [pr16] ph=0 & d=3 & tinv+16<=MAXS -> (ph'=1) & (pend'=16);
+  [pr17] ph=0 & d=3 & tinv+17<=MAXS -> (ph'=1) & (pend'=17);
+  [pr18] ph=0 & d=3 & tinv+18<=MAXS -> (ph'=1) & (pend'=18);
+  [pr19] ph=0 & d=3 & tinv+19<=MAXS -> (ph'=1) & (pend'=19);
+  [pr20] ph=0 & d=3 & tinv+20<=MAXS -> (ph'=1) & (pend'=20);
+  [pr21] ph=0 & d=3 & tinv+21<=MAXS -> (ph'=1) & (pend'=21);
+  [pr22] ph=0 & d=3 & tinv+22<=MAXS -> (ph'=1) & (pend'=22);
+  [pr23] ph=0 & d=3 & tinv+23<=MAXS -> (ph'=1) & (pend'=23);
+  [pr24] ph=0 & d=3 & tinv+24<=MAXS -> (ph'=1) & (pend'=24);
+  [pr25] ph=0 & d=3 & tinv+25<=MAXS -> (ph'=1) & (pend'=25);
+  [pr26] ph=0 & d=3 & tinv+26<=MAXS -> (ph'=1) & (pend'=26);
+  [pr27] ph=0 & d=3 & tinv+27<=MAXS -> (ph'=1) & (pend'=27);
+  [pr28] ph=0 & d=3 & tinv+28<=MAXS -> (ph'=1) & (pend'=28);
+  [pr29] ph=0 & d=3 & tinv+29<=MAXS -> (ph'=1) & (pend'=29);
+  [pr30] ph=0 & d=3 & tinv+30<=MAXS -> (ph'=1) & (pend'=30);
+  // Fri
+  [pr0] ph=0 & d=4 & tinv+0<=MAXS -> (ph'=1) & (pend'=0);
+  [pr1] ph=0 & d=4 & tinv+1<=MAXS -> (ph'=1) & (pend'=1);
+  [pr2] ph=0 & d=4 & tinv+2<=MAXS -> (ph'=1) & (pend'=2);
+  [pr3] ph=0 & d=4 & tinv+3<=MAXS -> (ph'=1) & (pend'=3);
+  [pr4] ph=0 & d=4 & tinv+4<=MAXS -> (ph'=1) & (pend'=4);
+  [pr5] ph=0 & d=4 & tinv+5<=MAXS -> (ph'=1) & (pend'=5);
+  [pr6] ph=0 & d=4 & tinv+6<=MAXS -> (ph'=1) & (pend'=6);
+  [pr7] ph=0 & d=4 & tinv+7<=MAXS -> (ph'=1) & (pend'=7);
+  [pr8] ph=0 & d=4 & tinv+8<=MAXS -> (ph'=1) & (pend'=8);
+  [pr9] ph=0 & d=4 & tinv+9<=MAXS -> (ph'=1) & (pend'=9);
+  [pr10] ph=0 & d=4 & tinv+10<=MAXS -> (ph'=1) & (pend'=10);
+  [pr11] ph=0 & d=4 & tinv+11<=MAXS -> (ph'=1) & (pend'=11);
+  [pr12] ph=0 & d=4 & tinv+12<=MAXS -> (ph'=1) & (pend'=12);
+  [pr13] ph=0 & d=4 & tinv+13<=MAXS -> (ph'=1) & (pend'=13);
+  [pr14] ph=0 & d=4 & tinv+14<=MAXS -> (ph'=1) & (pend'=14);
+  [pr15] ph=0 & d=4 & tinv+15<=MAXS -> (ph'=1) & (pend'=15);
+  [pr16] ph=0 & d=4 & tinv+16<=MAXS -> (ph'=1) & (pend'=16);
+  [pr17] ph=0 & d=4 & tinv+17<=MAXS -> (ph'=1) & (pend'=17);
+  [pr18] ph=0 & d=4 & tinv+18<=MAXS -> (ph'=1) & (pend'=18);
+  [pr19] ph=0 & d=4 & tinv+19<=MAXS -> (ph'=1) & (pend'=19);
+  [pr20] ph=0 & d=4 & tinv+20<=MAXS -> (ph'=1) & (pend'=20);
+  [pr21] ph=0 & d=4 & tinv+21<=MAXS -> (ph'=1) & (pend'=21);
+  [pr22] ph=0 & d=4 & tinv+22<=MAXS -> (ph'=1) & (pend'=22);
+  [pr23] ph=0 & d=4 & tinv+23<=MAXS -> (ph'=1) & (pend'=23);
+  [pr24] ph=0 & d=4 & tinv+24<=MAXS -> (ph'=1) & (pend'=24);
+  [pr25] ph=0 & d=4 & tinv+25<=MAXS -> (ph'=1) & (pend'=25);
+  [pr26] ph=0 & d=4 & tinv+26<=MAXS -> (ph'=1) & (pend'=26);
+  [pr27] ph=0 & d=4 & tinv+27<=MAXS -> (ph'=1) & (pend'=27);
+  [pr28] ph=0 & d=4 & tinv+28<=MAXS -> (ph'=1) & (pend'=28);
+  [pr29] ph=0 & d=4 & tinv+29<=MAXS -> (ph'=1) & (pend'=29);
+  [pr30] ph=0 & d=4 & tinv+30<=MAXS -> (ph'=1) & (pend'=30);
+  [pr0] ph=0 & d=5 -> (ph'=1) & (pend'=0);  // Sat: no production
+  [pr0] ph=0 & d=6 -> (ph'=1) & (pend'=0);  // Sun: no production
+
+  // --- Phase 1: stochastic demand (Poisson, self-normalised) ---
+  // FIFO: serve x1 (oldest) first, then x2, ...
+  // Aging: x_r' gets leftover from x_{r+1} after demand
+  // Delivery: x5' = pend (production arrives as fresh stock)
+
+  // Mon (lam0=6.50)
+  [dm] ph=1 & d=0 ->
+      p0 : (x1'=min(MAXS,max(0,x2-max(0,0-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,0-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,0-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,0-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p1 : (x1'=min(MAXS,max(0,x2-max(0,1-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,1-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,1-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,1-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p2 : (x1'=min(MAXS,max(0,x2-max(0,2-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,2-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,2-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,2-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p3 : (x1'=min(MAXS,max(0,x2-max(0,3-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,3-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,3-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,3-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p4 : (x1'=min(MAXS,max(0,x2-max(0,4-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,4-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,4-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,4-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p5 : (x1'=min(MAXS,max(0,x2-max(0,5-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,5-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,5-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,5-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p6 : (x1'=min(MAXS,max(0,x2-max(0,6-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,6-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,6-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,6-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p7 : (x1'=min(MAXS,max(0,x2-max(0,7-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,7-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,7-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,7-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p8 : (x1'=min(MAXS,max(0,x2-max(0,8-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,8-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,8-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,8-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p9 : (x1'=min(MAXS,max(0,x2-max(0,9-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,9-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,9-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,9-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p10 : (x1'=min(MAXS,max(0,x2-max(0,10-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,10-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,10-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,10-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p11 : (x1'=min(MAXS,max(0,x2-max(0,11-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,11-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,11-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,11-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p12 : (x1'=min(MAXS,max(0,x2-max(0,12-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,12-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,12-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,12-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p13 : (x1'=min(MAXS,max(0,x2-max(0,13-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,13-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,13-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,13-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p14 : (x1'=min(MAXS,max(0,x2-max(0,14-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,14-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,14-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,14-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p15 : (x1'=min(MAXS,max(0,x2-max(0,15-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,15-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,15-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,15-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p16 : (x1'=min(MAXS,max(0,x2-max(0,16-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,16-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,16-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,16-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p17 : (x1'=min(MAXS,max(0,x2-max(0,17-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,17-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,17-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,17-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p18 : (x1'=min(MAXS,max(0,x2-max(0,18-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,18-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,18-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,18-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p19 : (x1'=min(MAXS,max(0,x2-max(0,19-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,19-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,19-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,19-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p20 : (x1'=min(MAXS,max(0,x2-max(0,20-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,20-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,20-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,20-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0);
+
+  // Tue (lam1=5.00)
+  [dm] ph=1 & d=1 ->
+      p0 : (x1'=min(MAXS,max(0,x2-max(0,0-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,0-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,0-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,0-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p1 : (x1'=min(MAXS,max(0,x2-max(0,1-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,1-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,1-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,1-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p2 : (x1'=min(MAXS,max(0,x2-max(0,2-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,2-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,2-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,2-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p3 : (x1'=min(MAXS,max(0,x2-max(0,3-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,3-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,3-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,3-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p4 : (x1'=min(MAXS,max(0,x2-max(0,4-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,4-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,4-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,4-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p5 : (x1'=min(MAXS,max(0,x2-max(0,5-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,5-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,5-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,5-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p6 : (x1'=min(MAXS,max(0,x2-max(0,6-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,6-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,6-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,6-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p7 : (x1'=min(MAXS,max(0,x2-max(0,7-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,7-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,7-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,7-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p8 : (x1'=min(MAXS,max(0,x2-max(0,8-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,8-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,8-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,8-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p9 : (x1'=min(MAXS,max(0,x2-max(0,9-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,9-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,9-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,9-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p10 : (x1'=min(MAXS,max(0,x2-max(0,10-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,10-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,10-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,10-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p11 : (x1'=min(MAXS,max(0,x2-max(0,11-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,11-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,11-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,11-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p12 : (x1'=min(MAXS,max(0,x2-max(0,12-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,12-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,12-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,12-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p13 : (x1'=min(MAXS,max(0,x2-max(0,13-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,13-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,13-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,13-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p14 : (x1'=min(MAXS,max(0,x2-max(0,14-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,14-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,14-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,14-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p15 : (x1'=min(MAXS,max(0,x2-max(0,15-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,15-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,15-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,15-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p16 : (x1'=min(MAXS,max(0,x2-max(0,16-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,16-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,16-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,16-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p17 : (x1'=min(MAXS,max(0,x2-max(0,17-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,17-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,17-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,17-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p18 : (x1'=min(MAXS,max(0,x2-max(0,18-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,18-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,18-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,18-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p19 : (x1'=min(MAXS,max(0,x2-max(0,19-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,19-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,19-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,19-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p20 : (x1'=min(MAXS,max(0,x2-max(0,20-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,20-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,20-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,20-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0);
+
+  // Wed (lam2=8.00)
+  [dm] ph=1 & d=2 ->
+      p0 : (x1'=min(MAXS,max(0,x2-max(0,0-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,0-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,0-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,0-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p1 : (x1'=min(MAXS,max(0,x2-max(0,1-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,1-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,1-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,1-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p2 : (x1'=min(MAXS,max(0,x2-max(0,2-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,2-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,2-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,2-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p3 : (x1'=min(MAXS,max(0,x2-max(0,3-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,3-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,3-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,3-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p4 : (x1'=min(MAXS,max(0,x2-max(0,4-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,4-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,4-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,4-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p5 : (x1'=min(MAXS,max(0,x2-max(0,5-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,5-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,5-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,5-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p6 : (x1'=min(MAXS,max(0,x2-max(0,6-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,6-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,6-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,6-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p7 : (x1'=min(MAXS,max(0,x2-max(0,7-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,7-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,7-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,7-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p8 : (x1'=min(MAXS,max(0,x2-max(0,8-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,8-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,8-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,8-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p9 : (x1'=min(MAXS,max(0,x2-max(0,9-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,9-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,9-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,9-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p10 : (x1'=min(MAXS,max(0,x2-max(0,10-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,10-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,10-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,10-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p11 : (x1'=min(MAXS,max(0,x2-max(0,11-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,11-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,11-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,11-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p12 : (x1'=min(MAXS,max(0,x2-max(0,12-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,12-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,12-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,12-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p13 : (x1'=min(MAXS,max(0,x2-max(0,13-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,13-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,13-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,13-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p14 : (x1'=min(MAXS,max(0,x2-max(0,14-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,14-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,14-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,14-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p15 : (x1'=min(MAXS,max(0,x2-max(0,15-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,15-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,15-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,15-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p16 : (x1'=min(MAXS,max(0,x2-max(0,16-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,16-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,16-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,16-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p17 : (x1'=min(MAXS,max(0,x2-max(0,17-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,17-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,17-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,17-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p18 : (x1'=min(MAXS,max(0,x2-max(0,18-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,18-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,18-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,18-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p19 : (x1'=min(MAXS,max(0,x2-max(0,19-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,19-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,19-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,19-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p20 : (x1'=min(MAXS,max(0,x2-max(0,20-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,20-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,20-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,20-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0);
+
+  // Thu (lam3=5.00)
+  [dm] ph=1 & d=3 ->
+      p0 : (x1'=min(MAXS,max(0,x2-max(0,0-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,0-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,0-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,0-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p1 : (x1'=min(MAXS,max(0,x2-max(0,1-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,1-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,1-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,1-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p2 : (x1'=min(MAXS,max(0,x2-max(0,2-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,2-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,2-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,2-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p3 : (x1'=min(MAXS,max(0,x2-max(0,3-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,3-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,3-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,3-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p4 : (x1'=min(MAXS,max(0,x2-max(0,4-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,4-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,4-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,4-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p5 : (x1'=min(MAXS,max(0,x2-max(0,5-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,5-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,5-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,5-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p6 : (x1'=min(MAXS,max(0,x2-max(0,6-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,6-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,6-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,6-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p7 : (x1'=min(MAXS,max(0,x2-max(0,7-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,7-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,7-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,7-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p8 : (x1'=min(MAXS,max(0,x2-max(0,8-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,8-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,8-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,8-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p9 : (x1'=min(MAXS,max(0,x2-max(0,9-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,9-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,9-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,9-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p10 : (x1'=min(MAXS,max(0,x2-max(0,10-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,10-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,10-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,10-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p11 : (x1'=min(MAXS,max(0,x2-max(0,11-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,11-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,11-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,11-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p12 : (x1'=min(MAXS,max(0,x2-max(0,12-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,12-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,12-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,12-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p13 : (x1'=min(MAXS,max(0,x2-max(0,13-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,13-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,13-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,13-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p14 : (x1'=min(MAXS,max(0,x2-max(0,14-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,14-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,14-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,14-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p15 : (x1'=min(MAXS,max(0,x2-max(0,15-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,15-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,15-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,15-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p16 : (x1'=min(MAXS,max(0,x2-max(0,16-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,16-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,16-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,16-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p17 : (x1'=min(MAXS,max(0,x2-max(0,17-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,17-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,17-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,17-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p18 : (x1'=min(MAXS,max(0,x2-max(0,18-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,18-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,18-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,18-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p19 : (x1'=min(MAXS,max(0,x2-max(0,19-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,19-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,19-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,19-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p20 : (x1'=min(MAXS,max(0,x2-max(0,20-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,20-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,20-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,20-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0);
+
+  // Fri (lam4=6.50)
+  [dm] ph=1 & d=4 ->
+      p0 : (x1'=min(MAXS,max(0,x2-max(0,0-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,0-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,0-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,0-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p1 : (x1'=min(MAXS,max(0,x2-max(0,1-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,1-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,1-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,1-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p2 : (x1'=min(MAXS,max(0,x2-max(0,2-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,2-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,2-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,2-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p3 : (x1'=min(MAXS,max(0,x2-max(0,3-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,3-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,3-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,3-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p4 : (x1'=min(MAXS,max(0,x2-max(0,4-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,4-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,4-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,4-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p5 : (x1'=min(MAXS,max(0,x2-max(0,5-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,5-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,5-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,5-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p6 : (x1'=min(MAXS,max(0,x2-max(0,6-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,6-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,6-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,6-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p7 : (x1'=min(MAXS,max(0,x2-max(0,7-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,7-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,7-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,7-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p8 : (x1'=min(MAXS,max(0,x2-max(0,8-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,8-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,8-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,8-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p9 : (x1'=min(MAXS,max(0,x2-max(0,9-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,9-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,9-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,9-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p10 : (x1'=min(MAXS,max(0,x2-max(0,10-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,10-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,10-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,10-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p11 : (x1'=min(MAXS,max(0,x2-max(0,11-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,11-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,11-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,11-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p12 : (x1'=min(MAXS,max(0,x2-max(0,12-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,12-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,12-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,12-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p13 : (x1'=min(MAXS,max(0,x2-max(0,13-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,13-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,13-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,13-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p14 : (x1'=min(MAXS,max(0,x2-max(0,14-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,14-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,14-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,14-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p15 : (x1'=min(MAXS,max(0,x2-max(0,15-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,15-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,15-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,15-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p16 : (x1'=min(MAXS,max(0,x2-max(0,16-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,16-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,16-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,16-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p17 : (x1'=min(MAXS,max(0,x2-max(0,17-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,17-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,17-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,17-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p18 : (x1'=min(MAXS,max(0,x2-max(0,18-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,18-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,18-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,18-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p19 : (x1'=min(MAXS,max(0,x2-max(0,19-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,19-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,19-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,19-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p20 : (x1'=min(MAXS,max(0,x2-max(0,20-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,20-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,20-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,20-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0);
+
+  // Sat (lam5=1.75)
+  [dm] ph=1 & d=5 ->
+      p0 : (x1'=min(MAXS,max(0,x2-max(0,0-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,0-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,0-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,0-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p1 : (x1'=min(MAXS,max(0,x2-max(0,1-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,1-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,1-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,1-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p2 : (x1'=min(MAXS,max(0,x2-max(0,2-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,2-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,2-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,2-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p3 : (x1'=min(MAXS,max(0,x2-max(0,3-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,3-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,3-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,3-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p4 : (x1'=min(MAXS,max(0,x2-max(0,4-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,4-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,4-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,4-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p5 : (x1'=min(MAXS,max(0,x2-max(0,5-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,5-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,5-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,5-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p6 : (x1'=min(MAXS,max(0,x2-max(0,6-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,6-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,6-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,6-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p7 : (x1'=min(MAXS,max(0,x2-max(0,7-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,7-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,7-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,7-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p8 : (x1'=min(MAXS,max(0,x2-max(0,8-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,8-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,8-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,8-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p9 : (x1'=min(MAXS,max(0,x2-max(0,9-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,9-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,9-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,9-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p10 : (x1'=min(MAXS,max(0,x2-max(0,10-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,10-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,10-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,10-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p11 : (x1'=min(MAXS,max(0,x2-max(0,11-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,11-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,11-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,11-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p12 : (x1'=min(MAXS,max(0,x2-max(0,12-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,12-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,12-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,12-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p13 : (x1'=min(MAXS,max(0,x2-max(0,13-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,13-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,13-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,13-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p14 : (x1'=min(MAXS,max(0,x2-max(0,14-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,14-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,14-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,14-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p15 : (x1'=min(MAXS,max(0,x2-max(0,15-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,15-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,15-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,15-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p16 : (x1'=min(MAXS,max(0,x2-max(0,16-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,16-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,16-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,16-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p17 : (x1'=min(MAXS,max(0,x2-max(0,17-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,17-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,17-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,17-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p18 : (x1'=min(MAXS,max(0,x2-max(0,18-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,18-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,18-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,18-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p19 : (x1'=min(MAXS,max(0,x2-max(0,19-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,19-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,19-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,19-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p20 : (x1'=min(MAXS,max(0,x2-max(0,20-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,20-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,20-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,20-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0);
+
+  // Sun (lam6=3.25)
+  [dm] ph=1 & d=6 ->
+      p0 : (x1'=min(MAXS,max(0,x2-max(0,0-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,0-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,0-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,0-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p1 : (x1'=min(MAXS,max(0,x2-max(0,1-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,1-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,1-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,1-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p2 : (x1'=min(MAXS,max(0,x2-max(0,2-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,2-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,2-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,2-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p3 : (x1'=min(MAXS,max(0,x2-max(0,3-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,3-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,3-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,3-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p4 : (x1'=min(MAXS,max(0,x2-max(0,4-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,4-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,4-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,4-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p5 : (x1'=min(MAXS,max(0,x2-max(0,5-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,5-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,5-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,5-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p6 : (x1'=min(MAXS,max(0,x2-max(0,6-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,6-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,6-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,6-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p7 : (x1'=min(MAXS,max(0,x2-max(0,7-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,7-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,7-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,7-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p8 : (x1'=min(MAXS,max(0,x2-max(0,8-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,8-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,8-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,8-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p9 : (x1'=min(MAXS,max(0,x2-max(0,9-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,9-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,9-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,9-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p10 : (x1'=min(MAXS,max(0,x2-max(0,10-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,10-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,10-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,10-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p11 : (x1'=min(MAXS,max(0,x2-max(0,11-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,11-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,11-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,11-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p12 : (x1'=min(MAXS,max(0,x2-max(0,12-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,12-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,12-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,12-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p13 : (x1'=min(MAXS,max(0,x2-max(0,13-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,13-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,13-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,13-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p14 : (x1'=min(MAXS,max(0,x2-max(0,14-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,14-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,14-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,14-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p15 : (x1'=min(MAXS,max(0,x2-max(0,15-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,15-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,15-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,15-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p16 : (x1'=min(MAXS,max(0,x2-max(0,16-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,16-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,16-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,16-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p17 : (x1'=min(MAXS,max(0,x2-max(0,17-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,17-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,17-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,17-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p18 : (x1'=min(MAXS,max(0,x2-max(0,18-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,18-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,18-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,18-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p19 : (x1'=min(MAXS,max(0,x2-max(0,19-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,19-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,19-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,19-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0)
+    + p20 : (x1'=min(MAXS,max(0,x2-max(0,20-(x1))))) & (x2'=min(MAXS,max(0,x3-max(0,20-(x1+x2))))) & (x3'=min(MAXS,max(0,x4-max(0,20-(x1+x2+x3))))) & (x4'=min(MAXS,max(0,x5-max(0,20-(x1+x2+x3+x4))))) & (x5'=pend) & (d'=mod(d+1,7)) & (ph'=0) & (pend'=0);
+
+endmodule
+
+// ===== Reward structures =====
+
+// Shortage: for demand outcome b, shortage = max(0, b - tinv)
+// Outdating: for demand outcome b, outdating = max(0, x1 - b)
+// Expected values computed as sum over b of p_b * cost_b
+
+// Expected shortage given current total inventory
+formula exp_short = p0 * max(0, 0 - tinv) + p1 * max(0, 1 - tinv) + p2 * max(0, 2 - tinv) + p3 * max(0, 3 - tinv) + p4 * max(0, 4 - tinv) + p5 * max(0, 5 - tinv) + p6 * max(0, 6 - tinv) + p7 * max(0, 7 - tinv) + p8 * max(0, 8 - tinv) + p9 * max(0, 9 - tinv) + p10 * max(0, 10 - tinv) + p11 * max(0, 11 - tinv) + p12 * max(0, 12 - tinv) + p13 * max(0, 13 - tinv) + p14 * max(0, 14 - tinv) + p15 * max(0, 15 - tinv) + p16 * max(0, 16 - tinv) + p17 * max(0, 17 - tinv) + p18 * max(0, 18 - tinv) + p19 * max(0, 19 - tinv) + p20 * max(0, 20 - tinv);
+
+// Expected outdating given oldest stock x1
+formula exp_outdate = p0 * max(0, x1 - 0) + p1 * max(0, x1 - 1) + p2 * max(0, x1 - 2) + p3 * max(0, x1 - 3) + p4 * max(0, x1 - 4) + p5 * max(0, x1 - 5) + p6 * max(0, x1 - 6) + p7 * max(0, x1 - 7) + p8 * max(0, x1 - 8) + p9 * max(0, x1 - 9) + p10 * max(0, x1 - 10) + p11 * max(0, x1 - 11) + p12 * max(0, x1 - 12) + p13 * max(0, x1 - 13) + p14 * max(0, x1 - 14) + p15 * max(0, x1 - 15) + p16 * max(0, x1 - 16) + p17 * max(0, x1 - 17) + p18 * max(0, x1 - 18) + p19 * max(0, x1 - 19) + p20 * max(0, x1 - 20);
+
+rewards "cost"
+  ph=1 : CS * exp_short + CO * exp_outdate;
+endrewards
+
+
+
+// ===== Labels =====
+
+label "monday"     = d=0;
+label "weekend"    = d>=5;
+label "empty"      = tinv=0;
+label "full"       = tinv=MAXS;
+label "safe_stock" = tinv>=5;
+
+// ===== Example properties (save as .pctl) =====
+// Rmin=? [ S {"cost"} ]           // min long-run avg cost
+
+//
+// Sweep demand rate: prism model.nm props.pctl -const lam2=5:10:0.5
+// Sweep cost ratio: prism model.nm props.pctl -const CS=1:10:1

@@ -67,6 +67,26 @@ if __name__ == '__main__':
     m_project.create_postprocessor(m_project.command_line_arguments, env.observation_space, env.action_space, env.storm_bridge.state_mapper)
     m_project.create_state_labelers(command_line_arguments)
 
+    # Apply action replacement if requested
+    action_replace_str = command_line_arguments.get('action_replace', '')
+    if action_replace_str:
+        parts = action_replace_str.split(':')
+        if len(parts) == 2:
+            from_name, to_name = parts[0].strip(), parts[1].strip()
+            action_names = env.action_mapper.actions
+            if from_name in action_names and to_name in action_names:
+                from_idx = action_names.index(from_name)
+                to_idx = action_names.index(to_name)
+                m_project.agent.action_replace(from_idx, to_idx)
+                print(f"Action replacement active: '{from_name}' (idx {from_idx}) -> '{to_name}' (idx {to_idx})")
+            else:
+                raise ValueError(
+                    f"--action_replace: action name(s) not found in model. "
+                    f"Got '{from_name}':'{to_name}', available: {action_names}")
+        else:
+            raise ValueError(
+                f"--action_replace must have format 'from_action:to_action', got: '{action_replace_str}'")
+
     # Initialize preprocessors that need environment access (e.g., optimal_control)
     if m_project.preprocessors is not None:
         for preprocessor in m_project.preprocessors:

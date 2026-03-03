@@ -113,6 +113,12 @@ class Project():
                     del saved_command_line_arguments['state_labeler']
                 except:
                     pass
+            if self.command_line_arguments.get('action_replace', '') != '':
+                # Only delete it if it is not set by the command line (in this case take new one)
+                try:
+                    del saved_command_line_arguments['action_replace']
+                except:
+                    pass
             try:
                 del saved_command_line_arguments['range_plotting']
             except:
