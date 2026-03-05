@@ -2,7 +2,7 @@ from common.utilities.project import Project
 import sys
 from common.safe_gym.safe_gym import SafeGym
 from common.utilities.helper import *
-import gym
+import gymnasium as gym
 import random
 import math
 import numpy as np

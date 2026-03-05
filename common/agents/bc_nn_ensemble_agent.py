@@ -52,7 +52,7 @@ class EnsembleNetwork(nn.Module):
                 else:
                     x = F.relu(self.layers[i](x))
             return x
-        except:
+        except Exception:
             state = torch.tensor(state).float().to(self.DEVICE)
             x = state
             for i in range(len(self.layers)):
@@ -318,7 +318,7 @@ class BCNNEnsembleAgent(Agent):
 
         return actions
 
-    def get_raw_outputs(self, state: np.ndarray) -> np.ndarray:
+    def raw_outputs(self, state: np.ndarray) -> np.ndarray:
         """Get vote proportions for each action (soft voting).
 
         Args:

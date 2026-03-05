@@ -24,98 +24,98 @@ class Project():
             old_task = saved_command_line_arguments['task']
             try:
                 del saved_command_line_arguments['prop']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['task']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['parent_run_id']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['project_name']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['constant_definitions']
-            except:
+            except KeyError:
                 pass
             if self.command_line_arguments['preprocessor'] != '':
                 # Only delete it if it is not set by the command line (in this case take new one)
                 # If "None", later during building none will be created
                 try:
                     del saved_command_line_arguments['preprocessor']
-                except:
+                except KeyError:
                     pass
             if self.command_line_arguments['behavioral_cloning'] != '':
                 # Only delete it if it is not set by the command line (in this case take new one)
                 # If "None", later during building none will be created
                 try:
                     del saved_command_line_arguments['behavioral_cloning']
-                except:
+                except KeyError:
                     pass
             try:
                 del saved_command_line_arguments['bc_epochs']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['epsilon']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['epsilon_dec']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['epsilon_min']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['seed']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['interpreter']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['deploy']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['training_threshold']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['num_episodes']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['eval_interval']
-            except:
+            except KeyError:
                 pass
             try:
                 del saved_command_line_arguments['prop_type']
-            except:
+            except KeyError:
                 pass
             if self.command_line_arguments['postprocessor'] != '':
                 # Only delete it if it is not set by the command line (in this case take new one)
                 # If "None", later during building none will be created
                 try:
                     del saved_command_line_arguments['postprocessor']
-                except:
+                except KeyError:
                     pass
             if self.command_line_arguments.get('state_labeler', '') != '':
                 # Only delete it if it is not set by the command line (in this case take new one)
                 try:
                     del saved_command_line_arguments['state_labeler']
-                except:
+                except KeyError:
                     pass
             try:
                 del saved_command_line_arguments['range_plotting']
-            except:
+            except KeyError:
                 pass
 
             for key in saved_command_line_arguments.keys():

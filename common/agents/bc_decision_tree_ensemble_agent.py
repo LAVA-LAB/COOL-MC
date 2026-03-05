@@ -239,7 +239,7 @@ class BCDecisionTreeEnsembleAgent(Agent):
         state_2d = state.reshape(1, -1) if state.ndim == 1 else state
         return [int(dt.predict(state_2d)[0]) for dt in self.trees]
 
-    def get_raw_outputs(self, state: np.ndarray) -> np.ndarray:
+    def raw_outputs(self, state: np.ndarray) -> np.ndarray:
         """Get vote proportions for each action (soft voting).
 
         Args:

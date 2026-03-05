@@ -123,7 +123,7 @@ class BCDecisionTreeAgent(Agent):
         action = self.classifier.predict(state_2d)[0]
         return int(action)
 
-    def get_raw_outputs(self, state: np.ndarray) -> np.ndarray:
+    def raw_outputs(self, state: np.ndarray) -> np.ndarray:
         """Get class probabilities for the given state.
 
         Args:
@@ -210,13 +210,13 @@ class BCDecisionTreeAgent(Agent):
         # Get feature names from environment
         try:
             feature_names = env.storm_bridge.state_mapper.get_feature_names()
-        except:
+        except Exception:
             feature_names = [f"feature_{i}" for i in range(self.state_dimension)]
 
         # Get action names
         try:
             action_names = env.action_mapper.actions
-        except:
+        except Exception:
             action_names = [f"action_{i}" for i in range(self.number_of_actions)]
 
         plt.figure(figsize=(20, 10))

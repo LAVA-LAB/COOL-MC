@@ -123,7 +123,7 @@ class DeepQNetwork(nn.Module):
                 else:
                     x = F.relu(self.layers[i](x))
             return x
-        except:
+        except Exception:
             state = torch.tensor(state).float().to(DEVICE)
             x = state
             for i in range(len(self.layers)):

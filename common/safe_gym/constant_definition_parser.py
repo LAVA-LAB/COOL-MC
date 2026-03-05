@@ -31,7 +31,7 @@ class ConstantDefinitionParser():
         for idx, _ in enumerate(parts):
             try:
                 range_list.append(int(parts[idx]))
-            except:
+            except ValueError:
                 range_list.append(float(parts[idx]))
         range_tuple = tuple(range_list)
         assert isinstance(range_tuple, tuple)

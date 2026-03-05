@@ -43,7 +43,7 @@ def to_tuple(number_of_elements : int, values : int):
     :param values [int]: element values
     :return: tuple[int]
     '''
-    n_tuple: List[int] = []
+    n_tuple: list[int] = []
     for i in range(number_of_elements):
         n_tuple.append(values)
     return tuple(n_tuple)

@@ -77,21 +77,10 @@ class SarsaMaxAgent(Agent):
         h_params['Q'] =self.Q
         return h_params
 
-    def load(self, root_folder):
-        try:
-            with open(os.path.join(root_folder, 'model.pickle'), 'rb') as agent_file:
-                config_dict = pickle.load(agent_file)
-                self.Q = config_dict["Q"]
-        except:
-            pass
-
-
-
-
     def save(self):
         try:
             os.mkdir('tmp_model')
-        except:
+        except Exception:
             pass
         config_dict = {
             'Q': self.Q
@@ -104,12 +93,9 @@ class SarsaMaxAgent(Agent):
 
 
     def load(self, model_root_folder_path):
-        with open(os.path.join(model_root_folder_path,'model.pickle'), 'rb') as agent_file:
-                config_dict = pickle.load(agent_file)
-                self.Q = config_dict["Q"]
         try:
-            with open(os.path.join(model_root_folder_path,'model.pickle'), 'rb') as agent_file:
+            with open(os.path.join(model_root_folder_path, 'model.pickle'), 'rb') as agent_file:
                 config_dict = pickle.load(agent_file)
                 self.Q = config_dict["Q"]
-        except:
+        except Exception:
             pass

@@ -31,7 +31,7 @@ class PreprocessorBuilder():
         #print('Environment', observation_space.shape, action_space.n)
         try:
             state_dimension = observation_space.shape[0]
-        except:
+        except Exception:
             state_dimension = 1
         preprocessors = None
         if command_line_arguments['preprocessor'] != "" and command_line_arguments['preprocessor']!="None":

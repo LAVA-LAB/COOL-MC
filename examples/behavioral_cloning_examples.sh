@@ -7,10 +7,10 @@ python cool_mc.py \
   --prism_file_path="transporter.prism" \
   --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" \
   --behavioral_cloning="raw_dataset;../prism_files/transporter.prism;Pmax=? [ F jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10" \
-  --bc_epochs=50 \
+  --bc_epochs=65 \
   --eval_interval=100 \
-  --layers=3 \
-  --neurons=128 \
+  --layers=4 \
+  --neurons=512 \
   --lr=0.001 \
   --batch_size=32 \
   --num_episodes=101 \

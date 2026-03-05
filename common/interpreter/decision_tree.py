@@ -48,4 +48,4 @@ class DecisionTreeInterpreter(Interpreter):
 
         tree.plot_tree(clf, filled=True, class_names=action_labels, feature_names=feature_names)
         plt.title("Decision Tree")
-        plt.savefig('interpretion_plot.png')
+        plt.savefig('interpretation_plot.png')

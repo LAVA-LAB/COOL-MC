@@ -11,15 +11,15 @@ python cool_mc.py \
     --neurons=512 \
     --lr=0.0003 \
     --batch_size=64 \
-    --num_episodes=1000 \
+    --num_episodes=100 \
     --eval_interval=100 \
     --gamma=0.99 \
     --reward_flag=1 \
     --wrong_action_penalty=0 \
-    --prop="" \
+    --prop="Pmax=? [ F jobs_done=1 ]" \
     --max_steps=1000 \
     --behavioral_cloning="raw_dataset;../prism_files/transporter_with_rewards.prism;Pmax=? [ F jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10" \
-    --bc_epochs=65 \
+    --bc_epochs=200 \
     --deploy=1
 
 python cool_mc.py \

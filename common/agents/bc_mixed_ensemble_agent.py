@@ -341,7 +341,7 @@ class BCMixedEnsembleAgent(Agent):
 
         return actions
 
-    def get_raw_outputs(self, state: np.ndarray) -> np.ndarray:
+    def raw_outputs(self, state: np.ndarray) -> np.ndarray:
         """Get vote proportions for each action (soft voting).
 
         Args:

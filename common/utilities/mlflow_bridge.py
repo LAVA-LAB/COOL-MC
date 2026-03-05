@@ -6,7 +6,7 @@ import json
 import mlflow
 import time
 from mlflow.tracking import MlflowClient
-from distutils.dir_util import copy_tree
+from shutil import copytree
 import math
 
 
@@ -22,7 +22,7 @@ class MlFlowBridge:
         # Set project for experiment
         try:
             self.experiment_id = self.client.create_experiment(self.experiment_name)
-        except:
+        except Exception:
             self.experiment_id = self.client.get_experiment_by_name(self.experiment_name).experiment_id
         self.experiment = self.client.get_experiment(self.experiment_id)
         self.create_new_run(self.task, self.parent_run_id)
@@ -67,7 +67,7 @@ class MlFlowBridge:
             new_run_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=run_id_length))
             new_run_path = os.path.join('../mlruns', experiment.experiment_id, new_run_id)
             exists = self.check_folder_in_tree(new_run_id, '../mlruns')
-        copy_tree(run_path, new_run_path)
+        copytree(run_path, new_run_path, dirs_exist_ok=True)
         print("Copied run to " + new_run_path)
         # Modify Meta
         f = open(os.path.join(new_run_path,'meta.yaml'),'r')

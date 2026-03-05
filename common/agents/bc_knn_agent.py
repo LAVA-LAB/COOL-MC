@@ -136,7 +136,7 @@ class BCKNNAgent(Agent):
         action = self.classifier.predict(state_scaled)[0]
         return int(action)
 
-    def get_raw_outputs(self, state: np.ndarray) -> np.ndarray:
+    def raw_outputs(self, state: np.ndarray) -> np.ndarray:
         """Get class probabilities for the given state.
 
         Args:

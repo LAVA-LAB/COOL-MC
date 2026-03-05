@@ -6,8 +6,8 @@ import time
 from typing import Tuple
 import numpy as np
 import stormpy
-from stormpy.utility.utility import JsonContainerRational
-from stormpy.storage.storage import SimpleValuation
+from stormpy.utility import JsonContainerRational
+from stormpy.storage import SimpleValuation
 import common
 from common.safe_gym.state_mapper import StateMapper
 from common.agents.stochastic_agent import StochasticAgent

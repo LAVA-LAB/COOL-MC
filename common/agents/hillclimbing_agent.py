@@ -73,6 +73,6 @@ class HillClimbingAgent(Agent):
         try:
             self.best_w = np.load(os.path.join(root_folder, 'model.npy'))
             self.w = np.load(os.path.join(root_folder, 'model.npy'))
-        except:
+        except Exception:
             self.best_w = np.random.rand(self.state_dimension, self.number_of_actions)
             self.w = np.random.rand(self.state_dimension, self.number_of_actions)

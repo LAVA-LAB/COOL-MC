@@ -275,7 +275,7 @@ class StateMapper:
             try:
                 if self.mapper[name] == idx:
                     return name
-            except:
+            except Exception:
                 pass
         return None
 

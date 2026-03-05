@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import numpy as np
 from collections import deque
 import matplotlib.pyplot as plt
@@ -112,5 +112,5 @@ class ReinforceAgent(Agent):
         """
         try:
             self.policy.load_checkpoint(os.path.join(model_root_folder_path,'policy.chkpt'))
-        except:
+        except Exception:
             pass

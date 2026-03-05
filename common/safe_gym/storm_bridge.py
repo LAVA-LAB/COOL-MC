@@ -12,7 +12,7 @@ import stormpy.examples.files
 import stormpy.utility
 from common.safe_gym.model_checker import ModelChecker
 from common.safe_gym.state_mapper import StateMapper
-from stormpy.utility.utility import JsonContainerDouble
+from stormpy.utility import JsonContainerDouble
 from stormpy.simulator import PrismSimulator
 
 
@@ -69,7 +69,7 @@ class StormBridge:
             str: State as JSON string
         """
         assert isinstance(
-            json_example, stormpy.utility.utility.JsonContainerDouble)
+            json_example, stormpy.utility.JsonContainerDouble)
         dummy_state = {}
         json_example = str(json_example)
         for k in json.loads(json_example):
