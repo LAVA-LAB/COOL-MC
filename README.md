@@ -304,8 +304,7 @@ If you use COOL-MC in your research, please cite the relevant publication(s):
 | 2025 | Translating the Rashomon Effect to Sequential Decision-Making Tasks | arXiv | [arXiv](https://arxiv.org/abs/2512.17470) |
 | 2025 | Verifying Memoryless Sequential Decision-making of Large Language Models | OVERLAY | [arXiv](https://arxiv.org/abs/2510.06756) |
 | 2026 | Formally Verifying and Explaining Sepsis Treatment Policies with COOL-MC | arXiv | [arXiv](https://arxiv.org/abs/2602.14505) |
-| 2026 | COOL-MC: Verifying and Explaining RL Policies for Platelet Inventory Management
- | arXiv | [arXiv](https://arxiv.org/abs/2603.02396) |
+| 2026 | COOL-MC: Verifying and Explaining RL Policies for Platelet Inventory Management | arXiv | [arXiv](https://arxiv.org/abs/2603.02396) |
 
 
 </details>
