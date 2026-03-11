@@ -1,0 +1,2436 @@
+// ============================================================
+// PRISM MDP: 3-Bridge Parallel Network Maintenance
+// Based on: Wei, Bao & Li (2019), ICML RL4RealLife Workshop
+//
+// STATE FEATURES:
+//   cond_b1..cond_b3 : [0..9]  per-bridge NBI condition
+//     state = NBI rating directly (higher = better)
+//     9 = Excellent           
+//     8 = VeryGood            
+//     7 = Good                
+//     6 = Satisfactory        
+//     5 = Fair                
+//     4 = Poor                
+//     3 = Serious             
+//     2 = Critical            
+//     1 = ImminentFailure     
+//     0 = Failed                <- absorbing
+//   budget     : [0..B_MAX]  remaining budget this cycle
+//   cycle_year : [0..3]      year-within-4yr-cycle
+//   year       : [0..T_MAX]  global planning year
+//   init_done  : bool
+//
+// ACTION LABELS: [a_B1_B2_B3]
+//   0=DoNothing(0), 1=MinorMaint(1), 2=MajorMaint(2), 3=Replace(4)
+//   63 feasible joint actions (total cost <= B_MAX=10)
+//
+// TERMINATION: any bridge reaches state 0 (NBI 0, Failed)
+//
+// MAX_JOINT_COST = 3 bridges * cost_RP(4) = 12
+// ============================================================
+
+mdp
+
+const int T_MAX          = 20;
+const int B_MAX;
+const int MAX_JOINT_COST = 12;   // 3 bridges * cost_RP(4) — reward normaliser
+const int cost_DN        = 0;
+const int cost_MN        = 1;
+const int cost_MJ        = 2;
+const int cost_RP        = 4;
+
+formula failed = (cond_b1=0 | cond_b2=0 | cond_b3=0);
+formula alive  = !failed & (year < T_MAX);
+
+label "failed"          = (cond_b1=0 | cond_b2=0 | cond_b3=0);
+label "safe"            = alive;
+label "any_poor"        = (cond_b1<=4 | cond_b2<=4 | cond_b3<=4);
+label "any_serious"     = (cond_b1<=3 | cond_b2<=3 | cond_b3<=3);
+label "any_critical"    = (cond_b1<=2 | cond_b2<=2 | cond_b3<=2);
+label "all_good"        = (cond_b1>=7 & cond_b2>=7 & cond_b3>=7);
+label "budget_low"      = (budget<=1);
+label "budget_empty"    = (budget=0);
+label "cycle_start"     = (cycle_year=0);
+label "cycle_end"       = (cycle_year=3);
+label "at_horizon"      = (year >= T_MAX);
+label "b1_not_critical"  = (cond_b1>=3);
+label "b2_not_critical"  = (cond_b2>=3);
+label "b3_not_critical"  = (cond_b3>=3);
+
+module init_module
+    init_done : bool init false;
+    [start] !init_done -> 1:(init_done'=true);
+endmodule
+
+module budget_time
+    budget     : [0..B_MAX] init B_MAX;
+    cycle_year : [0..3]     init 0;
+    year       : [0..T_MAX] init 0;
+
+    // joint cost = 0  |  budget after reload = 10
+    [a0_0_0] alive & init_done & budget>=0 ->
+        (budget'=(cycle_year=3) ? B_MAX : budget) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 1  |  budget after reload = 9
+    [a0_0_1] alive & init_done & budget>=1 ->
+        (budget'=(cycle_year=3) ? 9 : (budget-1)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a0_1_0] alive & init_done & budget>=1 ->
+        (budget'=(cycle_year=3) ? 9 : (budget-1)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_0_0] alive & init_done & budget>=1 ->
+        (budget'=(cycle_year=3) ? 9 : (budget-1)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 2  |  budget after reload = 8
+    [a0_0_2] alive & init_done & budget>=2 ->
+        (budget'=(cycle_year=3) ? 8 : (budget-2)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a0_1_1] alive & init_done & budget>=2 ->
+        (budget'=(cycle_year=3) ? 8 : (budget-2)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a0_2_0] alive & init_done & budget>=2 ->
+        (budget'=(cycle_year=3) ? 8 : (budget-2)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_0_1] alive & init_done & budget>=2 ->
+        (budget'=(cycle_year=3) ? 8 : (budget-2)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_1_0] alive & init_done & budget>=2 ->
+        (budget'=(cycle_year=3) ? 8 : (budget-2)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_0_0] alive & init_done & budget>=2 ->
+        (budget'=(cycle_year=3) ? 8 : (budget-2)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 3  |  budget after reload = 7
+    [a0_1_2] alive & init_done & budget>=3 ->
+        (budget'=(cycle_year=3) ? 7 : (budget-3)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a0_2_1] alive & init_done & budget>=3 ->
+        (budget'=(cycle_year=3) ? 7 : (budget-3)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_0_2] alive & init_done & budget>=3 ->
+        (budget'=(cycle_year=3) ? 7 : (budget-3)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_1_1] alive & init_done & budget>=3 ->
+        (budget'=(cycle_year=3) ? 7 : (budget-3)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_2_0] alive & init_done & budget>=3 ->
+        (budget'=(cycle_year=3) ? 7 : (budget-3)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_0_1] alive & init_done & budget>=3 ->
+        (budget'=(cycle_year=3) ? 7 : (budget-3)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_1_0] alive & init_done & budget>=3 ->
+        (budget'=(cycle_year=3) ? 7 : (budget-3)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 4  |  budget after reload = 6
+    [a0_0_3] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a0_2_2] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a0_3_0] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_1_2] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_2_1] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_0_2] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_1_1] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_2_0] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_0_0] alive & init_done & budget>=4 ->
+        (budget'=(cycle_year=3) ? 6 : (budget-4)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 5  |  budget after reload = 5
+    [a0_1_3] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a0_3_1] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_0_3] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_2_2] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_3_0] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_1_2] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_2_1] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_0_1] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_1_0] alive & init_done & budget>=5 ->
+        (budget'=(cycle_year=3) ? 5 : (budget-5)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 6  |  budget after reload = 4
+    [a0_2_3] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a0_3_2] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_1_3] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_3_1] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_0_3] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_2_2] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_3_0] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_0_2] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_1_1] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_2_0] alive & init_done & budget>=6 ->
+        (budget'=(cycle_year=3) ? 4 : (budget-6)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 7  |  budget after reload = 3
+    [a1_2_3] alive & init_done & budget>=7 ->
+        (budget'=(cycle_year=3) ? 3 : (budget-7)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a1_3_2] alive & init_done & budget>=7 ->
+        (budget'=(cycle_year=3) ? 3 : (budget-7)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_1_3] alive & init_done & budget>=7 ->
+        (budget'=(cycle_year=3) ? 3 : (budget-7)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_3_1] alive & init_done & budget>=7 ->
+        (budget'=(cycle_year=3) ? 3 : (budget-7)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_1_2] alive & init_done & budget>=7 ->
+        (budget'=(cycle_year=3) ? 3 : (budget-7)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_2_1] alive & init_done & budget>=7 ->
+        (budget'=(cycle_year=3) ? 3 : (budget-7)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 8  |  budget after reload = 2
+    [a0_3_3] alive & init_done & budget>=8 ->
+        (budget'=(cycle_year=3) ? 2 : (budget-8)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_2_3] alive & init_done & budget>=8 ->
+        (budget'=(cycle_year=3) ? 2 : (budget-8)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a2_3_2] alive & init_done & budget>=8 ->
+        (budget'=(cycle_year=3) ? 2 : (budget-8)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_0_3] alive & init_done & budget>=8 ->
+        (budget'=(cycle_year=3) ? 2 : (budget-8)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_2_2] alive & init_done & budget>=8 ->
+        (budget'=(cycle_year=3) ? 2 : (budget-8)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_3_0] alive & init_done & budget>=8 ->
+        (budget'=(cycle_year=3) ? 2 : (budget-8)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 9  |  budget after reload = 1
+    [a1_3_3] alive & init_done & budget>=9 ->
+        (budget'=(cycle_year=3) ? 1 : (budget-9)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_1_3] alive & init_done & budget>=9 ->
+        (budget'=(cycle_year=3) ? 1 : (budget-9)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_3_1] alive & init_done & budget>=9 ->
+        (budget'=(cycle_year=3) ? 1 : (budget-9)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    // joint cost = 10  |  budget after reload = 0
+    [a2_3_3] alive & init_done & budget>=10 ->
+        (budget'=(cycle_year=3) ? 0 : (budget-10)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_2_3] alive & init_done & budget>=10 ->
+        (budget'=(cycle_year=3) ? 0 : (budget-10)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+    [a3_3_2] alive & init_done & budget>=10 ->
+        (budget'=(cycle_year=3) ? 0 : (budget-10)) & (cycle_year'=(cycle_year=3)?0:(cycle_year+1)) & (year'=year+1);
+
+    [done] !alive -> 1:(budget'=budget) & (cycle_year'=cycle_year) & (year'=year);
+endmodule
+
+module bridge1
+    cond_b1 : [0..9] init 9;
+
+    // Initial draw: Excellent(9), VeryGood(8), Good(7) with equal probability
+    [start] !init_done -> 0.34:(cond_b1'=9) + 0.33:(cond_b1'=8) + 0.33:(cond_b1'=7);
+
+    // Action 0 (DN)
+    // cond_b1=0: 1.0:(cond_b1'=0)
+    [a0_0_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_0_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_0_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_0_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_1_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_1_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_1_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_1_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_2_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_2_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_2_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_2_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_3_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_3_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_3_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a0_3_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    // cond_b1=1: 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0)
+    [a0_0_0] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_0_1] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_0_2] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_0_3] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_1_0] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_1_1] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_1_2] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_1_3] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_2_0] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_2_1] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_2_2] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_2_3] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_3_0] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_3_1] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_3_2] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a0_3_3] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    // cond_b1=2: 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1)
+    [a0_0_0] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_0_1] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_0_2] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_0_3] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_1_0] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_1_1] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_1_2] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_1_3] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_2_0] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_2_1] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_2_2] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_2_3] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_3_0] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_3_1] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_3_2] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a0_3_3] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    // cond_b1=3: 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2)
+    [a0_0_0] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_0_1] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_0_2] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_0_3] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_1_0] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_1_1] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_1_2] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_1_3] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_2_0] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_2_1] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_2_2] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_2_3] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_3_0] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_3_1] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_3_2] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a0_3_3] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    // cond_b1=4: 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3)
+    [a0_0_0] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_0_1] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_0_2] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_0_3] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_1_0] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_1_1] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_1_2] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_1_3] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_2_0] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_2_1] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_2_2] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_2_3] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_3_0] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_3_1] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_3_2] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    [a0_3_3] alive & init_done & cond_b1=4 -> 0.82:(cond_b1'=4) + 0.18:(cond_b1'=3);
+    // cond_b1=5: 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4)
+    [a0_0_0] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_0_1] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_0_2] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_0_3] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_1_0] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_1_1] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_1_2] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_1_3] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_2_0] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_2_1] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_2_2] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_2_3] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_3_0] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_3_1] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_3_2] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    [a0_3_3] alive & init_done & cond_b1=5 -> 0.83:(cond_b1'=5) + 0.17:(cond_b1'=4);
+    // cond_b1=6: 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5)
+    [a0_0_0] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_0_1] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_0_2] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_0_3] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_1_0] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_1_1] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_1_2] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_1_3] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_2_0] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_2_1] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_2_2] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_2_3] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_3_0] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_3_1] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_3_2] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    [a0_3_3] alive & init_done & cond_b1=6 -> 0.84:(cond_b1'=6) + 0.16:(cond_b1'=5);
+    // cond_b1=7: 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6)
+    [a0_0_0] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_0_1] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_0_2] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_0_3] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_1_0] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_1_1] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_1_2] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_1_3] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_2_0] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_2_1] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_2_2] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_2_3] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_3_0] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_3_1] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_3_2] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    [a0_3_3] alive & init_done & cond_b1=7 -> 0.85:(cond_b1'=7) + 0.15:(cond_b1'=6);
+    // cond_b1=8: 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7)
+    [a0_0_0] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_0_1] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_0_2] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_0_3] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_1_0] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_1_1] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_1_2] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_1_3] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_2_0] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_2_1] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_2_2] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_2_3] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_3_0] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_3_1] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_3_2] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a0_3_3] alive & init_done & cond_b1=8 -> 0.9:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    // cond_b1=9: 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8)
+    [a0_0_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_0_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_0_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_0_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_1_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_1_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_1_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_1_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_2_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_2_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_2_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_2_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_3_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_3_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_3_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a0_3_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+
+    // Action 1 (MN)
+    // cond_b1=0: 1.0:(cond_b1'=0)
+    [a1_0_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_0_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_0_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_0_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_1_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_1_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_1_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_1_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_2_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_2_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_2_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_2_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_3_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_3_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_3_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a1_3_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    // cond_b1=1: 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0)
+    [a1_0_0] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_0_1] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_0_2] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_0_3] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_1_0] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_1_1] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_1_2] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_1_3] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_2_0] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_2_1] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_2_2] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_2_3] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_3_0] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_3_1] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_3_2] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    [a1_3_3] alive & init_done & cond_b1=1 -> 0.65:(cond_b1'=1) + 0.35:(cond_b1'=0);
+    // cond_b1=2: 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1)
+    [a1_0_0] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_0_1] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_0_2] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_0_3] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_1_0] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_1_1] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_1_2] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_1_3] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_2_0] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_2_1] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_2_2] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_2_3] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_3_0] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_3_1] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_3_2] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    [a1_3_3] alive & init_done & cond_b1=2 -> 0.75:(cond_b1'=2) + 0.25:(cond_b1'=1);
+    // cond_b1=3: 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2)
+    [a1_0_0] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_0_1] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_0_2] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_0_3] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_1_0] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_1_1] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_1_2] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_1_3] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_2_0] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_2_1] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_2_2] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_2_3] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_3_0] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_3_1] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_3_2] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    [a1_3_3] alive & init_done & cond_b1=3 -> 0.78:(cond_b1'=3) + 0.22:(cond_b1'=2);
+    // cond_b1=4: 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4)
+    [a1_0_0] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_0_1] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_0_2] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_0_3] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_1_0] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_1_1] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_1_2] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_1_3] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_2_0] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_2_1] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_2_2] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_2_3] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_3_0] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_3_1] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_3_2] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    [a1_3_3] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=6) + 0.5:(cond_b1'=5) + 0.3:(cond_b1'=4);
+    // cond_b1=5: 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5)
+    [a1_0_0] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_0_1] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_0_2] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_0_3] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_1_0] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_1_1] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_1_2] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_1_3] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_2_0] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_2_1] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_2_2] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_2_3] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_3_0] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_3_1] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_3_2] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    [a1_3_3] alive & init_done & cond_b1=5 -> 0.2:(cond_b1'=7) + 0.5:(cond_b1'=6) + 0.3:(cond_b1'=5);
+    // cond_b1=6: 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6)
+    [a1_0_0] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_0_1] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_0_2] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_0_3] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_1_0] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_1_1] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_1_2] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_1_3] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_2_0] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_2_1] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_2_2] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_2_3] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_3_0] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_3_1] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_3_2] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    [a1_3_3] alive & init_done & cond_b1=6 -> 0.1:(cond_b1'=8) + 0.5:(cond_b1'=7) + 0.4:(cond_b1'=6);
+    // cond_b1=7: 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7)
+    [a1_0_0] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_0_1] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_0_2] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_0_3] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_1_0] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_1_1] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_1_2] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_1_3] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_2_0] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_2_1] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_2_2] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_2_3] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_3_0] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_3_1] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_3_2] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    [a1_3_3] alive & init_done & cond_b1=7 -> 0.2:(cond_b1'=9) + 0.5:(cond_b1'=8) + 0.3:(cond_b1'=7);
+    // cond_b1=8: 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8)
+    [a1_0_0] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_0_1] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_0_2] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_0_3] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_1_0] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_1_1] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_1_2] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_1_3] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_2_0] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_2_1] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_2_2] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_2_3] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_3_0] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_3_1] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_3_2] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    [a1_3_3] alive & init_done & cond_b1=8 -> 0.4:(cond_b1'=9) + 0.6:(cond_b1'=8);
+    // cond_b1=9: 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8)
+    [a1_0_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_0_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_0_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_0_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_1_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_1_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_1_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_1_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_2_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_2_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_2_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_2_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_3_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_3_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_3_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a1_3_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+
+    // Action 2 (MJ)
+    // cond_b1=0: 1.0:(cond_b1'=0)
+    [a2_0_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_0_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_0_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_0_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_1_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_1_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_1_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_1_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_2_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_2_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_2_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_2_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_3_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_3_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_3_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a2_3_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    // cond_b1=1: 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2)
+    [a2_0_0] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_0_1] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_0_2] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_0_3] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_1_0] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_1_1] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_1_2] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_1_3] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_2_0] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_2_1] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_2_2] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_2_3] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_3_0] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_3_1] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_3_2] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    [a2_3_3] alive & init_done & cond_b1=1 -> 0.2:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.3:(cond_b1'=3) + 0.2:(cond_b1'=2);
+    // cond_b1=2: 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3)
+    [a2_0_0] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_0_1] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_0_2] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_0_3] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_1_0] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_1_1] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_1_2] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_1_3] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_2_0] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_2_1] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_2_2] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_2_3] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_3_0] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_3_1] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_3_2] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    [a2_3_3] alive & init_done & cond_b1=2 -> 0.2:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.3:(cond_b1'=4) + 0.2:(cond_b1'=3);
+    // cond_b1=3: 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4)
+    [a2_0_0] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_0_1] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_0_2] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_0_3] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_1_0] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_1_1] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_1_2] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_1_3] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_2_0] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_2_1] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_2_2] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_2_3] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_3_0] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_3_1] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_3_2] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    [a2_3_3] alive & init_done & cond_b1=3 -> 0.2:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.3:(cond_b1'=5) + 0.2:(cond_b1'=4);
+    // cond_b1=4: 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5)
+    [a2_0_0] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_0_1] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_0_2] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_0_3] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_1_0] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_1_1] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_1_2] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_1_3] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_2_0] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_2_1] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_2_2] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_2_3] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_3_0] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_3_1] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_3_2] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    [a2_3_3] alive & init_done & cond_b1=4 -> 0.2:(cond_b1'=8) + 0.3:(cond_b1'=7) + 0.3:(cond_b1'=6) + 0.2:(cond_b1'=5);
+    // cond_b1=5: 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6)
+    [a2_0_0] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_0_1] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_0_2] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_0_3] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_1_0] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_1_1] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_1_2] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_1_3] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_2_0] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_2_1] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_2_2] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_2_3] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_3_0] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_3_1] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_3_2] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    [a2_3_3] alive & init_done & cond_b1=5 -> 0.3:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.2:(cond_b1'=6);
+    // cond_b1=6: 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6)
+    [a2_0_0] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_0_1] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_0_2] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_0_3] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_1_0] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_1_1] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_1_2] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_1_3] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_2_0] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_2_1] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_2_2] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_2_3] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_3_0] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_3_1] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_3_2] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    [a2_3_3] alive & init_done & cond_b1=6 -> 0.4:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.2:(cond_b1'=7) + 0.1:(cond_b1'=6);
+    // cond_b1=7: 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7)
+    [a2_0_0] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_0_1] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_0_2] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_0_3] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_1_0] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_1_1] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_1_2] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_1_3] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_2_0] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_2_1] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_2_2] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_2_3] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_3_0] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_3_1] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_3_2] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    [a2_3_3] alive & init_done & cond_b1=7 -> 0.6:(cond_b1'=9) + 0.3:(cond_b1'=8) + 0.1:(cond_b1'=7);
+    // cond_b1=8: 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8)
+    [a2_0_0] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_0_1] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_0_2] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_0_3] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_1_0] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_1_1] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_1_2] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_1_3] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_2_0] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_2_1] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_2_2] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_2_3] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_3_0] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_3_1] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_3_2] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    [a2_3_3] alive & init_done & cond_b1=8 -> 0.8:(cond_b1'=9) + 0.2:(cond_b1'=8);
+    // cond_b1=9: 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8)
+    [a2_0_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_0_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_0_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_0_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_1_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_1_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_1_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_1_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_2_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_2_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_2_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_2_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_3_0] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_3_1] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_3_2] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+    [a2_3_3] alive & init_done & cond_b1=9 -> 0.95:(cond_b1'=9) + 0.05:(cond_b1'=8);
+
+    // Action 3 (RP)
+    // cond_b1=0: 1.0:(cond_b1'=0)
+    [a3_0_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_0_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_0_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_0_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_1_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_1_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_1_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_1_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_2_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_2_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_2_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_2_3] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_3_0] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_3_1] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    [a3_3_2] alive & init_done & cond_b1=0 -> 1.0:(cond_b1'=0);
+    // cond_b1=1: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=1 -> 1.0:(cond_b1'=9);
+    // cond_b1=2: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=2 -> 1.0:(cond_b1'=9);
+    // cond_b1=3: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=3 -> 1.0:(cond_b1'=9);
+    // cond_b1=4: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=4 -> 1.0:(cond_b1'=9);
+    // cond_b1=5: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=5 -> 1.0:(cond_b1'=9);
+    // cond_b1=6: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=6 -> 1.0:(cond_b1'=9);
+    // cond_b1=7: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=7 -> 1.0:(cond_b1'=9);
+    // cond_b1=8: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=8 -> 1.0:(cond_b1'=9);
+    // cond_b1=9: 1.0:(cond_b1'=9)
+    [a3_0_0] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_0_1] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_0_2] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_0_3] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_1_0] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_1_1] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_1_2] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_1_3] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_2_0] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_2_1] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_2_2] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_2_3] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_3_0] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_3_1] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+    [a3_3_2] alive & init_done & cond_b1=9 -> 1.0:(cond_b1'=9);
+
+    [done] !alive -> 1:(cond_b1'=cond_b1);
+endmodule
+
+module bridge2
+    cond_b2 : [0..9] init 9;
+
+    // Initial draw: Excellent(9), VeryGood(8), Good(7) with equal probability
+    [start] !init_done -> 0.34:(cond_b2'=9) + 0.33:(cond_b2'=8) + 0.33:(cond_b2'=7);
+
+    // Action 0 (DN)
+    // cond_b2=0: 1.0:(cond_b2'=0)
+    [a0_0_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_0_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_0_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_0_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_0_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_0_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_0_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_0_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_0_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_0_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_0_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_0_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_0_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_0_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_0_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_0_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    // cond_b2=1: 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0)
+    [a0_0_0] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a0_0_1] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a0_0_2] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a0_0_3] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a1_0_0] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a1_0_1] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a1_0_2] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a1_0_3] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a2_0_0] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a2_0_1] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a2_0_2] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a2_0_3] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a3_0_0] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a3_0_1] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a3_0_2] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a3_0_3] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    // cond_b2=2: 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1)
+    [a0_0_0] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a0_0_1] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a0_0_2] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a0_0_3] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a1_0_0] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a1_0_1] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a1_0_2] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a1_0_3] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a2_0_0] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a2_0_1] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a2_0_2] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a2_0_3] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a3_0_0] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a3_0_1] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a3_0_2] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a3_0_3] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    // cond_b2=3: 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2)
+    [a0_0_0] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a0_0_1] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a0_0_2] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a0_0_3] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a1_0_0] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a1_0_1] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a1_0_2] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a1_0_3] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a2_0_0] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a2_0_1] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a2_0_2] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a2_0_3] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a3_0_0] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a3_0_1] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a3_0_2] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a3_0_3] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    // cond_b2=4: 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3)
+    [a0_0_0] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a0_0_1] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a0_0_2] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a0_0_3] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a1_0_0] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a1_0_1] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a1_0_2] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a1_0_3] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a2_0_0] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a2_0_1] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a2_0_2] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a2_0_3] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a3_0_0] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a3_0_1] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a3_0_2] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    [a3_0_3] alive & init_done & cond_b2=4 -> 0.82:(cond_b2'=4) + 0.18:(cond_b2'=3);
+    // cond_b2=5: 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4)
+    [a0_0_0] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a0_0_1] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a0_0_2] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a0_0_3] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a1_0_0] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a1_0_1] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a1_0_2] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a1_0_3] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a2_0_0] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a2_0_1] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a2_0_2] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a2_0_3] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a3_0_0] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a3_0_1] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a3_0_2] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    [a3_0_3] alive & init_done & cond_b2=5 -> 0.83:(cond_b2'=5) + 0.17:(cond_b2'=4);
+    // cond_b2=6: 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5)
+    [a0_0_0] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a0_0_1] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a0_0_2] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a0_0_3] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a1_0_0] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a1_0_1] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a1_0_2] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a1_0_3] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a2_0_0] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a2_0_1] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a2_0_2] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a2_0_3] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a3_0_0] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a3_0_1] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a3_0_2] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    [a3_0_3] alive & init_done & cond_b2=6 -> 0.84:(cond_b2'=6) + 0.16:(cond_b2'=5);
+    // cond_b2=7: 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6)
+    [a0_0_0] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a0_0_1] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a0_0_2] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a0_0_3] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a1_0_0] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a1_0_1] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a1_0_2] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a1_0_3] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a2_0_0] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a2_0_1] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a2_0_2] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a2_0_3] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a3_0_0] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a3_0_1] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a3_0_2] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    [a3_0_3] alive & init_done & cond_b2=7 -> 0.85:(cond_b2'=7) + 0.15:(cond_b2'=6);
+    // cond_b2=8: 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7)
+    [a0_0_0] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a0_0_1] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a0_0_2] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a0_0_3] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a1_0_0] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a1_0_1] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a1_0_2] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a1_0_3] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a2_0_0] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a2_0_1] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a2_0_2] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a2_0_3] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a3_0_0] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a3_0_1] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a3_0_2] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a3_0_3] alive & init_done & cond_b2=8 -> 0.9:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    // cond_b2=9: 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8)
+    [a0_0_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_0_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_0_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_0_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_0_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_0_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_0_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_0_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_0_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_0_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_0_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_0_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_0_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_0_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_0_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_0_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+
+    // Action 1 (MN)
+    // cond_b2=0: 1.0:(cond_b2'=0)
+    [a0_1_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_1_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_1_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_1_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_1_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_1_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_1_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_1_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_1_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_1_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_1_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_1_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_1_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_1_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_1_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_1_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    // cond_b2=1: 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0)
+    [a0_1_0] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a0_1_1] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a0_1_2] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a0_1_3] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a1_1_0] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a1_1_1] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a1_1_2] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a1_1_3] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a2_1_0] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a2_1_1] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a2_1_2] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a2_1_3] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a3_1_0] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a3_1_1] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a3_1_2] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    [a3_1_3] alive & init_done & cond_b2=1 -> 0.65:(cond_b2'=1) + 0.35:(cond_b2'=0);
+    // cond_b2=2: 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1)
+    [a0_1_0] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a0_1_1] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a0_1_2] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a0_1_3] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a1_1_0] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a1_1_1] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a1_1_2] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a1_1_3] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a2_1_0] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a2_1_1] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a2_1_2] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a2_1_3] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a3_1_0] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a3_1_1] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a3_1_2] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    [a3_1_3] alive & init_done & cond_b2=2 -> 0.75:(cond_b2'=2) + 0.25:(cond_b2'=1);
+    // cond_b2=3: 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2)
+    [a0_1_0] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a0_1_1] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a0_1_2] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a0_1_3] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a1_1_0] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a1_1_1] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a1_1_2] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a1_1_3] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a2_1_0] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a2_1_1] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a2_1_2] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a2_1_3] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a3_1_0] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a3_1_1] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a3_1_2] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    [a3_1_3] alive & init_done & cond_b2=3 -> 0.78:(cond_b2'=3) + 0.22:(cond_b2'=2);
+    // cond_b2=4: 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4)
+    [a0_1_0] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a0_1_1] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a0_1_2] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a0_1_3] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a1_1_0] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a1_1_1] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a1_1_2] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a1_1_3] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a2_1_0] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a2_1_1] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a2_1_2] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a2_1_3] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a3_1_0] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a3_1_1] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a3_1_2] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    [a3_1_3] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=6) + 0.5:(cond_b2'=5) + 0.3:(cond_b2'=4);
+    // cond_b2=5: 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5)
+    [a0_1_0] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a0_1_1] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a0_1_2] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a0_1_3] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a1_1_0] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a1_1_1] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a1_1_2] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a1_1_3] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a2_1_0] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a2_1_1] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a2_1_2] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a2_1_3] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a3_1_0] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a3_1_1] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a3_1_2] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    [a3_1_3] alive & init_done & cond_b2=5 -> 0.2:(cond_b2'=7) + 0.5:(cond_b2'=6) + 0.3:(cond_b2'=5);
+    // cond_b2=6: 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6)
+    [a0_1_0] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a0_1_1] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a0_1_2] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a0_1_3] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a1_1_0] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a1_1_1] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a1_1_2] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a1_1_3] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a2_1_0] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a2_1_1] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a2_1_2] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a2_1_3] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a3_1_0] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a3_1_1] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a3_1_2] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    [a3_1_3] alive & init_done & cond_b2=6 -> 0.1:(cond_b2'=8) + 0.5:(cond_b2'=7) + 0.4:(cond_b2'=6);
+    // cond_b2=7: 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7)
+    [a0_1_0] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a0_1_1] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a0_1_2] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a0_1_3] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a1_1_0] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a1_1_1] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a1_1_2] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a1_1_3] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a2_1_0] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a2_1_1] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a2_1_2] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a2_1_3] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a3_1_0] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a3_1_1] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a3_1_2] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    [a3_1_3] alive & init_done & cond_b2=7 -> 0.2:(cond_b2'=9) + 0.5:(cond_b2'=8) + 0.3:(cond_b2'=7);
+    // cond_b2=8: 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8)
+    [a0_1_0] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a0_1_1] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a0_1_2] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a0_1_3] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a1_1_0] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a1_1_1] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a1_1_2] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a1_1_3] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a2_1_0] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a2_1_1] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a2_1_2] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a2_1_3] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a3_1_0] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a3_1_1] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a3_1_2] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    [a3_1_3] alive & init_done & cond_b2=8 -> 0.4:(cond_b2'=9) + 0.6:(cond_b2'=8);
+    // cond_b2=9: 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8)
+    [a0_1_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_1_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_1_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_1_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_1_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_1_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_1_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_1_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_1_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_1_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_1_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_1_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_1_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_1_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_1_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_1_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+
+    // Action 2 (MJ)
+    // cond_b2=0: 1.0:(cond_b2'=0)
+    [a0_2_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_2_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_2_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_2_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_2_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_2_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_2_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_2_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_2_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_2_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_2_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_2_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_2_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_2_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_2_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_2_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    // cond_b2=1: 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2)
+    [a0_2_0] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a0_2_1] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a0_2_2] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a0_2_3] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a1_2_0] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a1_2_1] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a1_2_2] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a1_2_3] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a2_2_0] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a2_2_1] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a2_2_2] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a2_2_3] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a3_2_0] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a3_2_1] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a3_2_2] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    [a3_2_3] alive & init_done & cond_b2=1 -> 0.2:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.3:(cond_b2'=3) + 0.2:(cond_b2'=2);
+    // cond_b2=2: 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3)
+    [a0_2_0] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a0_2_1] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a0_2_2] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a0_2_3] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a1_2_0] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a1_2_1] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a1_2_2] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a1_2_3] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a2_2_0] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a2_2_1] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a2_2_2] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a2_2_3] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a3_2_0] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a3_2_1] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a3_2_2] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    [a3_2_3] alive & init_done & cond_b2=2 -> 0.2:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.3:(cond_b2'=4) + 0.2:(cond_b2'=3);
+    // cond_b2=3: 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4)
+    [a0_2_0] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a0_2_1] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a0_2_2] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a0_2_3] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a1_2_0] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a1_2_1] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a1_2_2] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a1_2_3] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a2_2_0] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a2_2_1] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a2_2_2] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a2_2_3] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a3_2_0] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a3_2_1] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a3_2_2] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    [a3_2_3] alive & init_done & cond_b2=3 -> 0.2:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.3:(cond_b2'=5) + 0.2:(cond_b2'=4);
+    // cond_b2=4: 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5)
+    [a0_2_0] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a0_2_1] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a0_2_2] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a0_2_3] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a1_2_0] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a1_2_1] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a1_2_2] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a1_2_3] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a2_2_0] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a2_2_1] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a2_2_2] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a2_2_3] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a3_2_0] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a3_2_1] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a3_2_2] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    [a3_2_3] alive & init_done & cond_b2=4 -> 0.2:(cond_b2'=8) + 0.3:(cond_b2'=7) + 0.3:(cond_b2'=6) + 0.2:(cond_b2'=5);
+    // cond_b2=5: 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6)
+    [a0_2_0] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a0_2_1] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a0_2_2] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a0_2_3] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a1_2_0] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a1_2_1] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a1_2_2] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a1_2_3] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a2_2_0] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a2_2_1] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a2_2_2] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a2_2_3] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a3_2_0] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a3_2_1] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a3_2_2] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    [a3_2_3] alive & init_done & cond_b2=5 -> 0.3:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.2:(cond_b2'=6);
+    // cond_b2=6: 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6)
+    [a0_2_0] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a0_2_1] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a0_2_2] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a0_2_3] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a1_2_0] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a1_2_1] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a1_2_2] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a1_2_3] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a2_2_0] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a2_2_1] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a2_2_2] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a2_2_3] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a3_2_0] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a3_2_1] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a3_2_2] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    [a3_2_3] alive & init_done & cond_b2=6 -> 0.4:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.2:(cond_b2'=7) + 0.1:(cond_b2'=6);
+    // cond_b2=7: 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7)
+    [a0_2_0] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a0_2_1] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a0_2_2] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a0_2_3] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a1_2_0] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a1_2_1] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a1_2_2] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a1_2_3] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a2_2_0] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a2_2_1] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a2_2_2] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a2_2_3] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a3_2_0] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a3_2_1] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a3_2_2] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    [a3_2_3] alive & init_done & cond_b2=7 -> 0.6:(cond_b2'=9) + 0.3:(cond_b2'=8) + 0.1:(cond_b2'=7);
+    // cond_b2=8: 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8)
+    [a0_2_0] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a0_2_1] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a0_2_2] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a0_2_3] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a1_2_0] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a1_2_1] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a1_2_2] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a1_2_3] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a2_2_0] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a2_2_1] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a2_2_2] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a2_2_3] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a3_2_0] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a3_2_1] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a3_2_2] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    [a3_2_3] alive & init_done & cond_b2=8 -> 0.8:(cond_b2'=9) + 0.2:(cond_b2'=8);
+    // cond_b2=9: 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8)
+    [a0_2_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_2_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_2_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a0_2_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_2_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_2_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_2_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a1_2_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_2_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_2_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_2_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a2_2_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_2_0] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_2_1] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_2_2] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+    [a3_2_3] alive & init_done & cond_b2=9 -> 0.95:(cond_b2'=9) + 0.05:(cond_b2'=8);
+
+    // Action 3 (RP)
+    // cond_b2=0: 1.0:(cond_b2'=0)
+    [a0_3_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_3_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_3_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a0_3_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_3_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_3_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_3_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a1_3_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_3_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_3_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_3_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a2_3_3] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_3_0] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_3_1] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    [a3_3_2] alive & init_done & cond_b2=0 -> 1.0:(cond_b2'=0);
+    // cond_b2=1: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=1 -> 1.0:(cond_b2'=9);
+    // cond_b2=2: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=2 -> 1.0:(cond_b2'=9);
+    // cond_b2=3: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=3 -> 1.0:(cond_b2'=9);
+    // cond_b2=4: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=4 -> 1.0:(cond_b2'=9);
+    // cond_b2=5: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=5 -> 1.0:(cond_b2'=9);
+    // cond_b2=6: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=6 -> 1.0:(cond_b2'=9);
+    // cond_b2=7: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=7 -> 1.0:(cond_b2'=9);
+    // cond_b2=8: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=8 -> 1.0:(cond_b2'=9);
+    // cond_b2=9: 1.0:(cond_b2'=9)
+    [a0_3_0] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a0_3_1] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a0_3_2] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a0_3_3] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a1_3_0] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a1_3_1] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a1_3_2] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a1_3_3] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a2_3_0] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a2_3_1] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a2_3_2] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a2_3_3] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a3_3_0] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a3_3_1] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+    [a3_3_2] alive & init_done & cond_b2=9 -> 1.0:(cond_b2'=9);
+
+    [done] !alive -> 1:(cond_b2'=cond_b2);
+endmodule
+
+module bridge3
+    cond_b3 : [0..9] init 9;
+
+    // Initial draw: Excellent(9), VeryGood(8), Good(7) with equal probability
+    [start] !init_done -> 0.34:(cond_b3'=9) + 0.33:(cond_b3'=8) + 0.33:(cond_b3'=7);
+
+    // Action 0 (DN)
+    // cond_b3=0: 1.0:(cond_b3'=0)
+    [a0_0_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_1_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_2_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_3_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_0_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_1_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_2_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_3_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_0_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_1_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_2_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_3_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_0_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_1_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_2_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_3_0] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    // cond_b3=1: 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0)
+    [a0_0_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a0_1_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a0_2_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a0_3_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a1_0_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a1_1_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a1_2_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a1_3_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a2_0_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a2_1_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a2_2_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a2_3_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a3_0_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a3_1_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a3_2_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a3_3_0] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    // cond_b3=2: 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1)
+    [a0_0_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a0_1_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a0_2_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a0_3_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a1_0_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a1_1_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a1_2_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a1_3_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a2_0_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a2_1_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a2_2_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a2_3_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a3_0_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a3_1_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a3_2_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a3_3_0] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    // cond_b3=3: 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2)
+    [a0_0_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a0_1_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a0_2_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a0_3_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a1_0_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a1_1_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a1_2_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a1_3_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a2_0_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a2_1_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a2_2_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a2_3_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a3_0_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a3_1_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a3_2_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a3_3_0] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    // cond_b3=4: 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3)
+    [a0_0_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a0_1_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a0_2_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a0_3_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a1_0_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a1_1_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a1_2_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a1_3_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a2_0_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a2_1_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a2_2_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a2_3_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a3_0_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a3_1_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a3_2_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    [a3_3_0] alive & init_done & cond_b3=4 -> 0.82:(cond_b3'=4) + 0.18:(cond_b3'=3);
+    // cond_b3=5: 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4)
+    [a0_0_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a0_1_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a0_2_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a0_3_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a1_0_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a1_1_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a1_2_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a1_3_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a2_0_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a2_1_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a2_2_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a2_3_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a3_0_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a3_1_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a3_2_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    [a3_3_0] alive & init_done & cond_b3=5 -> 0.83:(cond_b3'=5) + 0.17:(cond_b3'=4);
+    // cond_b3=6: 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5)
+    [a0_0_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a0_1_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a0_2_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a0_3_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a1_0_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a1_1_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a1_2_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a1_3_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a2_0_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a2_1_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a2_2_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a2_3_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a3_0_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a3_1_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a3_2_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    [a3_3_0] alive & init_done & cond_b3=6 -> 0.84:(cond_b3'=6) + 0.16:(cond_b3'=5);
+    // cond_b3=7: 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6)
+    [a0_0_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a0_1_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a0_2_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a0_3_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a1_0_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a1_1_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a1_2_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a1_3_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a2_0_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a2_1_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a2_2_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a2_3_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a3_0_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a3_1_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a3_2_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    [a3_3_0] alive & init_done & cond_b3=7 -> 0.85:(cond_b3'=7) + 0.15:(cond_b3'=6);
+    // cond_b3=8: 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7)
+    [a0_0_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a0_1_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a0_2_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a0_3_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a1_0_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a1_1_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a1_2_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a1_3_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a2_0_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a2_1_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a2_2_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a2_3_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a3_0_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a3_1_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a3_2_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a3_3_0] alive & init_done & cond_b3=8 -> 0.9:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    // cond_b3=9: 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8)
+    [a0_0_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_1_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_2_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_3_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_0_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_1_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_2_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_3_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_0_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_1_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_2_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_3_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_0_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_1_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_2_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_3_0] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+
+    // Action 1 (MN)
+    // cond_b3=0: 1.0:(cond_b3'=0)
+    [a0_0_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_1_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_2_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_3_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_0_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_1_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_2_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_3_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_0_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_1_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_2_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_3_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_0_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_1_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_2_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_3_1] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    // cond_b3=1: 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0)
+    [a0_0_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a0_1_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a0_2_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a0_3_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a1_0_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a1_1_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a1_2_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a1_3_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a2_0_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a2_1_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a2_2_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a2_3_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a3_0_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a3_1_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a3_2_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    [a3_3_1] alive & init_done & cond_b3=1 -> 0.65:(cond_b3'=1) + 0.35:(cond_b3'=0);
+    // cond_b3=2: 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1)
+    [a0_0_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a0_1_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a0_2_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a0_3_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a1_0_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a1_1_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a1_2_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a1_3_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a2_0_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a2_1_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a2_2_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a2_3_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a3_0_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a3_1_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a3_2_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    [a3_3_1] alive & init_done & cond_b3=2 -> 0.75:(cond_b3'=2) + 0.25:(cond_b3'=1);
+    // cond_b3=3: 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2)
+    [a0_0_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a0_1_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a0_2_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a0_3_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a1_0_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a1_1_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a1_2_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a1_3_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a2_0_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a2_1_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a2_2_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a2_3_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a3_0_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a3_1_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a3_2_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    [a3_3_1] alive & init_done & cond_b3=3 -> 0.78:(cond_b3'=3) + 0.22:(cond_b3'=2);
+    // cond_b3=4: 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4)
+    [a0_0_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a0_1_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a0_2_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a0_3_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a1_0_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a1_1_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a1_2_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a1_3_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a2_0_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a2_1_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a2_2_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a2_3_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a3_0_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a3_1_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a3_2_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    [a3_3_1] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=6) + 0.5:(cond_b3'=5) + 0.3:(cond_b3'=4);
+    // cond_b3=5: 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5)
+    [a0_0_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a0_1_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a0_2_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a0_3_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a1_0_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a1_1_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a1_2_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a1_3_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a2_0_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a2_1_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a2_2_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a2_3_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a3_0_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a3_1_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a3_2_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    [a3_3_1] alive & init_done & cond_b3=5 -> 0.2:(cond_b3'=7) + 0.5:(cond_b3'=6) + 0.3:(cond_b3'=5);
+    // cond_b3=6: 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6)
+    [a0_0_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a0_1_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a0_2_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a0_3_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a1_0_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a1_1_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a1_2_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a1_3_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a2_0_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a2_1_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a2_2_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a2_3_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a3_0_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a3_1_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a3_2_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    [a3_3_1] alive & init_done & cond_b3=6 -> 0.1:(cond_b3'=8) + 0.5:(cond_b3'=7) + 0.4:(cond_b3'=6);
+    // cond_b3=7: 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7)
+    [a0_0_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a0_1_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a0_2_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a0_3_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a1_0_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a1_1_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a1_2_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a1_3_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a2_0_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a2_1_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a2_2_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a2_3_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a3_0_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a3_1_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a3_2_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    [a3_3_1] alive & init_done & cond_b3=7 -> 0.2:(cond_b3'=9) + 0.5:(cond_b3'=8) + 0.3:(cond_b3'=7);
+    // cond_b3=8: 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8)
+    [a0_0_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a0_1_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a0_2_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a0_3_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a1_0_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a1_1_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a1_2_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a1_3_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a2_0_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a2_1_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a2_2_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a2_3_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a3_0_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a3_1_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a3_2_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    [a3_3_1] alive & init_done & cond_b3=8 -> 0.4:(cond_b3'=9) + 0.6:(cond_b3'=8);
+    // cond_b3=9: 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8)
+    [a0_0_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_1_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_2_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_3_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_0_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_1_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_2_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_3_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_0_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_1_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_2_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_3_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_0_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_1_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_2_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_3_1] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+
+    // Action 2 (MJ)
+    // cond_b3=0: 1.0:(cond_b3'=0)
+    [a0_0_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_1_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_2_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_3_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_0_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_1_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_2_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_3_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_0_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_1_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_2_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_3_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_0_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_1_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_2_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_3_2] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    // cond_b3=1: 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2)
+    [a0_0_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a0_1_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a0_2_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a0_3_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a1_0_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a1_1_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a1_2_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a1_3_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a2_0_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a2_1_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a2_2_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a2_3_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a3_0_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a3_1_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a3_2_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    [a3_3_2] alive & init_done & cond_b3=1 -> 0.2:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.3:(cond_b3'=3) + 0.2:(cond_b3'=2);
+    // cond_b3=2: 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3)
+    [a0_0_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a0_1_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a0_2_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a0_3_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a1_0_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a1_1_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a1_2_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a1_3_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a2_0_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a2_1_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a2_2_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a2_3_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a3_0_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a3_1_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a3_2_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    [a3_3_2] alive & init_done & cond_b3=2 -> 0.2:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.3:(cond_b3'=4) + 0.2:(cond_b3'=3);
+    // cond_b3=3: 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4)
+    [a0_0_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a0_1_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a0_2_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a0_3_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a1_0_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a1_1_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a1_2_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a1_3_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a2_0_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a2_1_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a2_2_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a2_3_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a3_0_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a3_1_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a3_2_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    [a3_3_2] alive & init_done & cond_b3=3 -> 0.2:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.3:(cond_b3'=5) + 0.2:(cond_b3'=4);
+    // cond_b3=4: 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5)
+    [a0_0_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a0_1_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a0_2_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a0_3_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a1_0_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a1_1_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a1_2_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a1_3_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a2_0_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a2_1_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a2_2_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a2_3_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a3_0_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a3_1_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a3_2_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    [a3_3_2] alive & init_done & cond_b3=4 -> 0.2:(cond_b3'=8) + 0.3:(cond_b3'=7) + 0.3:(cond_b3'=6) + 0.2:(cond_b3'=5);
+    // cond_b3=5: 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6)
+    [a0_0_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a0_1_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a0_2_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a0_3_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a1_0_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a1_1_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a1_2_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a1_3_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a2_0_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a2_1_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a2_2_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a2_3_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a3_0_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a3_1_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a3_2_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    [a3_3_2] alive & init_done & cond_b3=5 -> 0.3:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.2:(cond_b3'=6);
+    // cond_b3=6: 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6)
+    [a0_0_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a0_1_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a0_2_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a0_3_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a1_0_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a1_1_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a1_2_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a1_3_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a2_0_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a2_1_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a2_2_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a2_3_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a3_0_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a3_1_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a3_2_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    [a3_3_2] alive & init_done & cond_b3=6 -> 0.4:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.2:(cond_b3'=7) + 0.1:(cond_b3'=6);
+    // cond_b3=7: 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7)
+    [a0_0_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a0_1_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a0_2_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a0_3_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a1_0_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a1_1_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a1_2_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a1_3_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a2_0_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a2_1_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a2_2_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a2_3_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a3_0_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a3_1_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a3_2_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    [a3_3_2] alive & init_done & cond_b3=7 -> 0.6:(cond_b3'=9) + 0.3:(cond_b3'=8) + 0.1:(cond_b3'=7);
+    // cond_b3=8: 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8)
+    [a0_0_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a0_1_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a0_2_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a0_3_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a1_0_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a1_1_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a1_2_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a1_3_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a2_0_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a2_1_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a2_2_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a2_3_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a3_0_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a3_1_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a3_2_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    [a3_3_2] alive & init_done & cond_b3=8 -> 0.8:(cond_b3'=9) + 0.2:(cond_b3'=8);
+    // cond_b3=9: 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8)
+    [a0_0_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_1_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_2_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a0_3_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_0_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_1_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_2_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a1_3_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_0_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_1_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_2_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a2_3_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_0_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_1_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_2_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+    [a3_3_2] alive & init_done & cond_b3=9 -> 0.95:(cond_b3'=9) + 0.05:(cond_b3'=8);
+
+    // Action 3 (RP)
+    // cond_b3=0: 1.0:(cond_b3'=0)
+    [a0_0_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_1_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_2_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a0_3_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_0_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_1_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_2_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a1_3_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_0_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_1_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_2_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a2_3_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_0_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_1_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    [a3_2_3] alive & init_done & cond_b3=0 -> 1.0:(cond_b3'=0);
+    // cond_b3=1: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=1 -> 1.0:(cond_b3'=9);
+    // cond_b3=2: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=2 -> 1.0:(cond_b3'=9);
+    // cond_b3=3: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=3 -> 1.0:(cond_b3'=9);
+    // cond_b3=4: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=4 -> 1.0:(cond_b3'=9);
+    // cond_b3=5: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=5 -> 1.0:(cond_b3'=9);
+    // cond_b3=6: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=6 -> 1.0:(cond_b3'=9);
+    // cond_b3=7: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=7 -> 1.0:(cond_b3'=9);
+    // cond_b3=8: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=8 -> 1.0:(cond_b3'=9);
+    // cond_b3=9: 1.0:(cond_b3'=9)
+    [a0_0_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a0_1_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a0_2_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a0_3_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a1_0_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a1_1_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a1_2_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a1_3_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a2_0_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a2_1_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a2_2_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a2_3_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a3_0_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a3_1_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+    [a3_2_3] alive & init_done & cond_b3=9 -> 1.0:(cond_b3'=9);
+
+    [done] !alive -> 1:(cond_b3'=cond_b3);
+endmodule
+
+rewards "total"
+    // --- joint cost = 0 ---
+    [a0_0_0] alive & init_done & budget>=0 : 1;
+    // --- joint cost = 1 ---
+    [a0_0_1] alive & init_done & budget>=1 : 1 - (cost_MN) / MAX_JOINT_COST;
+    [a0_1_0] alive & init_done & budget>=1 : 1 - (cost_MN) / MAX_JOINT_COST;
+    [a1_0_0] alive & init_done & budget>=1 : 1 - (cost_MN) / MAX_JOINT_COST;
+    // --- joint cost = 2 ---
+    [a0_0_2] alive & init_done & budget>=2 : 1 - (cost_MJ) / MAX_JOINT_COST;
+    [a0_1_1] alive & init_done & budget>=2 : 1 - (2*cost_MN) / MAX_JOINT_COST;
+    [a0_2_0] alive & init_done & budget>=2 : 1 - (cost_MJ) / MAX_JOINT_COST;
+    [a1_0_1] alive & init_done & budget>=2 : 1 - (2*cost_MN) / MAX_JOINT_COST;
+    [a1_1_0] alive & init_done & budget>=2 : 1 - (2*cost_MN) / MAX_JOINT_COST;
+    [a2_0_0] alive & init_done & budget>=2 : 1 - (cost_MJ) / MAX_JOINT_COST;
+    // --- joint cost = 3 ---
+    [a0_1_2] alive & init_done & budget>=3 : 1 - (cost_MN + cost_MJ) / MAX_JOINT_COST;
+    [a0_2_1] alive & init_done & budget>=3 : 1 - (cost_MN + cost_MJ) / MAX_JOINT_COST;
+    [a1_0_2] alive & init_done & budget>=3 : 1 - (cost_MN + cost_MJ) / MAX_JOINT_COST;
+    [a1_1_1] alive & init_done & budget>=3 : 1 - (3*cost_MN) / MAX_JOINT_COST;
+    [a1_2_0] alive & init_done & budget>=3 : 1 - (cost_MN + cost_MJ) / MAX_JOINT_COST;
+    [a2_0_1] alive & init_done & budget>=3 : 1 - (cost_MN + cost_MJ) / MAX_JOINT_COST;
+    [a2_1_0] alive & init_done & budget>=3 : 1 - (cost_MN + cost_MJ) / MAX_JOINT_COST;
+    // --- joint cost = 4 ---
+    [a0_0_3] alive & init_done & budget>=4 : 1 - (cost_RP) / MAX_JOINT_COST;
+    [a0_2_2] alive & init_done & budget>=4 : 1 - (2*cost_MJ) / MAX_JOINT_COST;
+    [a0_3_0] alive & init_done & budget>=4 : 1 - (cost_RP) / MAX_JOINT_COST;
+    [a1_1_2] alive & init_done & budget>=4 : 1 - (2*cost_MN + cost_MJ) / MAX_JOINT_COST;
+    [a1_2_1] alive & init_done & budget>=4 : 1 - (2*cost_MN + cost_MJ) / MAX_JOINT_COST;
+    [a2_0_2] alive & init_done & budget>=4 : 1 - (2*cost_MJ) / MAX_JOINT_COST;
+    [a2_1_1] alive & init_done & budget>=4 : 1 - (2*cost_MN + cost_MJ) / MAX_JOINT_COST;
+    [a2_2_0] alive & init_done & budget>=4 : 1 - (2*cost_MJ) / MAX_JOINT_COST;
+    [a3_0_0] alive & init_done & budget>=4 : 1 - (cost_RP) / MAX_JOINT_COST;
+    // --- joint cost = 5 ---
+    [a0_1_3] alive & init_done & budget>=5 : 1 - (cost_MN + cost_RP) / MAX_JOINT_COST;
+    [a0_3_1] alive & init_done & budget>=5 : 1 - (cost_MN + cost_RP) / MAX_JOINT_COST;
+    [a1_0_3] alive & init_done & budget>=5 : 1 - (cost_MN + cost_RP) / MAX_JOINT_COST;
+    [a1_2_2] alive & init_done & budget>=5 : 1 - (cost_MN + 2*cost_MJ) / MAX_JOINT_COST;
+    [a1_3_0] alive & init_done & budget>=5 : 1 - (cost_MN + cost_RP) / MAX_JOINT_COST;
+    [a2_1_2] alive & init_done & budget>=5 : 1 - (cost_MN + 2*cost_MJ) / MAX_JOINT_COST;
+    [a2_2_1] alive & init_done & budget>=5 : 1 - (cost_MN + 2*cost_MJ) / MAX_JOINT_COST;
+    [a3_0_1] alive & init_done & budget>=5 : 1 - (cost_MN + cost_RP) / MAX_JOINT_COST;
+    [a3_1_0] alive & init_done & budget>=5 : 1 - (cost_MN + cost_RP) / MAX_JOINT_COST;
+    // --- joint cost = 6 ---
+    [a0_2_3] alive & init_done & budget>=6 : 1 - (cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a0_3_2] alive & init_done & budget>=6 : 1 - (cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a1_1_3] alive & init_done & budget>=6 : 1 - (2*cost_MN + cost_RP) / MAX_JOINT_COST;
+    [a1_3_1] alive & init_done & budget>=6 : 1 - (2*cost_MN + cost_RP) / MAX_JOINT_COST;
+    [a2_0_3] alive & init_done & budget>=6 : 1 - (cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a2_2_2] alive & init_done & budget>=6 : 1 - (3*cost_MJ) / MAX_JOINT_COST;
+    [a2_3_0] alive & init_done & budget>=6 : 1 - (cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a3_0_2] alive & init_done & budget>=6 : 1 - (cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a3_1_1] alive & init_done & budget>=6 : 1 - (2*cost_MN + cost_RP) / MAX_JOINT_COST;
+    [a3_2_0] alive & init_done & budget>=6 : 1 - (cost_MJ + cost_RP) / MAX_JOINT_COST;
+    // --- joint cost = 7 ---
+    [a1_2_3] alive & init_done & budget>=7 : 1 - (cost_MN + cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a1_3_2] alive & init_done & budget>=7 : 1 - (cost_MN + cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a2_1_3] alive & init_done & budget>=7 : 1 - (cost_MN + cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a2_3_1] alive & init_done & budget>=7 : 1 - (cost_MN + cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a3_1_2] alive & init_done & budget>=7 : 1 - (cost_MN + cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a3_2_1] alive & init_done & budget>=7 : 1 - (cost_MN + cost_MJ + cost_RP) / MAX_JOINT_COST;
+    // --- joint cost = 8 ---
+    [a0_3_3] alive & init_done & budget>=8 : 1 - (2*cost_RP) / MAX_JOINT_COST;
+    [a2_2_3] alive & init_done & budget>=8 : 1 - (2*cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a2_3_2] alive & init_done & budget>=8 : 1 - (2*cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a3_0_3] alive & init_done & budget>=8 : 1 - (2*cost_RP) / MAX_JOINT_COST;
+    [a3_2_2] alive & init_done & budget>=8 : 1 - (2*cost_MJ + cost_RP) / MAX_JOINT_COST;
+    [a3_3_0] alive & init_done & budget>=8 : 1 - (2*cost_RP) / MAX_JOINT_COST;
+    // --- joint cost = 9 ---
+    [a1_3_3] alive & init_done & budget>=9 : 1 - (cost_MN + 2*cost_RP) / MAX_JOINT_COST;
+    [a3_1_3] alive & init_done & budget>=9 : 1 - (cost_MN + 2*cost_RP) / MAX_JOINT_COST;
+    [a3_3_1] alive & init_done & budget>=9 : 1 - (cost_MN + 2*cost_RP) / MAX_JOINT_COST;
+    // --- joint cost = 10 ---
+    [a2_3_3] alive & init_done & budget>=10 : 1 - (cost_MJ + 2*cost_RP) / MAX_JOINT_COST;
+    [a3_2_3] alive & init_done & budget>=10 : 1 - (cost_MJ + 2*cost_RP) / MAX_JOINT_COST;
+    [a3_3_2] alive & init_done & budget>=10 : 1 - (cost_MJ + 2*cost_RP) / MAX_JOINT_COST;
+endrewards
+
+rewards "cost"
+    // --- joint cost = 1 ---
+    [a0_0_1] alive & init_done & budget>=1 : cost_MN;
+    [a0_1_0] alive & init_done & budget>=1 : cost_MN;
+    [a1_0_0] alive & init_done & budget>=1 : cost_MN;
+    // --- joint cost = 2 ---
+    [a0_0_2] alive & init_done & budget>=2 : cost_MJ;
+    [a0_1_1] alive & init_done & budget>=2 : 2*cost_MN;
+    [a0_2_0] alive & init_done & budget>=2 : cost_MJ;
+    [a1_0_1] alive & init_done & budget>=2 : 2*cost_MN;
+    [a1_1_0] alive & init_done & budget>=2 : 2*cost_MN;
+    [a2_0_0] alive & init_done & budget>=2 : cost_MJ;
+    // --- joint cost = 3 ---
+    [a0_1_2] alive & init_done & budget>=3 : cost_MN + cost_MJ;
+    [a0_2_1] alive & init_done & budget>=3 : cost_MN + cost_MJ;
+    [a1_0_2] alive & init_done & budget>=3 : cost_MN + cost_MJ;
+    [a1_1_1] alive & init_done & budget>=3 : 3*cost_MN;
+    [a1_2_0] alive & init_done & budget>=3 : cost_MN + cost_MJ;
+    [a2_0_1] alive & init_done & budget>=3 : cost_MN + cost_MJ;
+    [a2_1_0] alive & init_done & budget>=3 : cost_MN + cost_MJ;
+    // --- joint cost = 4 ---
+    [a0_0_3] alive & init_done & budget>=4 : cost_RP;
+    [a0_2_2] alive & init_done & budget>=4 : 2*cost_MJ;
+    [a0_3_0] alive & init_done & budget>=4 : cost_RP;
+    [a1_1_2] alive & init_done & budget>=4 : 2*cost_MN + cost_MJ;
+    [a1_2_1] alive & init_done & budget>=4 : 2*cost_MN + cost_MJ;
+    [a2_0_2] alive & init_done & budget>=4 : 2*cost_MJ;
+    [a2_1_1] alive & init_done & budget>=4 : 2*cost_MN + cost_MJ;
+    [a2_2_0] alive & init_done & budget>=4 : 2*cost_MJ;
+    [a3_0_0] alive & init_done & budget>=4 : cost_RP;
+    // --- joint cost = 5 ---
+    [a0_1_3] alive & init_done & budget>=5 : cost_MN + cost_RP;
+    [a0_3_1] alive & init_done & budget>=5 : cost_MN + cost_RP;
+    [a1_0_3] alive & init_done & budget>=5 : cost_MN + cost_RP;
+    [a1_2_2] alive & init_done & budget>=5 : cost_MN + 2*cost_MJ;
+    [a1_3_0] alive & init_done & budget>=5 : cost_MN + cost_RP;
+    [a2_1_2] alive & init_done & budget>=5 : cost_MN + 2*cost_MJ;
+    [a2_2_1] alive & init_done & budget>=5 : cost_MN + 2*cost_MJ;
+    [a3_0_1] alive & init_done & budget>=5 : cost_MN + cost_RP;
+    [a3_1_0] alive & init_done & budget>=5 : cost_MN + cost_RP;
+    // --- joint cost = 6 ---
+    [a0_2_3] alive & init_done & budget>=6 : cost_MJ + cost_RP;
+    [a0_3_2] alive & init_done & budget>=6 : cost_MJ + cost_RP;
+    [a1_1_3] alive & init_done & budget>=6 : 2*cost_MN + cost_RP;
+    [a1_3_1] alive & init_done & budget>=6 : 2*cost_MN + cost_RP;
+    [a2_0_3] alive & init_done & budget>=6 : cost_MJ + cost_RP;
+    [a2_2_2] alive & init_done & budget>=6 : 3*cost_MJ;
+    [a2_3_0] alive & init_done & budget>=6 : cost_MJ + cost_RP;
+    [a3_0_2] alive & init_done & budget>=6 : cost_MJ + cost_RP;
+    [a3_1_1] alive & init_done & budget>=6 : 2*cost_MN + cost_RP;
+    [a3_2_0] alive & init_done & budget>=6 : cost_MJ + cost_RP;
+    // --- joint cost = 7 ---
+    [a1_2_3] alive & init_done & budget>=7 : cost_MN + cost_MJ + cost_RP;
+    [a1_3_2] alive & init_done & budget>=7 : cost_MN + cost_MJ + cost_RP;
+    [a2_1_3] alive & init_done & budget>=7 : cost_MN + cost_MJ + cost_RP;
+    [a2_3_1] alive & init_done & budget>=7 : cost_MN + cost_MJ + cost_RP;
+    [a3_1_2] alive & init_done & budget>=7 : cost_MN + cost_MJ + cost_RP;
+    [a3_2_1] alive & init_done & budget>=7 : cost_MN + cost_MJ + cost_RP;
+    // --- joint cost = 8 ---
+    [a0_3_3] alive & init_done & budget>=8 : 2*cost_RP;
+    [a2_2_3] alive & init_done & budget>=8 : 2*cost_MJ + cost_RP;
+    [a2_3_2] alive & init_done & budget>=8 : 2*cost_MJ + cost_RP;
+    [a3_0_3] alive & init_done & budget>=8 : 2*cost_RP;
+    [a3_2_2] alive & init_done & budget>=8 : 2*cost_MJ + cost_RP;
+    [a3_3_0] alive & init_done & budget>=8 : 2*cost_RP;
+    // --- joint cost = 9 ---
+    [a1_3_3] alive & init_done & budget>=9 : cost_MN + 2*cost_RP;
+    [a3_1_3] alive & init_done & budget>=9 : cost_MN + 2*cost_RP;
+    [a3_3_1] alive & init_done & budget>=9 : cost_MN + 2*cost_RP;
+    // --- joint cost = 10 ---
+    [a2_3_3] alive & init_done & budget>=10 : cost_MJ + 2*cost_RP;
+    [a3_2_3] alive & init_done & budget>=10 : cost_MJ + 2*cost_RP;
+    [a3_3_2] alive & init_done & budget>=10 : cost_MJ + 2*cost_RP;
+endrewards
+
+rewards "steps"
+    [] alive & init_done : 1;
+endrewards

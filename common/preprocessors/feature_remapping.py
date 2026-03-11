@@ -13,14 +13,26 @@ class FeatureRemapper(Preprocessor):
         Parse the configuration.
         :param config_str: The configuration.
 
-        Example: feature_remapping;fuel=[0,2,4,6]
+        Closest-value mode:  feature_remapping;fuel=[0,2,4,6]
+        Explicit dict mode:  feature_remapping;year={0:16,1:17,2:18,3:19}
         """
         self.feature_mapper = {}
+        self.feature_dict_mapper = {}
         for feature in config_str.split(";")[1:]:
-            feature_name, feature_values = feature.split("=")
-            feature_values = feature_values.replace("[", "").replace("]", "").split(",")
-            feature_values = [int(x) for x in feature_values]
-            self.feature_mapper[feature_name] = feature_values
+            feature_name, feature_values = feature.split("=", 1)
+            if feature_values.startswith("{") and feature_values.endswith("}"):
+                # Explicit dict mapping: {0:16,1:17,2:18,3:19}
+                inner = feature_values[1:-1]
+                mapping = {}
+                for pair in inner.split(","):
+                    k, v = pair.split(":")
+                    mapping[int(k.strip())] = int(v.strip())
+                self.feature_dict_mapper[feature_name] = mapping
+            else:
+                # Closest-value list: [0,2,4,6]
+                feature_values = feature_values.replace("[", "").replace("]", "").split(",")
+                feature_values = [int(x) for x in feature_values]
+                self.feature_mapper[feature_name] = feature_values
 
     def feature_remapping(self, feature_values, current_value):
         """
@@ -51,7 +63,11 @@ class FeatureRemapper(Preprocessor):
             for i, value in enumerate(list(original_state)):
                 # Feature index to feature name
                 feature_name = self.state_mapper.inverse_mapping(i)
-                if feature_name in self.feature_mapper.keys():
+                if feature_name in self.feature_dict_mapper:
+                    key = int(original_state[i])
+                    if key in self.feature_dict_mapper[feature_name]:
+                        state[i] = self.feature_dict_mapper[feature_name][key]
+                elif feature_name in self.feature_mapper:
                     state[i] = self.feature_remapping(self.feature_mapper[feature_name], original_state[i])
                 self.update_buffer(original_state, state, True)
             return state

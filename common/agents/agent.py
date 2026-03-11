@@ -3,7 +3,35 @@ import numpy as np
 class Agent():
 
     def __init__(self):
-        pass
+        # Maps action index → replacement action index, applied in select_action.
+        # Populated via action_replace(); empty means no replacement.
+        self._action_replacement: dict = {}
+
+    def action_replace(self, from_action: int, to_action: int) -> None:
+        """Register a permanent action substitution for model checking.
+
+        Whenever select_action would return ``from_action``, ``to_action`` is
+        returned instead.  Call before model checking; has no effect during
+        training because apply_action_replacement is only called with
+        deploy=True paths in concrete subclasses.
+
+        Args:
+            from_action: Action index to intercept.
+            to_action:   Action index to substitute.
+        """
+        self._action_replacement[from_action] = to_action
+        print(f"Agent: registered action replacement {from_action} -> {to_action}")
+
+    def apply_action_replacement(self, action: int) -> int:
+        """Return the replacement for *action* if one is registered, else *action*.
+
+        Args:
+            action: Raw action index returned by the policy network.
+
+        Returns:
+            Possibly-replaced action index.
+        """
+        return self._action_replacement.get(action, action)
 
     def select_action(self, state : np.ndarray, deploy : bool =False):
         """
