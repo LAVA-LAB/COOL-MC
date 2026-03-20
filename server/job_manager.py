@@ -208,8 +208,8 @@ def _extract_run_id(log_path: str) -> Optional[str]:
     try:
         with open(log_path) as f:
             for line in f:
-                # MLflow typically prints: "run_id: <hex>"
-                if "run_id" in line.lower():
+                # cool_mc.py prints: "Run ID: <hex>"
+                if "run id:" in line.lower() or "run_id:" in line.lower():
                     parts = line.strip().split()
                     for part in parts:
                         if len(part) == 32 and part.isalnum():
