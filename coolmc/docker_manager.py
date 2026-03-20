@@ -38,6 +38,27 @@ def _prepare_volumes() -> None:
     jobs_file = VOLUMES_DIR / "jobs.json"
     if not jobs_file.exists():
         jobs_file.write_text("{}")
+    _init_mlflow_store()
+
+
+def _init_mlflow_store() -> None:
+    """Create the MLflow default experiment (ID 0) directory if it doesn't exist.
+
+    cool_mc.py calls mlflow.run() which hardcodes experiment_id=0. MLflow's
+    file store requires mlruns/0/meta.yaml to exist before any run is created.
+    """
+    exp0_dir = VOLUMES_DIR / "mlruns" / "0"
+    meta = exp0_dir / "meta.yaml"
+    if meta.exists():
+        return
+    exp0_dir.mkdir(parents=True, exist_ok=True)
+    # artifact_location must match the path inside the container
+    meta.write_text(
+        "artifact_location: file:///workspaces/coolmc/mlruns/0\n"
+        "experiment_id: '0'\n"
+        "lifecycle_stage: active\n"
+        "name: Default\n"
+    )
 
 
 def _write_runtime_compose() -> None:
