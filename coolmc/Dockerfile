@@ -21,5 +21,10 @@ RUN pip install --no-cache-dir fastapi>=0.110.0 uvicorn>=0.29.0 aiofiles>=23.0.0
 RUN mkdir -p logs mlruns prism_files_user
 
 EXPOSE 8765
+EXPOSE 5000
 
-CMD ["uvicorn", "server.server:app", "--host", "0.0.0.0", "--port", "8765"]
+# Startup script: launches the MLflow UI (background) + FastAPI server (foreground).
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]

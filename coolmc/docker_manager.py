@@ -84,6 +84,7 @@ services:
     working_dir: {WORKDIR}
     ports:
       - "8765:8765"
+      - "5000:5000"
     restart: unless-stopped
     volumes:
       - {mlruns}:{WORKDIR}/mlruns
