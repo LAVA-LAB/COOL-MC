@@ -13,7 +13,7 @@ from .config import CONTAINER_NAME, SERVER_URL, VOLUMES_DIR, WORKDIR
 # context and image definition). At runtime we write a second, resolved
 # compose file to ~/.coolmc/ so that volume paths are absolute and correct
 # regardless of where pip installed the package.
-_PACKAGE_DIR = Path(__file__).parent.parent
+_PACKAGE_DIR = Path(__file__).parent        # coolmc/ inside site-packages
 _RUNTIME_COMPOSE = VOLUMES_DIR.parent / "docker-compose.yml"  # ~/.coolmc/docker-compose.yml
 
 _HEALTHZ = f"{SERVER_URL}/healthz"
@@ -58,7 +58,7 @@ services:
   coolmc-server:
     build:
       context: {_PACKAGE_DIR}
-      dockerfile: .devcontainer/Dockerfile.server
+      dockerfile: Dockerfile
     container_name: {CONTAINER_NAME}
     working_dir: {WORKDIR}
     ports:
