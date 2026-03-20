@@ -1,0 +1,19 @@
+services:
+  coolmc-server:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.server
+    container_name: coolmc-server
+    working_dir: /workspaces/coolmc
+    ports:
+      - "8765:8765"
+    restart: unless-stopped
+    volumes:
+      # Permanent experiment storage — survives container rebuilds
+      - ../volumes/mlruns:/workspaces/coolmc/mlruns
+      # Per-job log files — append-only, permanent
+      - ../volumes/logs:/workspaces/coolmc/logs
+      # User-provided PRISM models
+      - ../volumes/prism_files:/workspaces/coolmc/prism_files_user
+      # Job queue checkpoint — survives server crashes
+      - ../volumes/jobs.json:/workspaces/coolmc/jobs.json

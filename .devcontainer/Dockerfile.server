@@ -1,0 +1,27 @@
+FROM movesrwth/stormpy:1.7.0
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Project lives at this exact path — required by Storm/MLflow internals
+WORKDIR /workspaces/coolmc
+
+# Install COOL-MC Python deps
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install server deps
+COPY server/requirements_server.txt .
+RUN pip install --no-cache-dir -r requirements_server.txt
+
+# Copy entire project
+COPY . .
+
+# Persistent directories (will be bind-mounted from host)
+RUN mkdir -p logs mlruns prism_files_user
+
+EXPOSE 8765
+
+CMD ["uvicorn", "server.server:app", "--host", "0.0.0.0", "--port", "8765"]

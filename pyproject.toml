@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coolmc"
+version = "0.1.0"
+description = "Python client for COOL-MC — formal verification of RL policies"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.31",
+    "docker>=7.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["coolmc*"]

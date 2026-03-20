@@ -69,6 +69,152 @@ Verify that everything works: `python run_tests.py` ✅
 
 For detailed examples, see the `examples` directory which contains bash scripts for running various experiments. A full list of command-line arguments with descriptions is documented in `common/utilities/helper.py`.
 
+---
+
+### 🐍 Option 1: Python Package Client
+
+The easiest way to use COOL-MC is via the pip-installable Python client. It manages the Docker container automatically — no manual setup required beyond having Docker installed.
+
+#### Installation
+
+```bash
+pip install git+https://github.com/LAVA-LAB/COOL-MC.git
+```
+
+#### How it works
+
+On the first `import coolmc`, the package checks whether the COOL-MC Docker container is running. If not, it builds and starts it automatically (this takes a few minutes on first run). All subsequent imports return immediately. The container runs a FastAPI server at `localhost:8765` that accepts job submissions and enforces a single-job queue — Storm can only verify one model at a time.
+
+Experiments, logs, and MLflow artifacts are written to `~/.coolmc/volumes/` on your machine and persist across container restarts and pip upgrades:
+
+```
+~/.coolmc/
+├── volumes/
+│   ├── mlruns/        ← MLflow experiments and model artifacts
+│   ├── logs/          ← per-job stdout/stderr logs
+│   └── prism_files/   ← drop your own .prism models here
+└── docker-compose.yml ← generated on first import (do not edit)
+```
+
+#### Training
+
+```python
+import coolmc
+
+mc = coolmc.CoolMC()
+
+# Submit a training job — returns immediately, job runs in the background
+job = mc.cmd(
+    task="safe_training",
+    project_name="my_experiment",
+    prism_file_path="transporter.prism",
+    constant_definitions="MAX_JOBS=2,MAX_FUEL=10",
+    prop="Pmax=? [ F jobs_done=2 ]",
+    algorithm="dqn_agent",
+    num_episodes=10000,
+    eval_interval=100,
+    max_steps=100,
+)
+
+print(job)  # <Job a3f1bc20 PENDING (queue pos 1)>
+
+# Block until the job finishes
+job = mc.wait(job.job_id)
+print(job.mlflow_run_id)
+```
+
+#### Behavioral Cloning
+
+```python
+job = mc.cmd(
+    task="safe_training",
+    project_name="bc_experiment",
+    prism_file_path="scheduling_task.prism",
+    algorithm="bc_nn_agent",
+    behavioral_cloning='raw_dataset;../prism_files/scheduling_task.prism;Pmax=? [ F "goal" ];',
+    bc_epochs=100,
+    layers=3,
+    neurons=128,
+    lr=0.001,
+    batch_size=32,
+)
+job = mc.wait(job.job_id)
+```
+
+#### Verification
+
+```python
+# Option A: pass the run ID from a previous job explicitly
+verify_job = mc.cmd(
+    task="rl_model_checking",
+    parent_run_id=job.mlflow_run_id,
+    prism_file_path="transporter.prism",
+    constant_definitions="MAX_JOBS=2,MAX_FUEL=10",
+    prop="P=? [ F jobs_done=2 ]",
+)
+
+# Option B: use "last" to automatically pick the most recently completed run
+verify_job = mc.cmd(
+    task="rl_model_checking",
+    parent_run_id="last",
+    prism_file_path="transporter.prism",
+    constant_definitions="MAX_JOBS=2,MAX_FUEL=10",
+    prop="P=? [ F jobs_done=2 ]",
+)
+
+# You can also fetch the last run ID directly
+print(mc.last_run_id())
+
+verify_job = mc.wait(verify_job.job_id)
+print(mc.get_logs(verify_job.job_id))
+```
+
+#### Uploading custom PRISM environments
+
+```python
+# Upload a local .prism file — stored permanently in ~/.coolmc/volumes/prism_files/
+path = mc.upload_prism("/home/user/my_model.prism")
+print(path)  # "prism_files_user/my_model.prism"
+
+# Use it directly in a job
+job = mc.cmd(
+    task="safe_training",
+    prism_file_path="prism_files_user/my_model.prism",
+    algorithm="dqn_agent",
+    num_episodes=1000,
+)
+
+# List and delete uploaded files
+print(mc.list_prism_files())          # ["my_model.prism", ...]
+mc.delete_prism_file("my_model.prism")
+```
+
+Uploaded files are stored in `~/.coolmc/volumes/prism_files/` on your machine, so they survive container restarts.
+
+#### Job management
+
+```python
+# Check queue (only one job runs at a time)
+print(mc.queue_status())
+# → {"running": "a3f1bc20", "pending_count": 2, "pending": ["b5e2...", "c9f1..."]}
+
+# Stream logs while a job is running
+print(mc.get_logs(job.job_id))
+
+# List all jobs (pending, running, history)
+for j in mc.list_jobs():
+    print(j)
+
+# Cancel a pending or running job
+mc.cancel(job.job_id)
+```
+
+`mc.cmd()` accepts every parameter that `cool_mc.py` supports. See `common/utilities/helper.py` for the full list with descriptions.
+
+---
+
+### 🖥️ Option 2: Direct CLI (inside the Dev Container)
+
 ### 🏋️ Training
 
 COOL-MC allows you to train a policy in an environment modeled as a Markov Decision Process (MDP), specified in the [PRISM language](https://www.prismmodelchecker.org/manual/ThePRISMLanguage/Introduction). You can train agents using two approaches: behavioral cloning (learning from optimal demonstrations) or reinforcement learning (learning through environment interaction).
