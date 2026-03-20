@@ -210,21 +210,27 @@ class CoolMC:
     # PRISM file management
     # ------------------------------------------------------------------
 
-    def upload_prism(self, local_path: str) -> str:
+    def upload_prism(self, local_path: str, dest_name: str | None = None) -> str:
         """Upload a local .prism file to the container.
+
+        Args:
+            local_path: Path to the local .prism file.
+            dest_name:  Optional filename to use inside the container.
+                        Defaults to the original filename.
 
         Returns the path string to pass as ``prism_file_path`` in ``mc.cmd()``.
 
         Example::
 
-            mc.upload_prism("/home/user/my_model.prism")
-            job = mc.cmd(prism_file_path="prism_files_user/my_model.prism", ...)
+            mc.upload_prism("avoid.prism", dest_name="dummy.prism")
+            job = mc.cmd(prism_file_path="prism_files_user/dummy.prism", ...)
         """
         path = Path(local_path)
+        upload_name = dest_name if dest_name else path.name
         with open(path, "rb") as f:
             resp = requests.post(
                 f"{self._url}/files/prism",
-                files={"file": (path.name, f, "text/plain")},
+                files={"file": (upload_name, f, "text/plain")},
                 timeout=30,
             )
         resp.raise_for_status()
