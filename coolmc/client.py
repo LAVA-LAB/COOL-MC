@@ -226,14 +226,17 @@ class CoolMC:
             job = mc.cmd(prism_file_path="prism_files_user/dummy.prism", ...)
         """
         path = Path(local_path)
+        # Use dest_name as the filename on the server; fall back to the local filename.
         upload_name = dest_name if dest_name else path.name
         with open(path, "rb") as f:
+            # The server saves the file under prism_files_user/<upload_name>.
             resp = requests.post(
                 f"{self._url}/files/prism",
                 files={"file": (upload_name, f, "text/plain")},
                 timeout=30,
             )
         resp.raise_for_status()
+        # Returns e.g. "prism_files_user/dummy.prism" — pass directly to mc.cmd().
         return resp.json()["path"]
 
     def list_prism_files(self) -> list[str]:
