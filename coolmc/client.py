@@ -206,6 +206,32 @@ class CoolMC:
         """Return current queue depth and the running job (if any)."""
         return self._get("/queue")
 
+    def cancel_all(self) -> list[Job]:
+        """Cancel all pending jobs and kill the running job (if any)."""
+        return [Job._from_dict(j) for j in self._post("/jobs/cancel-all", {})]
+
+    def clear_history(self) -> int:
+        """Remove all completed (DONE/FAILED/CANCELLED) jobs. Returns the count removed."""
+        return self._delete("/jobs/history")["cleared"]
+
+    def get_result(self, job_id: str) -> Optional[float]:
+        """Extract the final property result value from the job log.
+
+        Scans the log for lines containing 'Property Result' and returns the
+        last numeric value found, or None if no result is present.
+        """
+        log = self.get_logs(job_id)
+        result = None
+        for line in log.splitlines():
+            if "property result" in line.lower():
+                for part in reversed(line.split()):
+                    try:
+                        result = float(part)
+                        break
+                    except ValueError:
+                        continue
+        return result
+
     # ------------------------------------------------------------------
     # PRISM file management
     # ------------------------------------------------------------------
@@ -288,6 +314,44 @@ class CoolMC:
         resp = requests.delete(f"{self._url}/files/prism/{filename}", timeout=10)
         resp.raise_for_status()
 
+    # ------------------------------------------------------------------
+    # Container management
+    # ------------------------------------------------------------------
+
+    def stop(self) -> None:
+        """Stop the COOL-MC Docker container."""
+        from . import docker_manager
+        docker_manager.stop()
+
+    def restart(self) -> None:
+        """Restart the COOL-MC Docker container and wait until healthy."""
+        from . import docker_manager
+        docker_manager.restart()
+
+    def server_info(self) -> dict:
+        """Return COOL-MC version info and service URLs."""
+        return self._get("/info")
+
+    # ------------------------------------------------------------------
+    # MLflow integration
+    # ------------------------------------------------------------------
+
+    def list_experiments(self) -> list[dict]:
+        """List all MLflow experiments."""
+        return self._get("/mlflow/experiments")
+
+    def list_runs(self, experiment_id: str = "0", max_results: int = 50) -> list[dict]:
+        """List MLflow runs for an experiment, newest first."""
+        return self._get(f"/mlflow/runs?experiment_id={experiment_id}&max_results={max_results}")
+
+    def get_run(self, run_id: str) -> dict:
+        """Get a single MLflow run by ID (params, metrics, tags)."""
+        return self._get(f"/mlflow/runs/{run_id}")
+
+    def get_metric_history(self, run_id: str, metric_key: str) -> list[dict]:
+        """Get the full history of a metric for a run as a list of {step, value, timestamp}."""
+        return self._get(f"/mlflow/runs/{run_id}/metrics/{metric_key}")
+
     def last_run_id(self) -> str:
         """Return the mlflow_run_id of the most recently completed job."""
         job = Job._from_dict(self._get("/jobs/last"))
@@ -301,6 +365,11 @@ class CoolMC:
                 'parent_run_id="last" requested but no completed jobs found. '
                 "Run a training job first."
             ) from e
+
+    def _delete(self, path: str) -> Any:
+        resp = requests.delete(f"{self._url}{path}", timeout=10)
+        resp.raise_for_status()
+        return resp.json()
 
     def _post(self, path: str, payload: dict) -> dict:
         resp = requests.post(f"{self._url}{path}", json=payload, timeout=10)

@@ -104,6 +104,21 @@ def _is_healthy() -> bool:
         return False
 
 
+def stop() -> None:
+    """Stop the COOL-MC Docker container."""
+    subprocess.run(
+        ["docker", "compose", "-f", str(_RUNTIME_COMPOSE), "down"],
+        check=True,
+    )
+
+
+def restart() -> None:
+    """Stop the container, rebuild if needed, and wait for it to be healthy."""
+    stop()
+    _docker_compose_up()
+    _wait_for_healthy()
+
+
 def _docker_compose_up() -> None:
     subprocess.run(
         ["docker", "compose", "-f", str(_RUNTIME_COMPOSE), "up", "-d", "--build"],

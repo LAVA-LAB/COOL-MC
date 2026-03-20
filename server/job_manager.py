@@ -89,6 +89,30 @@ class JobManager:
             "pending": [j.job_id for j in pending],
         }
 
+    def cancel_all(self) -> list[Job]:
+        """Cancel all PENDING jobs and kill the RUNNING job (if any)."""
+        cancelled = []
+        for job in list(self._jobs.values()):
+            if job.status == "PENDING":
+                job.status = "CANCELLED"
+                cancelled.append(job)
+            elif job.status == "RUNNING" and self._current_proc:
+                self._current_proc.terminate()
+                job.status = "CANCELLED"
+                job.finished_at = datetime.utcnow().isoformat()
+                cancelled.append(job)
+        self._checkpoint()
+        return cancelled
+
+    def clear_history(self) -> int:
+        """Remove all DONE, FAILED, and CANCELLED jobs. Returns the count removed."""
+        terminal = [jid for jid, j in self._jobs.items()
+                    if j.status in ("DONE", "FAILED", "CANCELLED")]
+        for jid in terminal:
+            del self._jobs[jid]
+        self._checkpoint()
+        return len(terminal)
+
     async def cancel(self, job_id: str) -> Optional[Job]:
         job = self._jobs.get(job_id)
         if not job:

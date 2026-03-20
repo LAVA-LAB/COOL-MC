@@ -38,6 +38,84 @@ def healthz():
     return {"status": "ok"}
 
 
+@app.get("/info")
+def server_info() -> dict:
+    """Return COOL-MC version info and service URLs."""
+    import subprocess
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"], cwd=WORKDIR, text=True
+        ).strip()
+        commit_date = subprocess.check_output(
+            ["git", "log", "-1", "--format=%ai"], cwd=WORKDIR, text=True
+        ).strip()
+    except Exception:
+        commit = "unknown"
+        commit_date = "unknown"
+    return {
+        "server": "COOL-MC FastAPI Server",
+        "cool_mc_commit": commit,
+        "cool_mc_commit_date": commit_date,
+        "mlflow_ui": "http://localhost:5000",
+    }
+
+
+# ---------------------------------------------------------------------------
+# MLflow query endpoints
+# ---------------------------------------------------------------------------
+
+@app.get("/mlflow/experiments")
+def list_experiments() -> list[dict]:
+    """List all MLflow experiments."""
+    import mlflow
+    mlflow.set_tracking_uri(f"file://{WORKDIR}/mlruns")
+    client = mlflow.tracking.MlflowClient()
+    return [
+        {"experiment_id": e.experiment_id, "name": e.name, "artifact_location": e.artifact_location}
+        for e in client.search_experiments()
+    ]
+
+
+@app.get("/mlflow/runs")
+def list_runs(experiment_id: str = "0", max_results: int = 50) -> list[dict]:
+    """List MLflow runs for an experiment, newest first."""
+    import mlflow
+    mlflow.set_tracking_uri(f"file://{WORKDIR}/mlruns")
+    client = mlflow.tracking.MlflowClient()
+    runs = client.search_runs(
+        experiment_ids=[experiment_id],
+        max_results=max_results,
+        order_by=["attribute.start_time DESC"],
+    )
+    return [_run_dict(r) for r in runs]
+
+
+@app.get("/mlflow/runs/{run_id}")
+def get_run(run_id: str) -> dict:
+    """Get a single MLflow run by ID."""
+    import mlflow
+    mlflow.set_tracking_uri(f"file://{WORKDIR}/mlruns")
+    client = mlflow.tracking.MlflowClient()
+    try:
+        run = client.get_run(run_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Run not found")
+    return _run_dict(run)
+
+
+@app.get("/mlflow/runs/{run_id}/metrics/{metric_key}")
+def get_metric_history(run_id: str, metric_key: str) -> list[dict]:
+    """Get the full history of a metric for a run."""
+    import mlflow
+    mlflow.set_tracking_uri(f"file://{WORKDIR}/mlruns")
+    client = mlflow.tracking.MlflowClient()
+    try:
+        history = client.get_metric_history(run_id, metric_key)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Metric not found")
+    return [{"step": m.step, "value": m.value, "timestamp": m.timestamp} for m in history]
+
+
 @app.post("/jobs/run", response_model=None)
 def run_job(params: dict[str, Any]) -> dict:
     """Enqueue a cool_mc.py invocation. Returns immediately with job_id."""
@@ -82,6 +160,19 @@ def get_logs(job_id: str) -> str:
     if not log_path.exists():
         return ""
     return log_path.read_text()
+
+
+@app.post("/jobs/cancel-all")
+def cancel_all_jobs() -> list[dict]:
+    """Cancel all pending and running jobs."""
+    return [_job_dict(j) for j in manager.cancel_all()]
+
+
+@app.delete("/jobs/history")
+def clear_job_history() -> dict:
+    """Remove all completed (DONE/FAILED/CANCELLED) jobs from history."""
+    count = manager.clear_history()
+    return {"cleared": count}
 
 
 @app.delete("/jobs/{job_id}")
@@ -150,3 +241,16 @@ def delete_prism_file(filename: str) -> dict:
 def _job_dict(job: Job) -> dict:
     from dataclasses import asdict
     return asdict(job)
+
+
+def _run_dict(run) -> dict:
+    return {
+        "run_id": run.info.run_id,
+        "experiment_id": run.info.experiment_id,
+        "status": run.info.status,
+        "start_time": run.info.start_time,
+        "end_time": run.info.end_time,
+        "params": dict(run.data.params),
+        "metrics": dict(run.data.metrics),
+        "tags": {k: v for k, v in run.data.tags.items() if not k.startswith("mlflow.")},
+    }
