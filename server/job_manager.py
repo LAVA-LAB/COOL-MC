@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
@@ -13,6 +14,7 @@ from pathlib import Path
 from typing import Optional
 
 WORKDIR = "/workspaces/coolmc"
+MLFLOW_TRACKING_URI = f"file://{WORKDIR}/mlruns"
 LOGS_DIR = Path(WORKDIR) / "logs"
 JOBS_FILE = Path(WORKDIR) / "jobs.json"
 
@@ -132,6 +134,7 @@ class JobManager:
                 cwd=WORKDIR,
                 stdout=log_file,
                 stderr=asyncio.subprocess.STDOUT,
+                env={**os.environ, "MLFLOW_TRACKING_URI": MLFLOW_TRACKING_URI},
             )
             job.pid = proc.pid
             self._current_proc = proc

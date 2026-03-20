@@ -5,7 +5,7 @@ import asyncio
 from pathlib import Path
 from typing import Any
 
-import mlflow
+from mlflow.store.tracking.file_store import FileStore
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
@@ -20,10 +20,9 @@ app = FastAPI(title="COOL-MC Server")
 
 @app.on_event("startup")
 async def _start_worker():
-    # Point MLflow at the bind-mounted volume and ensure the default
-    # experiment (ID 0) exists — the file store requires it before any run.
-    mlflow.set_tracking_uri(f"file://{WORKDIR}/mlruns")
-    mlflow.set_experiment("Default")
+    # Initialise the MLflow file store — this creates mlruns/0/ (the default
+    # experiment) if the bind-mounted volume is empty.
+    FileStore(f"{WORKDIR}/mlruns")
 
     asyncio.create_task(manager.run_worker())
 
