@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import asyncio
+import io
+import zipfile
 from pathlib import Path
 from typing import Any
 
@@ -104,6 +106,26 @@ async def upload_prism(file: UploadFile = File(...)) -> dict:
     dest = _PRISM_USER_DIR / file.filename
     dest.write_bytes(await file.read())
     return {"filename": file.filename, "path": f"prism_files_user/{file.filename}"}
+
+
+@app.post("/files/prism-bundle")
+async def upload_prism_bundle(file: UploadFile = File(...)) -> dict:
+    """Upload a zip archive containing a .prism file and any companion directories.
+
+    The zip is extracted directly into prism_files_user/, preserving the internal
+    directory structure. Use this for environments like icu_sepsis that ship with
+    a subfolder of data files alongside the .prism file.
+    """
+    data = await file.read()
+    with zipfile.ZipFile(io.BytesIO(data)) as zf:
+        prism_names = [n for n in zf.namelist() if n.endswith(".prism")]
+        if not prism_names:
+            raise HTTPException(status_code=400, detail="Zip contains no .prism file")
+        zf.extractall(_PRISM_USER_DIR)
+    return {
+        "extracted": zf.namelist(),
+        "prism_files": [f"prism_files_user/{n}" for n in prism_names],
+    }
 
 
 @app.get("/files/prism")

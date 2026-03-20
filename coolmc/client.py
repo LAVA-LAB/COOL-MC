@@ -239,6 +239,46 @@ class CoolMC:
         # Returns e.g. "prism_files_user/dummy.prism" — pass directly to mc.cmd().
         return resp.json()["path"]
 
+    def upload_prism_bundle(self, *paths: str) -> list[str]:
+        """Upload a .prism file together with companion directories/files as a zip.
+
+        Pass any mix of file and directory paths. All are zipped in memory and
+        extracted into prism_files_user/ on the server, preserving structure.
+        Use this for environments that ship a subfolder alongside the .prism file
+        (e.g. icu_sepsis.prism + icu_sepsis/).
+
+        Returns a list of "prism_files_user/<name>" paths for use in mc.cmd().
+
+        Example::
+
+            paths = mc.upload_prism_bundle("icu_sepsis.prism", "icu_sepsis/")
+            job = mc.cmd(
+                prism_file_path="/workspaces/coolmc/" + paths[0], ...)
+        """
+        import io
+        import zipfile
+
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            for p in paths:
+                path = Path(p)
+                if path.is_dir():
+                    # Add all files in the directory, preserving the folder name.
+                    for f in path.rglob("*"):
+                        if f.is_file():
+                            zf.write(f, f.relative_to(path.parent))
+                else:
+                    zf.write(path, path.name)
+        buf.seek(0)
+
+        resp = requests.post(
+            f"{self._url}/files/prism-bundle",
+            files={"file": ("bundle.zip", buf, "application/zip")},
+            timeout=120,  # large bundles (e.g. icu_sepsis) may take a while
+        )
+        resp.raise_for_status()
+        return resp.json()["prism_files"]
+
     def list_prism_files(self) -> list[str]:
         """List all user-uploaded PRISM files available in the container."""
         return self._get("/files/prism")
