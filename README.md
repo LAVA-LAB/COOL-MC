@@ -44,26 +44,12 @@ Together, these capabilities make COOL-MC a comprehensive tool for training, ver
 
 
 ## 🚀 Setup
-This guide will walk you through the setup process for running COOL-MC, including installing Docker and Visual Studio Code, and setting up a local Docker container for the COOL-MC repository.
 
-### 1. 🐳 Install Docker
+### 🐳 Install Docker
 To install Docker on your system, you'll need to follow these general steps:
 1. Go to the Docker website (https://www.docker.com/) and click on the "Get Docker" button to download the installer for your operating system (Windows, Mac, or Linux).
 2. Run the installer and follow the prompts to complete the installation process.
 3. Once the installation is complete, you can verify that Docker is installed and running by opening a terminal or command prompt and running the command "docker --version". This should display the version of Docker that you have installed.
-
-### 2. 💻 Install Visual Studio Code and some of its extensions
-Installing Visual Studio Code (VSCode) is a simple process, and can be done by following these steps:
-
-1. Go to the Visual Studio Code website (https://code.visualstudio.com/) and click on the "Download" button for your operating system (Windows, Mac, or Linux).
-2. Once the download is complete, open the installer and follow the prompts to complete the installation process.
-3. Add VSCode extensions: docker, Visual Studio Code Dev Containers
-
-### 3. 📦 Create your local docker container and verify COOL-MC
-Open Remote Explorer, clone repository in container volume, add https://github.com/LAVA-LAB/COOL-MC, make sure that the working space directory is set to `coolmc`.
-Afterwards, the docker container will be created (it takes time).
-
-Verify that everything works: `python run_tests.py` ✅
 
 ## 🎯 Getting Started
 
@@ -214,6 +200,20 @@ mc.cancel(job.job_id)
 ---
 
 ### 🖥️ Option 2: Direct CLI (inside the Dev Container)
+
+For development and direct CLI access, COOL-MC can be run inside a Dev Container using Visual Studio Code and its Dev Containers extension. This gives you a fully configured environment with Storm and all dependencies pre-installed, and lets you run `cool_mc.py` commands directly.
+
+#### 💻 Install Visual Studio Code and extensions
+
+1. Go to the Visual Studio Code website (https://code.visualstudio.com/) and download the installer for your operating system.
+2. Open the installer and follow the prompts to complete the installation.
+3. Add VSCode extensions: **Docker**, **Dev Containers**
+
+#### 📦 Create the dev container
+
+Open Remote Explorer, clone the repository in a container volume, add `https://github.com/LAVA-LAB/COOL-MC`, and make sure the workspace directory is set to `coolmc`. The container will be created automatically (this takes a few minutes).
+
+Verify that everything works: `python run_tests.py` ✅
 
 ### 🏋️ Training
 
