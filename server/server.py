@@ -8,7 +8,7 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
-from job_manager import Job, manager, WORKDIR
+from server.job_manager import Job, manager, WORKDIR
 
 app = FastAPI(title="COOL-MC Server")
 
