@@ -24,7 +24,6 @@ EXPOSE 8765
 EXPOSE 5000
 
 # Startup script: launches the MLflow UI (background) + FastAPI server (foreground).
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+RUN printf '#!/bin/bash\nmlflow ui --backend-store-uri "file:///workspaces/coolmc/mlruns" --host 0.0.0.0 --port 5000 &\nexec uvicorn server.server:app --host 0.0.0.0 --port 8765\n' > /start.sh && chmod +x /start.sh
 
 CMD ["/start.sh"]
