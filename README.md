@@ -61,13 +61,13 @@ For detailed examples, see the `examples` directory which contains bash scripts 
 
 The easiest way to use COOL-MC is via the pip-installable Python client. It manages the Docker container automatically — no manual setup required beyond having Docker installed.
 
-#### Installation
+#### 📦 Installation
 
 ```bash
 pip install git+https://github.com/LAVA-LAB/COOL-MC.git
 ```
 
-#### How it works
+#### ⚙️ How it works
 
 On the first `import coolmc`, the package checks whether the COOL-MC Docker container is running. If not, it builds and starts it automatically (this takes a few minutes on first run). All subsequent imports return immediately. The container runs a FastAPI server at `localhost:8765` that accepts job submissions and enforces a single-job queue — Storm can only verify one model at a time.
 
@@ -82,7 +82,7 @@ Experiments, logs, and MLflow artifacts are written to `~/.coolmc/volumes/` on y
 └── docker-compose.yml ← generated on first import (do not edit)
 ```
 
-#### Training
+#### 🏋️ Training
 
 ```python
 import coolmc
@@ -109,7 +109,7 @@ job = mc.wait(job.job_id)
 print(job.mlflow_run_id)
 ```
 
-#### Behavioral Cloning
+#### 🎓 Behavioral Cloning
 
 ```python
 job = mc.cmd(
@@ -127,7 +127,7 @@ job = mc.cmd(
 job = mc.wait(job.job_id)
 ```
 
-#### Verification
+#### ✅ Verification
 
 ```python
 # Option A: pass the run ID from a previous job explicitly
@@ -155,7 +155,7 @@ verify_job = mc.wait(verify_job.job_id)
 print(mc.get_logs(verify_job.job_id))
 ```
 
-#### Uploading custom PRISM environments
+#### 📤 Uploading custom PRISM environments
 
 ```python
 # Upload a local .prism file — stored permanently in ~/.coolmc/volumes/prism_files/
@@ -177,7 +177,7 @@ mc.delete_prism_file("my_model.prism")
 
 Uploaded files are stored in `~/.coolmc/volumes/prism_files/` on your machine, so they survive container restarts.
 
-#### Job management
+#### 📋 Job management
 
 ```python
 # Check queue (only one job runs at a time)
@@ -431,7 +431,7 @@ PRISM Model (*.prism)
 - **helper.py**: CLI parsing, random seed management
 
 
-## Publications
+## 📄 Publications
 
 If you use COOL-MC in your research, please cite the relevant publication(s):
 
@@ -454,7 +454,7 @@ If you use COOL-MC in your research, please cite the relevant publication(s):
 | 2026 | COOL-MC: Verifying and Explaining RL Policies for Multi-bridge Network Maintenance | arXiv | [arXiv](https://arxiv.org/abs/2603.07546) |
 </details>
 
-## Collaboration & Contributors
+## 👥 Collaboration & Contributors
 
 COOL-MC is developed and maintained by [Dennis Gross](https://www.linkedin.com/in/dennis-gro%C3%9F-b25044326/), with contributions from [Nils Jansen](https://www.linkedin.com/in/nils-jansen-48458011a/), [Sebastian Junges](https://www.linkedin.com/in/sebastian-junges/), and [Guillermo A. Pérez](https://gaperez64.github.io/).
 
