@@ -198,33 +198,46 @@ def simulate(
 ) -> dict:
     """Run a Monte Carlo simulation and return the path as a list of step dicts.
 
-    The simulator selects the first available action at each step (deterministic
-    trace).  Use *seed* for reproducible results.
+    The simulator selects the first available action (alphabetically) at each
+    step.  Use *seed* for reproducible results.
+
+    Each step dict has keys ``step``, ``state`` (variable assignments as dict),
+    and ``action`` (action name string, or ``None`` for the initial state).
     """
+    import json
+
     path = resolve_prism_path(prism_file_path)
     program = stormpy.parse_prism_program(str(path))
     program = _apply_constants(program, constant_definitions)
 
+    # Label any unlabelled commands so action-name mode works correctly.
+    suggestions: dict = {}
+    i = 0
+    for module in program.modules:
+        for command in module.commands:
+            if not command.is_labeled:
+                suggestions[command.global_index] = f"tau_{i}"
+                i += 1
+    program = program.label_unlabelled_commands(suggestions)
+
     kwargs: dict = {"seed": seed} if seed is not None else {}
     simulator = stormpy.simulator.create_simulator(program, **kwargs)
-    simulator.restart()
+    simulator.set_action_mode(stormpy.simulator.SimulatorActionMode.GLOBAL_NAMES)
 
-    state, labels, _ = simulator.observe()
-    steps: list[dict] = [
-        {"step": 0, "state": state, "labels": list(labels), "action": None}
-    ]
+    # restart() returns the initial state as a JsonContainerDouble.
+    initial_state = json.loads(str(simulator.restart()[0]))
+    steps: list[dict] = [{"step": 0, "state": initial_state, "action": None}]
 
-    for i in range(nr_steps):
+    for step_idx in range(nr_steps):
         if simulator.is_done():
             break
-        actions = simulator.available_actions()
+        actions = sorted(simulator.available_actions())
         if not actions:
             break
         action = actions[0]
-        state, labels, _ = simulator.step(action)
-        steps.append(
-            {"step": i + 1, "state": state, "labels": list(labels), "action": str(action)}
-        )
+        result = simulator.step(action)
+        state = json.loads(str(result[0]))
+        steps.append({"step": step_idx + 1, "state": state, "action": action})
 
     return {
         "path": steps,
