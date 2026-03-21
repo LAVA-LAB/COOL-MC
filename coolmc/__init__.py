@@ -22,7 +22,24 @@ Usage::
 
 from .docker_manager import ensure_running
 from .client import CoolMC, Job
+from .storm import (
+    Storm,
+    ModelInfo,
+    StormResult,
+    SchedulerResult,
+    SimulationResult,
+    ParametricResult,
+)
 
 ensure_running()
 
-__all__ = ["CoolMC", "Job"]
+__all__ = [
+    "CoolMC",
+    "Job",
+    "Storm",
+    "ModelInfo",
+    "StormResult",
+    "SchedulerResult",
+    "SimulationResult",
+    "ParametricResult",
+]

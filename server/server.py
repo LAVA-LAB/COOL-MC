@@ -5,11 +5,12 @@ import asyncio
 import io
 import zipfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from mlflow.store.tracking.file_store import FileStore
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import PlainTextResponse
+from pydantic import BaseModel
 
 from server.job_manager import Job, manager, WORKDIR
 
@@ -232,6 +233,110 @@ def delete_prism_file(filename: str) -> dict:
         raise HTTPException(status_code=404, detail="File not found")
     target.unlink()
     return {"deleted": filename}
+
+
+# ---------------------------------------------------------------------------
+# Storm / stormpy endpoints
+# ---------------------------------------------------------------------------
+
+class _StormRequest(BaseModel):
+    prism_file_path: str
+    constant_definitions: str = ""
+    formula: str = ""
+    all_states: bool = False
+    nr_steps: int = 100
+    seed: Optional[int] = None
+
+
+def _storm_endpoint(fn, req: _StormRequest, **extra):
+    """Shared error-handling wrapper for Storm endpoints."""
+    try:
+        return fn(**extra)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/storm/build-model")
+def storm_build_model(req: _StormRequest) -> dict:
+    """Build a stormpy model and return statistics (type, states, transitions, labels)."""
+    from server.storm_api import build_model
+    return _storm_endpoint(
+        build_model, req,
+        prism_file_path=req.prism_file_path,
+        constant_definitions=req.constant_definitions,
+        formula=req.formula,
+    )
+
+
+@app.post("/storm/check")
+def storm_check(req: _StormRequest) -> dict:
+    """Model-check a formula and return the result for the initial state."""
+    if not req.formula:
+        raise HTTPException(status_code=422, detail="formula is required")
+    from server.storm_api import check
+    return _storm_endpoint(
+        check, req,
+        prism_file_path=req.prism_file_path,
+        formula=req.formula,
+        constant_definitions=req.constant_definitions,
+        all_states=req.all_states,
+    )
+
+
+@app.post("/storm/get-scheduler")
+def storm_get_scheduler(req: _StormRequest) -> dict:
+    """Extract an optimal scheduler via model checking."""
+    if not req.formula:
+        raise HTTPException(status_code=422, detail="formula is required")
+    from server.storm_api import get_scheduler
+    return _storm_endpoint(
+        get_scheduler, req,
+        prism_file_path=req.prism_file_path,
+        formula=req.formula,
+        constant_definitions=req.constant_definitions,
+    )
+
+
+@app.post("/storm/simulate")
+def storm_simulate(req: _StormRequest) -> dict:
+    """Run a Monte Carlo simulation on a PRISM model."""
+    from server.storm_api import simulate
+    return _storm_endpoint(
+        simulate, req,
+        prism_file_path=req.prism_file_path,
+        nr_steps=req.nr_steps,
+        constant_definitions=req.constant_definitions,
+        seed=req.seed,
+    )
+
+
+@app.post("/storm/parametric-check")
+def storm_parametric_check(req: _StormRequest) -> dict:
+    """Perform parametric model checking (returns rational function)."""
+    if not req.formula:
+        raise HTTPException(status_code=422, detail="formula is required")
+    from server.storm_api import parametric_check
+    return _storm_endpoint(
+        parametric_check, req,
+        prism_file_path=req.prism_file_path,
+        formula=req.formula,
+        constant_definitions=req.constant_definitions,
+    )
+
+
+@app.post("/storm/transitions")
+def storm_get_transitions(req: _StormRequest) -> dict:
+    """Return the full sparse transition matrix of a PRISM model."""
+    from server.storm_api import get_transitions
+    return _storm_endpoint(
+        get_transitions, req,
+        prism_file_path=req.prism_file_path,
+        constant_definitions=req.constant_definitions,
+    )
 
 
 # ---------------------------------------------------------------------------

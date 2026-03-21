@@ -9,6 +9,7 @@ from typing import Any, Optional
 import requests
 
 from .config import SERVER_URL, DEFAULTS
+from .storm import Storm
 
 
 # ---------------------------------------------------------------------------
@@ -54,6 +55,8 @@ class CoolMC:
 
     def __init__(self, server_url: str = SERVER_URL):
         self._url = server_url.rstrip("/")
+        # Remote Storm/stormpy interface — no local Storm installation required.
+        self.storm = Storm(self._url)
 
     # ------------------------------------------------------------------
     # Primary interface
