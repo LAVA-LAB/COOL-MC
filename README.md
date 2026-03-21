@@ -53,13 +53,15 @@ To install Docker on your system, you'll need to follow these general steps:
 
 ## 🎯 Getting Started
 
-For detailed examples, see the `examples` directory which contains bash scripts for running various experiments. A full list of command-line arguments with descriptions is documented in `common/utilities/helper.py`.
+For detailed examples, see the `examples` directory which contains bash scripts for CLI usage and Python scripts for the client API:
+- [`examples/client_api_example.py`](examples/client_api_example.py) — training, verification, job management, and file uploads via the Python client
+- [`examples/storm_api_example.py`](examples/storm_api_example.py) — remote Storm model checking via the Python client
 
----
+A full list of command-line arguments with descriptions is documented in `common/utilities/helper.py`.
 
 ### 🐍 Option 1: Python Package Client
 
-The easiest way to use COOL-MC is via the pip-installable Python client. It manages the Docker container automatically — no manual setup required beyond having Docker installed.
+The easiest way to use COOL-MC is via the pip-installable Python client. It manages the Docker container automatically, no manual setup required beyond having Docker installed.
 
 #### 📦 Installation
 
@@ -69,7 +71,7 @@ pip install git+https://github.com/LAVA-LAB/COOL-MC.git
 
 #### ⚙️ How it works
 
-On the first `import coolmc`, the package checks whether the COOL-MC Docker container is running. If not, it builds and starts it automatically (this takes a few minutes on first run). All subsequent imports return immediately. The container runs a FastAPI server at `localhost:8765` that accepts job submissions and enforces a single-job queue — Storm can only verify one model at a time.
+On the first `import coolmc`, the package checks whether the COOL-MC Docker container is running. If not, it builds and starts it automatically (this takes a few minutes on first run). All subsequent imports return immediately. The container runs a FastAPI server at `localhost:8765` that accepts job submissions and enforces a single-job queue, since Storm can only verify one model at a time.
 
 Experiments, logs, and MLflow artifacts are written to `~/.coolmc/volumes/` on your machine and persist across container restarts and pip upgrades:
 
@@ -89,7 +91,7 @@ import coolmc
 
 mc = coolmc.CoolMC()
 
-# Submit a training job — returns immediately, job runs in the background
+# Submit a training job (returns immediately, job runs in the background)
 job = mc.cmd(
     task="safe_training",
     project_name="my_experiment",
@@ -158,7 +160,7 @@ print(mc.get_logs(verify_job.job_id))
 #### 📤 Uploading custom PRISM environments
 
 ```python
-# Upload a local .prism file — stored permanently in ~/.coolmc/volumes/prism_files/
+# Upload a local .prism file (stored permanently in ~/.coolmc/volumes/prism_files/)
 path = mc.upload_prism("/home/user/my_model.prism")
 print(path)  # "prism_files_user/my_model.prism"
 
@@ -176,6 +178,54 @@ mc.delete_prism_file("my_model.prism")
 ```
 
 Uploaded files are stored in `~/.coolmc/volumes/prism_files/` on your machine, so they survive container restarts.
+
+#### ⚡ Remote Storm Model Checking (no local Storm needed)
+
+The Python client exposes the full Storm 1.7.0 model checker running inside Docker via `mc.storm`. You can build models, check properties, extract schedulers, simulate, and inspect transition matrices, all without installing Storm or stormpy locally.
+
+```python
+# Build a model and inspect its structure
+info = mc.storm.build_model("transporter.prism", constants="MAX_JOBS=2,MAX_FUEL=10")
+print(info.nr_states, info.labels)
+
+# Check a property (returns the result for the initial state)
+res = mc.storm.check(
+    "transporter.prism",
+    "Pmax=? [ F jobs_done=2 ]",
+    constants="MAX_JOBS=2,MAX_FUEL=10",
+)
+print(float(res))  # e.g. 1.0
+
+# Get results for every state
+res_all = mc.storm.check(..., all_states=True)
+print(res_all.all_states[:5])
+
+# Extract the optimal scheduler (maps each state to an action index)
+sched = mc.storm.get_scheduler(
+    "transporter.prism",
+    "Pmax=? [ F jobs_done=2 ]",
+    constants="MAX_JOBS=2,MAX_FUEL=10",
+)
+print(sched.get_action(0))  # action chosen in state 0
+
+# Run a simulation trace
+sim = mc.storm.simulate("transporter.prism", nr_steps=20,
+                        constants="MAX_JOBS=2,MAX_FUEL=10", seed=42)
+for step in sim.path:
+    print(step["step"], step["action"], step["state"])
+
+# Inspect the full sparse transition matrix
+trans = mc.storm.get_transitions("transporter.prism", constants="MAX_JOBS=2,MAX_FUEL=10")
+for t in trans["transitions"][:3]:
+    print(t)  # {"from": 0, "action": 2, "to": 1, "probability": 1.0}
+
+# Parametric model checking (returns a rational function over free parameters)
+pres = mc.storm.parametric_check("my_parametric_model.prism", "P=? [ F target ]")
+print(pres.result)     # e.g. "p/(1 - p + p**2)"
+print(pres.parameters) # e.g. ["p"]
+```
+
+Works with built-in environments and user-uploaded files alike. See [`examples/storm_api_example.py`](examples/storm_api_example.py) for a full walkthrough.
 
 #### 📋 Job management
 
@@ -197,7 +247,7 @@ mc.cancel(job.job_id)
 
 `mc.cmd()` accepts every parameter that `cool_mc.py` supports. See `common/utilities/helper.py` for the full list with descriptions.
 
----
+A complete example covering training, verification, file uploads, job management, and the Storm API is available in [`examples/client_api_example.py`](examples/client_api_example.py).
 
 ### 🖥️ Option 2: Direct CLI (inside the Dev Container)
 
