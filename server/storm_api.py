@@ -65,20 +65,9 @@ def _apply_constants(program, constant_definitions: str):
     the updated program with those constants defined."""
     if not constant_definitions or not constant_definitions.strip():
         return program
-    manager = program.expression_manager
-    constants = {}
-    for pair in constant_definitions.split(","):
-        name, value_str = pair.strip().split("=")
-        name = name.strip()
-        value_str = value_str.strip()
-        try:
-            constants[name] = manager.create_integer(int(value_str))
-        except ValueError:
-            try:
-                constants[name] = manager.create_double(float(value_str))
-            except ValueError:
-                constants[name] = manager.create_boolean(value_str.lower() == "true")
-    return program.define_constants(constants)
+    return stormpy.preprocess_symbolic_input(
+        program, [], constant_definitions
+    )[0].as_prism_program()
 
 
 def _model_to_dict(model) -> dict:
