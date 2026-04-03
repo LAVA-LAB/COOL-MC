@@ -1,6 +1,6 @@
 """Server-side stormpy wrapper.
 
-All stormpy calls run here — inside the Docker container where Storm 1.7.0
+All stormpy calls run here — inside the Docker container where Storm 1.12.0
 and the corresponding stormpy bindings are installed.  Clients call these
 functions indirectly via the FastAPI endpoints in server.py and receive
 JSON-serialisable results without needing a local Storm installation.
@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Any, Optional
 
 import stormpy
-import stormpy.core
 import stormpy.simulator
 
 WORKDIR = Path("/workspaces/coolmc")
@@ -269,7 +268,7 @@ def parametric_check(
 
     initial_state = int(model.initial_states[0])
     result_func = result.at(initial_state)
-    parameters = [str(p) for p in model.collect_probability_parameters()]
+    parameters = [str(p) for p in model.collect_all_parameters()]
 
     return {
         "result": str(result_func),

@@ -6,7 +6,6 @@ import json
 import mlflow
 import time
 from mlflow.tracking import MlflowClient
-from distutils.dir_util import copy_tree
 import math
 
 
@@ -52,51 +51,36 @@ class MlFlowBridge:
 
 
     def __copy_run(self, experiment, run):
-        # Find unique run_id
-        exists = True
-        # Make sure that run_id length is not too long
-        run_id_length = len(run.info.run_id)+10
-        if run_id_length > 50:
-            run_id_length = 32
-        new_run_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=run_id_length))
-        run_path = os.path.join('../mlruns', experiment.experiment_id, run.info.run_id)
-        new_run_path = os.path.join('../mlruns', experiment.experiment_id, new_run_id)
-        # print working directory
+        """Create a new MLflow run and copy artifacts from an existing run.
+
+        MLflow 3.x stores metadata in a database, not in the filesystem, so we
+        use the tracking API to create runs and copy artifacts instead of
+        manipulating files directly.
+        """
         print("Copying run...")
-        while exists:
-            new_run_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=run_id_length))
-            new_run_path = os.path.join('../mlruns', experiment.experiment_id, new_run_id)
-            exists = self.check_folder_in_tree(new_run_id, '../mlruns')
-        copy_tree(run_path, new_run_path)
-        print("Copied run to " + new_run_path)
-        # Modify Meta
-        f = open(os.path.join(new_run_path,'meta.yaml'),'r')
-        lines = f.readlines()
-        f.close()
-        lines[0] = lines[0].replace(run.info.run_id, new_run_id)
-        lines[5] = lines[5].replace(run.info.run_id, new_run_id)
-        lines[6] = lines[6].replace(run.info.run_id, new_run_id)
-        lines[7] = lines[7].replace(run.info.run_id, new_run_id)
-        lines[7] = lines[7].replace(run.info.run_id, new_run_id)
-        lines[11] = 'start_time: ' + str(time.time()*1000).split('.')[0] + '\n'
-        f = open(os.path.join(new_run_path,'meta.yaml'),'w')
-        f.writelines(lines)
-        f.close()
-        # Update task
-        f = open(os.path.join(new_run_path,'tags','task'),'w')
-        f.write(self.task)
-        f.close()
-        # Delete already existing metrics
-        metrics_path = os.path.join(new_run_path, 'metrics')
-        shutil.rmtree(metrics_path)
-        os.mkdir(metrics_path)
-        # Delete already existing params
-        params_path = os.path.join(new_run_path, 'params')
-        shutil.rmtree(params_path)
-        os.mkdir(params_path)
-        # Get run
-        run = mlflow.get_run(new_run_id)
-        return run
+        # Create a new run via the API
+        new_run = self.client.create_run(experiment.experiment_id)
+        new_run_id = new_run.info.run_id
+
+        # Copy artifacts from the source run to the new run
+        src_artifact_uri = run.info.artifact_uri.replace('file://', '')
+        dst_artifact_uri = new_run.info.artifact_uri.replace('file://', '')
+
+        if os.path.isdir(src_artifact_uri):
+            for item in os.listdir(src_artifact_uri):
+                src_item = os.path.join(src_artifact_uri, item)
+                dst_item = os.path.join(dst_artifact_uri, item)
+                if os.path.isdir(src_item):
+                    shutil.copytree(src_item, dst_item)
+                else:
+                    os.makedirs(dst_artifact_uri, exist_ok=True)
+                    shutil.copy2(src_item, dst_item)
+
+        # Set task tag
+        self.client.set_tag(new_run_id, "task", self.task)
+
+        print("Copied run to " + new_run_id)
+        return mlflow.get_run(new_run_id)
 
 
     def save_command_line_arguments(self, command_line_arguments):
@@ -109,19 +93,20 @@ class MlFlowBridge:
 
 
     def load_command_line_arguments(self):
-        meta_folder_path = mlflow.get_artifact_uri(artifact_path="meta").replace('/file:/','')
-        # If rerun, take all the command line arguments from previous run into account except the following:
-        command_line_arguments_file_path = os.path.join(meta_folder_path, 'command_line_arguments.json')[7:]
-        #print(command_line_arguments_file_path)
+        meta_folder_path = mlflow.get_artifact_uri(artifact_path="meta")
+        # Strip file:// prefix if present (MLflow 2.x adds it, MLflow 3.x does not)
+        meta_folder_path = meta_folder_path.replace('file://', '')
+        command_line_arguments_file_path = os.path.join(meta_folder_path, 'command_line_arguments.json')
         if os.path.exists(command_line_arguments_file_path):
             with open(command_line_arguments_file_path) as json_file:
                 command_line_arguments = json.load(json_file)
-                #print(command_line_arguments)
                 return command_line_arguments
         return None
 
     def get_agent_path(self):
-        model_folder_path = mlflow.get_artifact_uri(artifact_path="model").replace('file:///workspaces/coolmc/','/workspaces/coolmc/')
+        model_folder_path = mlflow.get_artifact_uri(artifact_path="model")
+        # Strip file:// prefix if present (MLflow 2.x adds it, MLflow 3.x does not)
+        model_folder_path = model_folder_path.replace('file://', '')
         return model_folder_path
 
     def get_run_id(self):
@@ -149,35 +134,30 @@ class MlFlowBridge:
         mlflow.log_param('result', result)
 
 
-    def get_best_reward(self,command_line_arguments):
-        run_path = self.get_agent_path().replace("/artifacts/model","")
+    def get_best_reward(self, command_line_arguments):
         best_reward = -math.inf
-        p = os.path.join("/workspaces/coolmc/",run_path, 'metrics','best_sliding_window_reward').strip()
-        path_parts = p.split("/")
-        path_parts[5] = command_line_arguments['parent_run_id']
-        p = "/".join(path_parts)
-        if not os.path.exists(p):
-            return best_reward
-        with open(p) as f:
-            lines = f.readlines()
-            best_reward = float(lines[-1].split(' ')[-2])
-        print("Best Reward: ", best_reward)
+        parent_run_id = command_line_arguments['parent_run_id']
+        try:
+            parent_run = self.client.get_run(parent_run_id)
+            value = parent_run.data.metrics.get('best_sliding_window_reward')
+            if value is not None:
+                best_reward = float(value)
+                print("Best Reward: ", best_reward)
+        except Exception:
+            pass
         return best_reward
 
-    def get_best_property_result(self,command_line_arguments):
-        run_path = self.get_agent_path().replace("/artifacts/model","")
+    def get_best_property_result(self, command_line_arguments):
         best_property_result = -math.inf
-        p = os.path.join("/workspaces/coolmc/",run_path, 'metrics','best_property_result').strip()
-        path_parts = p.split("/")
-        path_parts[5] = command_line_arguments['parent_run_id']
-        p = "/".join(path_parts)
-        if not os.path.exists(p):
-            return best_property_result
-        with open(p) as f:
-            lines = f.readlines()
-            best_property_result = float(lines[-1].split(' ')[-2])
-
-        print("Best best_property_result: ", best_property_result)
+        parent_run_id = command_line_arguments['parent_run_id']
+        try:
+            parent_run = self.client.get_run(parent_run_id)
+            value = parent_run.data.metrics.get('best_property_result')
+            if value is not None:
+                best_property_result = float(value)
+                print("Best best_property_result: ", best_property_result)
+        except Exception:
+            pass
         return best_property_result
 
 

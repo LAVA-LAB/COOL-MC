@@ -1,4 +1,4 @@
-FROM movesrwth/stormpy:1.7.0
+FROM movesrwth/stormpy:1.12.0
 
 # System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -11,11 +11,8 @@ WORKDIR /workspaces/coolmc
 # Clone COOL-MC (includes server/ and all source files)
 RUN git clone https://github.com/LAVA-LAB/COOL-MC.git .
 
-# Install COOL-MC Python deps
+# Install COOL-MC Python deps (includes fastapi, uvicorn, aiofiles, etc.)
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Install server deps
-RUN pip install --no-cache-dir fastapi>=0.110.0 uvicorn>=0.29.0 aiofiles>=23.0.0 python-multipart>=0.0.9
 
 # Persistent directories (bind-mounted from host at runtime)
 RUN mkdir -p logs mlruns prism_files_user
