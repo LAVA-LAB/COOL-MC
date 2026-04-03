@@ -94,7 +94,7 @@ def train(project, env, prop_type=''):
                 project.agent.episodic_learn()
 
             if episode % project.command_line_arguments['eval_interval']==0 and prop_type != 'reward':
-                mdp_reward_result, model_checking_info = env.storm_bridge.model_checker.induced_markov_chain(project.agent, project.preprocessors, env, project.command_line_arguments['constant_definitions'], project.command_line_arguments['prop'])
+                mdp_reward_result, model_checking_info = env.storm_bridge.model_checker.induced_markov_chain(project.agent, project.preprocessors, env, project.command_line_arguments['constant_definitions'], project.command_line_arguments['prop'], transition_updaters=project.transition_updaters)
                 project.agent.model_checking_learn(mdp_reward_result, model_checking_info, env.storm_bridge.model_checker)
                 all_property_results.append(mdp_reward_result)
 

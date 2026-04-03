@@ -207,7 +207,8 @@ class ModelChecker():
     def induced_markov_chain(self, agent: common.agents, preprocessors, env,
                              constant_definitions: str,
                              formula_str: str, collect_label_and_states:bool=False,
-                             state_labelers=None) -> Tuple[float, int]:
+                             state_labelers=None,
+                             transition_updaters=None) -> Tuple[float, int]:
         """Creates a Markov chain of an MDP induced by a policy
         and applies model checking.py
 
@@ -447,6 +448,14 @@ class ModelChecker():
             model_size = len(model.states)
             model_transitions = model.nr_transitions
 
+        # Apply transition updaters (e.g., convert to interval model)
+        if transition_updaters is not None:
+            for updater in transition_updaters:
+                model = updater.update_model(model, env, agent)
+            # Update model size and transitions after updater
+            model_size = model.nr_states
+            model_transitions = model.nr_transitions
+
         # Apply state labelers to add custom labels to the model
         if state_labelers is not None:
             for labeler in state_labelers:
@@ -458,14 +467,44 @@ class ModelChecker():
         else:
             properties = stormpy.parse_properties(formula_str, prism_program)
 
-        result = stormpy.model_checking(model, properties[0])
+        # Check if the model is an interval model (from transition updaters)
+        is_interval_model = model.supports_uncertainty
 
-        model_checking_time = time.time() - model_checking_start_time
+        if is_interval_model:
+            env_mc = stormpy.Environment()
+            initial_state = model.initial_states[0]
 
-        stormpy.export_to_drn(model,"test.drn")
-        initial_state = model.initial_states[0]
-        #print('Result for initial state', result.at(initial_state))
-        mdp_result = result.at(initial_state)
+            # Check with MAXIMIZE
+            task_max = stormpy.CheckTask(properties[0].raw_formula, only_initial_states=False)
+            task_max.set_uncertainty_resolution_mode(stormpy.UncertaintyResolutionMode.MAXIMIZE)
+            if model.model_type == stormpy.ModelType.DTMC:
+                result_max = stormpy.check_interval_dtmc(model, task_max, env_mc)
+            else:
+                result_max = stormpy.check_interval_mdp(model, task_max, env_mc)
+            max_result = result_max.at(initial_state)
 
-        info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
-        return mdp_result, info
+            # Check with MINIMIZE
+            task_min = stormpy.CheckTask(properties[0].raw_formula, only_initial_states=False)
+            task_min.set_uncertainty_resolution_mode(stormpy.UncertaintyResolutionMode.MINIMIZE)
+            if model.model_type == stormpy.ModelType.DTMC:
+                result_min = stormpy.check_interval_dtmc(model, task_min, env_mc)
+            else:
+                result_min = stormpy.check_interval_mdp(model, task_min, env_mc)
+            min_result = result_min.at(initial_state)
+
+            model_checking_time = time.time() - model_checking_start_time
+            mdp_result = max_result  # Use max as the primary result
+
+            info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes, "min_result": min_result, "max_result": max_result}
+            return mdp_result, info
+        else:
+            result = stormpy.model_checking(model, properties[0])
+
+            model_checking_time = time.time() - model_checking_start_time
+
+            stormpy.export_to_drn(model,"test.drn")
+            initial_state = model.initial_states[0]
+            mdp_result = result.at(initial_state)
+
+            info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes}
+            return mdp_result, info

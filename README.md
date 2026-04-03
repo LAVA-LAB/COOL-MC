@@ -465,14 +465,43 @@ PRISM Model (*.prism)
 
 **Use Case**: AI Explainability over time.
 
-### 7. 🔍 Interpreters (`common/interpreter/`)
+### 7. 🔀 Transition Updaters (`common/transition_updaters/`)
+
+**Purpose**: Transform the induced model's transition matrix after construction, typically to create interval models (IDTMCs/IMDPs) for robust verification under transition probability uncertainty.
+
+**Key Components**:
+- **TransitionUpdater**: Base class defining the updater interface
+- **EpsilonTransitionUpdater**: Replaces each transition probability `p` with the interval `[p - eps, p + eps]`
+- **TransitionUpdaterBuilder**: Factory for building updaters from configuration strings
+
+**Available Updaters**:
+- `epsilon;eps=<float>`: Creates an interval model where each transition probability `p` becomes `[max(0, p - eps), min(1, p + eps)]`. The model checker then computes both the minimum and maximum probability bounds.
+
+**Usage**:
+```bash
+python cool_mc.py --task=rl_model_checking \
+    --parent_run_id="last" \
+    --prism_file_path="transporter.prism" \
+    --constant_definitions="MAX_JOBS=2,MAX_FUEL=10" \
+    --prop="P=? [ F \"empty\" ]" \
+    --transition_updater="epsilon;eps=0.05"
+```
+
+**Output** (for interval models, both bounds are printed):
+```
+P=? [ F "empty" ]:  min=0.85  max=1.0
+```
+
+**Use Case**: Robustness analysis. When transition probabilities are estimated from data or subject to perturbation, interval models provide worst-case and best-case bounds on whether the property is satisfied.
+
+### 8. 🔍 Interpreters (`common/interpreter/`)
 
 **Purpose**:
 - Extract interpretable representations from RL policies
 - **Decision Tree Interpreter**: Converts neural network policies to decision trees
 - Provides human-readable policy explanations
 
-### 8. 🛠️ Utilities (`common/utilities/`)
+### 9. 🛠️ Utilities (`common/utilities/`)
 
 **Key Modules**:
 - **training.py**: Main training loop implementation

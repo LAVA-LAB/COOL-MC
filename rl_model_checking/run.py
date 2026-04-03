@@ -66,6 +66,7 @@ if __name__ == '__main__':
     m_project.create_preprocessor(m_project.command_line_arguments, env.observation_space, env.action_space, env.storm_bridge.state_mapper)
     m_project.create_postprocessor(m_project.command_line_arguments, env.observation_space, env.action_space, env.storm_bridge.state_mapper)
     m_project.create_state_labelers(command_line_arguments)
+    m_project.create_transition_updaters(command_line_arguments)
 
     # Initialize preprocessors that need environment access (e.g., optimal_control)
     if m_project.preprocessors is not None:
@@ -84,11 +85,15 @@ if __name__ == '__main__':
         m_project.agent, m_project.preprocessors, env,
         m_project.command_line_arguments['constant_definitions'],
         m_project.command_line_arguments['prop'], collect_label_and_states,
-        state_labelers=m_project.state_labelers)
+        state_labelers=m_project.state_labelers,
+        transition_updaters=m_project.transition_updaters)
     m_project.mlflow_bridge.log_result(mdp_reward_result)
 
     run_id = m_project.mlflow_bridge.get_run_id()
-    print(f'{original_prop}:\t{mdp_reward_result}')
+    if "min_result" in model_checking_info:
+        print(f'{original_prop}:\tmin={model_checking_info["min_result"]}\tmax={model_checking_info["max_result"]}')
+    else:
+        print(f'{original_prop}:\t{mdp_reward_result}')
     print(f'Model Size:\t\t{model_checking_info["model_size"]}')
     print(f'Number of Transitions:\t{model_checking_info["model_transitions"]}')
     print(f'Model Building Time:\t{model_checking_info["model_building_time"]}')

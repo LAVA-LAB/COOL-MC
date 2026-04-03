@@ -2,6 +2,7 @@ from common.agents.agent_builder import AgentBuilder
 from common.preprocessors.preprocessor_builder import PreprocessorBuilder
 from common.postprocessors.postprocessor_builder import PostprocessorBuilder
 from common.state_labelers.state_labeler_builder import StateLabelerBuilder
+from common.transition_updaters.transition_updater_builder import TransitionUpdaterBuilder
 from common.utilities.mlflow_bridge import MlFlowBridge
 
 class Project():
@@ -13,6 +14,7 @@ class Project():
         self.preprocessors = None
         self.manipulator = None
         self.state_labelers = None
+        self.transition_updaters = None
 
 
     def init_mlflow_bridge(self, project_name, task, parent_run_id):
@@ -113,6 +115,12 @@ class Project():
                     del saved_command_line_arguments['state_labeler']
                 except:
                     pass
+            if self.command_line_arguments.get('transition_updater', '') != '':
+                # Only delete it if it is not set by the command line (in this case take new one)
+                try:
+                    del saved_command_line_arguments['transition_updater']
+                except:
+                    pass
             try:
                 del saved_command_line_arguments['range_plotting']
             except:
@@ -170,6 +178,21 @@ class Project():
         if self.state_labelers is not None:
             print(f"State labelers: {command_line_arguments['state_labeler']}")
         return self.state_labelers
+
+    def create_transition_updaters(self, command_line_arguments):
+        """Create transition updaters from command line arguments.
+
+        Args:
+            command_line_arguments: Dictionary with command line arguments
+
+        Returns:
+            List of TransitionUpdater instances or None
+        """
+        config = command_line_arguments.get('transition_updater', '')
+        self.transition_updaters = TransitionUpdaterBuilder.build_transition_updaters(config)
+        if self.transition_updaters is not None:
+            print(f"Transition updaters: {config}")
+        return self.transition_updaters
 
     def save(self):
         # Agent
