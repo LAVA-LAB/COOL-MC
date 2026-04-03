@@ -181,7 +181,7 @@ Uploaded files are stored in `~/.coolmc/volumes/prism_files/` on your machine, s
 
 #### ⚡ Remote Storm Model Checking (no local Storm needed)
 
-The Python client exposes the full Storm 1.7.0 model checker running inside Docker via `mc.storm`. You can build models, check properties, extract schedulers, simulate, and inspect transition matrices, all without installing Storm or stormpy locally.
+The Python client exposes the full Storm 1.12.0 model checker running inside Docker via `mc.storm`. You can build models, check properties, extract schedulers, simulate, and inspect transition matrices, all without installing Storm or stormpy locally.
 
 ```python
 # Build a model and inspect its structure

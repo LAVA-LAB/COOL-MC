@@ -1,6 +1,6 @@
 """Remote Storm/stormpy client.
 
-Exposes Storm 1.7.0 model-checking capabilities through the COOL-MC server
+Exposes Storm 1.12.0 model-checking capabilities through the COOL-MC server
 without requiring a local Storm or stormpy installation.
 
 Obtain via ``mc.storm`` after creating a :class:`~coolmc.client.CoolMC` instance.
@@ -179,6 +179,35 @@ class SimulationResult:
         )
 
 
+class IntervalResult:
+    """Result of interval model checking via :meth:`Storm.interval_check`."""
+
+    def __init__(self, data: dict) -> None:
+        self._data = data
+
+    @property
+    def min_result(self) -> float:
+        """Lower bound (minimizing uncertainty resolution)."""
+        return self._data["min_result"]
+
+    @property
+    def max_result(self) -> float:
+        """Upper bound (maximizing uncertainty resolution)."""
+        return self._data["max_result"]
+
+    @property
+    def eps(self) -> float:
+        """Epsilon perturbation used."""
+        return self._data["eps"]
+
+    @property
+    def model(self) -> ModelInfo:
+        return ModelInfo(self._data.get("model", {}))
+
+    def __repr__(self) -> str:
+        return f"<IntervalResult min={self.min_result} max={self.max_result} eps={self.eps}>"
+
+
 class ParametricResult:
     """Result of parametric model checking via :meth:`Storm.parametric_check`."""
 
@@ -208,7 +237,7 @@ class ParametricResult:
 # ---------------------------------------------------------------------------
 
 class Storm:
-    """Remote interface to Storm 1.7.0 running inside the COOL-MC Docker container.
+    """Remote interface to Storm 1.12.0 running inside the COOL-MC Docker container.
 
     All methods mirror the stormpy API but execute server-side — no local
     Storm installation required.
@@ -376,6 +405,49 @@ class Storm:
             self._req(prism_file_path, formula=formula, constants=constants),
         )
         return ParametricResult(data)
+
+    def interval_check(
+        self,
+        prism_file_path: str,
+        formula: str,
+        *,
+        constants: str = "",
+        eps: float = 0.05,
+    ) -> IntervalResult:
+        """Build an interval model and check with both min and max bounds.
+
+        Each transition probability *p* is widened to
+        ``[max(0, p - eps), min(1, p + eps)]``, then Storm checks the
+        property under both minimizing and maximizing uncertainty resolution.
+
+        Args:
+            prism_file_path: PRISM file to analyse.
+            formula:         PCTL formula, e.g. ``"Pmax=? [ F done ]"``.
+            constants:       Constant definitions string.
+            eps:             Epsilon perturbation (default 0.05).
+
+        Returns an :class:`IntervalResult` with ``min_result`` and ``max_result``.
+
+        Example::
+
+            res = mc.storm.interval_check(
+                "transporter.prism",
+                "Pmax=? [ F jobs_done=2 ]",
+                constants="MAX_JOBS=2,MAX_FUEL=10",
+                eps=0.1,
+            )
+            print(res.min_result, res.max_result)  # e.g. 0.85, 1.0
+        """
+        data = self._post(
+            "/storm/interval-check",
+            self._req(
+                prism_file_path,
+                formula=formula,
+                constants=constants,
+                eps=eps,
+            ),
+        )
+        return IntervalResult(data)
 
     def get_transitions(
         self,

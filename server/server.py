@@ -246,6 +246,7 @@ class _StormRequest(BaseModel):
     all_states: bool = False
     nr_steps: int = 100
     seed: Optional[int] = None
+    eps: float = 0.05
 
 
 def _storm_endpoint(fn, req: _StormRequest, **extra):
@@ -325,6 +326,21 @@ def storm_parametric_check(req: _StormRequest) -> dict:
         prism_file_path=req.prism_file_path,
         formula=req.formula,
         constant_definitions=req.constant_definitions,
+    )
+
+
+@app.post("/storm/interval-check")
+def storm_interval_check(req: _StormRequest) -> dict:
+    """Build an interval model (eps-perturbed) and check with both min and max."""
+    if not req.formula:
+        raise HTTPException(status_code=422, detail="formula is required")
+    from server.storm_api import interval_check
+    return _storm_endpoint(
+        interval_check, req,
+        prism_file_path=req.prism_file_path,
+        formula=req.formula,
+        constant_definitions=req.constant_definitions,
+        eps=req.eps,
     )
 
 

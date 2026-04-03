@@ -277,6 +277,86 @@ def parametric_check(
     }
 
 
+def interval_check(
+    prism_file_path: str,
+    formula: str,
+    constant_definitions: str = "",
+    eps: float = 0.05,
+) -> dict:
+    """Build an interval model and check with both MAXIMIZE and MINIMIZE.
+
+    Each transition probability *p* is widened to ``[max(0, p-eps), min(1, p+eps)]``.
+    Returns both the min and max result for the initial state.
+    """
+    from stormpy.pycarl import Interval
+
+    path = resolve_prism_path(prism_file_path)
+    program = stormpy.parse_prism_program(str(path))
+    program = _apply_constants(program, constant_definitions)
+
+    properties = stormpy.parse_properties(formula, program)
+    model = stormpy.build_model(program, properties)
+
+    # Build interval transition matrix
+    tm = model.transition_matrix
+    is_mdp = model.model_type == stormpy.ModelType.MDP
+
+    builder = stormpy.IntervalSparseMatrixBuilder(
+        rows=0, columns=0, entries=0,
+        force_dimensions=False,
+        has_custom_row_grouping=is_mdp,
+    )
+
+    for state_id in range(model.nr_states):
+        row_start = tm.get_row_group_start(state_id)
+        row_end = tm.get_row_group_end(state_id)
+        if is_mdp:
+            builder.new_row_group(row_start)
+        for row in range(row_start, row_end):
+            for entry in tm.get_row(row):
+                p = float(entry.value())
+                lo = max(0.0, p - eps)
+                hi = min(1.0, p + eps)
+                builder.add_next_value(row, entry.column, Interval(lo, hi))
+
+    interval_matrix = builder.build()
+    components = stormpy.SparseIntervalModelComponents(transition_matrix=interval_matrix)
+    components.state_labeling = model.labeling
+    if len(model.reward_models) > 0:
+        components.reward_models = model.reward_models
+
+    if is_mdp:
+        interval_model = stormpy.SparseIntervalMdp(components)
+    else:
+        interval_model = stormpy.SparseIntervalDtmc(components)
+
+    # Check with MAXIMIZE
+    env = stormpy.Environment()
+    task_max = stormpy.CheckTask(properties[0].raw_formula, only_initial_states=False)
+    task_max.set_uncertainty_resolution_mode(stormpy.UncertaintyResolutionMode.MAXIMIZE)
+    if is_mdp:
+        result_max = stormpy.check_interval_mdp(interval_model, task_max, env)
+    else:
+        result_max = stormpy.check_interval_dtmc(interval_model, task_max, env)
+
+    # Check with MINIMIZE
+    task_min = stormpy.CheckTask(properties[0].raw_formula, only_initial_states=False)
+    task_min.set_uncertainty_resolution_mode(stormpy.UncertaintyResolutionMode.MINIMIZE)
+    if is_mdp:
+        result_min = stormpy.check_interval_mdp(interval_model, task_min, env)
+    else:
+        result_min = stormpy.check_interval_dtmc(interval_model, task_min, env)
+
+    initial_state = int(interval_model.initial_states[0])
+
+    return {
+        "min_result": _to_python(result_min.at(initial_state)),
+        "max_result": _to_python(result_max.at(initial_state)),
+        "eps": eps,
+        "model": _model_to_dict(interval_model),
+    }
+
+
 def get_transitions(
     prism_file_path: str,
     constant_definitions: str = "",
