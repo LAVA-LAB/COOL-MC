@@ -92,6 +92,7 @@ class CoolMC:
         postprocessor: str = DEFAULTS["postprocessor"],
         interpreter: str = DEFAULTS["interpreter"],
         state_labeler: str = DEFAULTS["state_labeler"],
+        transition_updater: str = DEFAULTS["transition_updater"],
         # ── Model Checking ────────────────────────────────────────────
         prop: str = DEFAULTS["prop"],
         range_plotting: int = DEFAULTS["range_plotting"],
@@ -154,6 +155,7 @@ class CoolMC:
             "postprocessor": postprocessor,
             "interpreter": interpreter,
             "state_labeler": state_labeler,
+            "transition_updater": transition_updater,
             "prop": prop,
             "range_plotting": range_plotting,
             "algorithm": algorithm,
@@ -217,16 +219,33 @@ class CoolMC:
         """Remove all completed (DONE/FAILED/CANCELLED) jobs. Returns the count removed."""
         return self._delete("/jobs/history")["cleared"]
 
-    def get_result(self, job_id: str) -> Optional[float]:
+    def get_result(self, job_id: str) -> Optional[float | dict]:
         """Extract the final property result value from the job log.
 
-        Scans the log for lines containing 'Property Result' and returns the
-        last numeric value found, or None if no result is present.
+        For standard models, returns a single float.
+        For interval models (transition updater), returns a dict with
+        ``{"min": float, "max": float}``.
+        Returns None if no result is found.
         """
         log = self.get_logs(job_id)
         result = None
         for line in log.splitlines():
-            if "property result" in line.lower():
+            # Interval model output: "P=? ...: min=0.85 max=1.0"
+            if "min=" in line and "max=" in line:
+                try:
+                    parts = line.split()
+                    min_val = max_val = None
+                    for part in parts:
+                        if part.startswith("min="):
+                            min_val = float(part[4:])
+                        elif part.startswith("max="):
+                            max_val = float(part[4:])
+                    if min_val is not None and max_val is not None:
+                        result = {"min": min_val, "max": max_val}
+                except ValueError:
+                    continue
+            # Standard output: "Last Property Result: 0.95"
+            elif "property result" in line.lower():
                 for part in reversed(line.split()):
                     try:
                         result = float(part)

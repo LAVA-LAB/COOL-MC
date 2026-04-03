@@ -44,6 +44,7 @@ DEFAULTS = {
     "postprocessor": "",
     "interpreter": "",
     "state_labeler": "",
+    "transition_updater": "",
     # Model Checking
     "prop": "",
     "range_plotting": 1,
