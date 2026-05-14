@@ -1,0 +1,51 @@
+mdp
+
+// =====================================================================
+// Wolf, Goat, and Cabbage River-Crossing Puzzle
+//
+// Each entity's position: 0 = left bank, 1 = right bank.
+// All start on the left bank; goal is to get all four to the right bank
+// without ever leaving an incompatible pair unattended.
+//   - Wolf eats goat   if the farmer is not on the goat's bank.
+//   - Goat eats cabbage if the farmer is not on the goat's bank.
+// =====================================================================
+
+formula UNSAFE = ((wolf=goat) & !(farmer=goat)) | ((goat=cabbage) & !(farmer=goat));
+formula WON    = (farmer=1) & (wolf=1) & (goat=1) & (cabbage=1);
+formula DONE   = WON | UNSAFE;
+
+module river
+
+    farmer  : [0..1] init 0;
+    wolf    : [0..1] init 0;
+    goat    : [0..1] init 0;
+    cabbage : [0..1] init 0;
+
+    // --- Active crossings -----------------------------------------
+    [cross_alone]   !DONE                    -> (farmer'=1-farmer);
+    [cross_wolf]    !DONE & (wolf=farmer)    -> (farmer'=1-farmer) & (wolf'=1-wolf);
+    [cross_goat]    !DONE & (goat=farmer)    -> (farmer'=1-farmer) & (goat'=1-goat);
+    [cross_cabbage] !DONE & (cabbage=farmer) -> (farmer'=1-farmer) & (cabbage'=1-cabbage);
+
+    // --- Absorbing self-loops on terminal states ------------------
+    [cross_alone]   DONE -> (farmer'=farmer);
+    [cross_wolf]    DONE -> (farmer'=farmer);
+    [cross_goat]    DONE -> (farmer'=farmer);
+    [cross_cabbage] DONE -> (farmer'=farmer);
+
+endmodule
+
+// --- Labels -----------------------------------------------------------
+
+label "won"    = (farmer=1) & (wolf=1) & (goat=1) & (cabbage=1);
+label "unsafe" = ((wolf=goat) & !(farmer=goat)) | ((goat=cabbage) & !(farmer=goat));
+label "done"   = ((farmer=1) & (wolf=1) & (goat=1) & (cabbage=1)) | ((wolf=goat) & !(farmer=goat)) | ((goat=cabbage) & !(farmer=goat));
+
+// --- Rewards ----------------------------------------------------------
+
+rewards
+    [cross_alone]   !DONE : 1;
+    [cross_wolf]    !DONE : 1;
+    [cross_goat]    !DONE : 1;
+    [cross_cabbage] !DONE : 1;
+endrewards

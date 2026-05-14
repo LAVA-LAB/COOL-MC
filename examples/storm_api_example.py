@@ -1,7 +1,7 @@
 """Storm remote API — usage examples.
 
 This file shows how to use COOL-MC's remote Storm/stormpy interface.
-All model checking runs inside the Docker container where Storm 1.7.0 is
+All model checking runs inside the Docker container where Storm 1.12.0 is
 installed.  Your local machine needs nothing beyond the coolmc pip package.
 
 Run with:

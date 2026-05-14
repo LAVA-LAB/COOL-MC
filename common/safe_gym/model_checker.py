@@ -279,6 +279,16 @@ class ModelChecker():
         use_state_cache = (not isinstance(agent, StochasticAgent)
                            and (preprocessors is None or len(preprocessors) == 0))
 
+        # If any transition updater requires the full MDP (e.g. policy_sampling),
+        # accept all (state, action) pairs so the updater can sample the policy
+        # itself and build the interval model from the full action space.
+        build_full_mdp = False
+        if transition_updaters is not None:
+            for updater in transition_updaters:
+                if getattr(updater, "requires_full_mdp", False):
+                    build_full_mdp = True
+                    break
+
         def incremental_building(state_valuation: SimpleValuation, action_index: int) -> bool:
             """Whether for the given state and action, the action should be allowed in the model.
 
@@ -292,6 +302,11 @@ class ModelChecker():
             assert isinstance(state_valuation, SimpleValuation)
             assert isinstance(action_index, int)
             current_action_name = prism_program.get_action_name(action_index)
+
+            # If an updater wants the full MDP, accept every (state, action)
+            # pair without consulting the agent.
+            if build_full_mdp:
+                return True
 
             # Fast path: single-entry cache for deterministic agent without preprocessors.
             # Storm visits all actions for a state consecutively, so we only keep the last state.
@@ -471,6 +486,13 @@ class ModelChecker():
         is_interval_model = model.supports_uncertainty
 
         if is_interval_model:
+            # Persist the IDTMC so it can be picked up by the post-hoc
+            # multi-policy comparator.
+            try:
+                stormpy.export_to_drn(model, "idtmc.drn")
+            except Exception as exc:
+                print(f"Warning: failed to export IDTMC to idtmc.drn: {exc}")
+
             env_mc = stormpy.Environment()
             initial_state = model.initial_states[0]
 
@@ -495,7 +517,7 @@ class ModelChecker():
             model_checking_time = time.time() - model_checking_start_time
             mdp_result = max_result  # Use max as the primary result
 
-            info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes, "min_result": min_result, "max_result": max_result}
+            info = {"property": formula_str, "model_building_time": (time.time()-start_time), "model_checking_time": model_checking_time, "model_size": model_size, "model_transitions": model_transitions, "collected_states": collected_states, "collected_action_idizes": collected_action_idizes, "min_result": min_result, "max_result": max_result, "idtmc_drn_path": "idtmc.drn"}
             return mdp_result, info
         else:
             result = stormpy.model_checking(model, properties[0])

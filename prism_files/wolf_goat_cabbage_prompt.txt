@@ -1,0 +1,42 @@
+Wolf, Goat, and Cabbage river-crossing puzzle.
+
+A farmer must move a wolf, a goat, and a cabbage from the LEFT bank
+(position 0) to the RIGHT bank (position 1). The boat fits only the
+farmer plus at most one of the wolf, the goat, or the cabbage per crossing.
+
+Constraints (any violation ends the run as UNSAFE):
+- If the wolf and the goat are on the same bank without the farmer,
+  the wolf eats the goat.
+- If the goat and the cabbage are on the same bank without the farmer,
+  the goat eats the cabbage.
+
+Goal: reach the state where farmer=1, wolf=1, goat=1, cabbage=1.
+
+Current state:
+- farmer  = {farmer}    (0 = left, 1 = right)
+- wolf    = {wolf}      (0 = left, 1 = right)
+- goat    = {goat}      (0 = left, 1 = right)
+- cabbage = {cabbage}   (0 = left, 1 = right)
+
+Available actions:
+- cross_alone    : the farmer crosses by itself.
+- cross_wolf     : the farmer takes the wolf across (must be on the
+                   same bank as the farmer).
+- cross_goat     : the farmer takes the goat across (must be on the
+                   same bank as the farmer).
+- cross_cabbage  : the farmer takes the cabbage across (must be on the
+                   same bank as the farmer).
+
+Action list (for reference):
+{action_list}
+
+Rules for the response:
+- You may reason briefly about the puzzle. Only the LAST listed
+  action name in your whole response is executed, so state your
+  final choice last (e.g. on its own line at the end).
+- If no listed action is found, the verifier falls back to the
+  alphabetically first action.
+
+Choose the next action that maximises the probability of reaching the
+goal state (all four on the right bank) while never leaving an
+incompatible pair unattended.

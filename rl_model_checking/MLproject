@@ -16,12 +16,16 @@ entry_points:
             interpreter: {type: string, default: ""}
             # Transition Updater
             transition_updater: {type: string, default: ""}
+            idtmc_out: {type: string, default: ""}
 
             # Model Checking Parameters
             prop : {type: string, default: "Pmax=? [F jobs_done=2]"}
 
-
+            # Quantum transformer agent
+            n_qubits : {type: float, default: 4}
+            poly_degree : {type: float, default: 2}
+            remove_gates : {type: string, default: ""}
 
 
         command: >-
-            python run.py --project_name={project_name} --parent_run_id={parent_run_id} --preprocessor={preprocessor} --prism_dir={prism_dir} --prism_file_path={prism_file_path} --constant_definitions={constant_definitions} --prop={prop} --interpreter={interpreter} --transition_updater={transition_updater}
+            python run.py --project_name={project_name} --parent_run_id={parent_run_id} --preprocessor={preprocessor} --prism_dir={prism_dir} --prism_file_path={prism_file_path} --constant_definitions={constant_definitions} --prop={prop} --interpreter={interpreter} --transition_updater={transition_updater} --idtmc_out={idtmc_out} --n_qubits={n_qubits} --poly_degree={poly_degree} --remove_gates={remove_gates}

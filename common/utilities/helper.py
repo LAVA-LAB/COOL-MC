@@ -82,6 +82,8 @@ def get_arguments() -> Dict[str, Any]:
     # Transition Updater
     arg_parser.add_argument('--transition_updater', help='Transition updater configuration string (e.g., "epsilon;eps=0.05").', type=str,
                             default='')
+    arg_parser.add_argument('--idtmc_out', help='If set, copy the IDTMC produced by the interval transition updater to this path (used by the multi-policy comparator).', type=str,
+                            default='')
 
     # Model Checking
     arg_parser.add_argument('--prop', help='Property Specification.', type=str,

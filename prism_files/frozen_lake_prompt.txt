@@ -1,0 +1,30 @@
+4x4 Frozen Lake. Cells 0..15 row-by-row (top-left=0, bottom-right=15).
+Holes: 5, 7, 11, 12. Goal: 15.
+
+Movement (slippery):
+- a0_left:  position -= 1 (bounded by left border).
+- a2_right: position += 1 (bounded by right border).
+- a3_up:    position -= 4 (bounded by top border).
+- a1_down:  position += 4 (bounded by bottom border).
+- You usually move in the chosen direction, but you may slip sideways
+  into either perpendicular direction instead. Hitting a border only
+  cancels the specific step that would cross it (position stays put
+  for that outcome); the sideways slips can still happen.
+- The ice-control constant for this run is control = {control}. With
+  probability control you move as intended; with probability
+  (1-control)/2 each you slip to one of the two perpendicular moves.
+
+Current: position = {pos}
+
+Actions:
+{action_list}
+
+Rules:
+- Reason freely. You may mention candidate actions while reasoning;
+  only the LAST listed action name in your whole response is executed,
+  so state your final choice last (e.g. on its own line at the end).
+- If no listed action is found, we fall back to the alphabetically
+  first action.
+
+Choose the next action that maximises the probability of reaching
+the goal while avoiding the holes.

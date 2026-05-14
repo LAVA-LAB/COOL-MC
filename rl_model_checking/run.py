@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 sys.path.insert(0, '../')
 from common.utilities.helper import *
@@ -88,6 +89,16 @@ if __name__ == '__main__':
         state_labelers=m_project.state_labelers,
         transition_updaters=m_project.transition_updaters)
     m_project.mlflow_bridge.log_result(mdp_reward_result)
+
+    # Copy the IDTMC artifact to a user-specified location (for the
+    # multi-policy comparator).
+    idtmc_out = m_project.command_line_arguments.get('idtmc_out', '')
+    idtmc_src = model_checking_info.get('idtmc_drn_path')
+    if idtmc_out and idtmc_src and os.path.exists(idtmc_src):
+        dst = os.path.abspath(idtmc_out)
+        os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
+        shutil.copy(idtmc_src, dst)
+        print(f"IDTMC copied to {dst}")
 
     run_id = m_project.mlflow_bridge.get_run_id()
     if "min_result" in model_checking_info:

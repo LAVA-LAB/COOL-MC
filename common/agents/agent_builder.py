@@ -16,6 +16,8 @@ from common.agents.bc_nn_ensemble_agent import *
 from common.agents.bc_mixed_ensemble_agent import *
 from common.agents.ppo_agent import *
 from common.agents.stochastic_ppo_agent import *
+from common.agents.random_agent import RandomAgent
+from common.agents.ollama_agent import OllamaAgent
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class
@@ -44,7 +46,13 @@ class AgentBuilder():
         except:
             state_dimension = 1
         agent = None
-        if command_line_arguments['algorithm'] == "dqn_agent":
+        # Some algorithms (e.g. ollama_agent) carry their own ';'-separated
+        # config inside the --algorithm string. Strip it for dispatch.
+        algo_str = command_line_arguments['algorithm']
+        algo_name = algo_str.split(';', 1)[0].strip()
+        if algo_name == "ollama_agent":
+            agent = OllamaAgent(algo_str, action_names=list(all_actions))
+        elif command_line_arguments['algorithm'] == "dqn_agent":
             number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'],command_line_arguments['neurons'])
             agent = DQNAgent(state_dimension, number_of_neurons, action_space.n, epsilon=command_line_arguments['epsilon'], epsilon_dec=command_line_arguments['epsilon_dec'], epsilon_min=command_line_arguments['epsilon_min'], gamma=command_line_arguments['gamma'], learning_rate=command_line_arguments['lr'], replace=command_line_arguments['replace'], batch_size=command_line_arguments['batch_size'], replay_buffer_size=command_line_arguments['replay_buffer_size'])
             agent.load(model_root_folder_path)
@@ -167,6 +175,8 @@ class AgentBuilder():
             agent = PPOAgent(state_dimension, number_of_neurons, action_space.n, gamma=command_line_arguments['gamma'], lr=command_line_arguments['lr'], batch_size=command_line_arguments['batch_size'])
             if model_root_folder_path != None:
                 agent.load(model_root_folder_path)
+        elif command_line_arguments['algorithm'] == 'random_agent':
+            agent = RandomAgent(action_space.n, seed=command_line_arguments.get('seed', 0))
         elif command_line_arguments['algorithm'] == 'stochastic_ppo_agent':
             number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'], command_line_arguments['neurons'])
             agent = StochasticPPOAgent(state_dimension, number_of_neurons, action_space.n, gamma=command_line_arguments['gamma'], lr=command_line_arguments['lr'], batch_size=command_line_arguments['batch_size'])
