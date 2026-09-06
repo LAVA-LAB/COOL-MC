@@ -531,6 +531,7 @@ If you use COOL-MC in your research, please cite the relevant publication(s):
 | 2026 | Formally Verifying and Explaining Sepsis Treatment Policies with COOL-MC | arXiv | [arXiv](https://arxiv.org/abs/2602.14505) |
 | 2026 | COOL-MC: Verifying and Explaining RL Policies for Platelet Inventory Management | arXiv | [arXiv](https://arxiv.org/abs/2603.02396) |
 | 2026 | COOL-MC: Verifying and Explaining RL Policies for Multi-bridge Network Maintenance | arXiv | [arXiv](https://arxiv.org/abs/2603.07546) |
+| 2026 | Automated Testing of LLM-Based Post Hoc Explainers Using Model Checking as an Oracle | ICTSS | [arXiv](https://arxiv.org/abs/2608.30581) |
 </details>
 
 ## 👥 Collaboration & Contributors
