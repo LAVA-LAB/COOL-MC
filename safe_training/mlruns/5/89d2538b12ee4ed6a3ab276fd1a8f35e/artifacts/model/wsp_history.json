@@ -1,0 +1,42 @@
+[
+ {
+  "phase": "create",
+  "round": 0,
+  "summary": "initial weights written (no self-check states given)"
+ },
+ {
+  "phase": "dataset",
+  "round": 0,
+  "summary": "accuracy 43.75%"
+ },
+ {
+  "phase": "dataset",
+  "round": 1,
+  "summary": "accuracy 43.75% (weights: no self-check states given)"
+ },
+ {
+  "phase": "model checking",
+  "round": 0,
+  "summary": "Pmax=? [ F pos=15 ] = 0.0316312"
+ },
+ {
+  "phase": "repair applied",
+  "round": 1,
+  "summary": "no self-check states given"
+ },
+ {
+  "phase": "model checking",
+  "round": 1,
+  "summary": "Pmax=? [ F pos=15 ] = 0.0316312"
+ },
+ {
+  "phase": "repair applied",
+  "round": 2,
+  "summary": "no self-check states given"
+ },
+ {
+  "phase": "model checking",
+  "round": 2,
+  "summary": "Pmax=? [ F pos=15 ] = 0.0316312"
+ }
+]

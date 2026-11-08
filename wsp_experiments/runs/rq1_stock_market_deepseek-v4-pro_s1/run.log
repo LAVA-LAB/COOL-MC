@@ -1,0 +1,26 @@
+2026/11/08 13:22:28 INFO mlflow.projects.utils: === Created directory /tmp/tmpo13dsxv0 for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 13:22:28 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.9999 --deploy=0 --project_name=wsp_rq1_stock_market --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=deepseek-v4-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/stock_market_wsp.md;temperature=0;seed=1;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq1_stock_market_deepseek-v4-pro_s1' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=stock_market.prism --constant_definitions='' --prop='Pmax=? [ F "success" ]' --reward_flag=1 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=2 --neurons=32 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 1 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/stock_market.prism;Pmax=? [ F "success" ];' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '6ee306ccc7ba4614846af6dd7e19409a' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 1
+Agent loaded.
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 1, prompt 4909 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [31, 32]
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 2, prompt 5078 chars)
+[WSP] initial creation: valid weights, self-check 10/10 states as intended. Notes: Policy waits in HOLD until buy_price=1 with no stocks, then buys all-in. It holds stocks until sell_price=10, then sells. This guarantees eventual success with probability 1 because the price chain is finite and irreducible under HOLD. Neurons compute exact indicators: stocks==0, buy_price==1, capital>=1 for BUY; stocks>0 and sell_price==10 for SELL; otherwise HOLD. Disabled actions are avoided by
+[WSP] dataset round 0: accuracy 100.00%
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ F "success" ] = 1
+[WSP] Property satisfied (1); no repair.
+Property satisfied!
+0 Episode	Reward 5.0 	Average Reward 5.0 	Last Property Result: 1.0
+Run ID: 11294066bb3542b6a53a40c719322b0b
+2026/11/08 13:26:01 INFO mlflow.projects: === Run (ID '6ee306ccc7ba4614846af6dd7e19409a') succeeded ===
+=======================
+Set Seed to 1

@@ -18,6 +18,8 @@ from common.agents.ppo_agent import *
 from common.agents.stochastic_ppo_agent import *
 from common.agents.random_agent import RandomAgent
 from common.agents.ollama_agent import OllamaAgent
+from common.agents.weight_space_programming_agent import WeightSpaceProgrammingAgent
+from common.utilities.helper import DEFAULT_TRAINING_THRESHOLD
 '''
 HOW TO ADD MORE AGENTS?
 1) Create a new AGENTNAME.py with an AGENTNAME class
@@ -52,6 +54,22 @@ class AgentBuilder():
         algo_name = algo_str.split(';', 1)[0].strip()
         if algo_name == "ollama_agent":
             agent = OllamaAgent(algo_str, action_names=list(all_actions))
+        elif algo_name == "weight_space_programming_agent":
+            number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'], command_line_arguments['neurons'])
+            threshold = command_line_arguments.get('training_threshold', DEFAULT_TRAINING_THRESHOLD)
+            agent = WeightSpaceProgrammingAgent(algo_str, state_dimension, number_of_neurons, action_space.n,
+                                                action_names=list(all_actions),
+                                                prop=command_line_arguments.get('prop', ''),
+                                                constant_definitions=command_line_arguments.get('constant_definitions', ''),
+                                                training_threshold=None if threshold == DEFAULT_TRAINING_THRESHOLD else threshold,
+                                                deploy=bool(command_line_arguments.get('deploy', False)),
+                                                reward_flag=bool(command_line_arguments.get('reward_flag', 0)),
+                                                wrong_action_penalty=command_line_arguments.get('wrong_action_penalty', 0),
+                                                max_steps=command_line_arguments.get('max_steps'),
+                                                num_episodes=command_line_arguments.get('num_episodes'),
+                                                eval_interval=command_line_arguments.get('eval_interval'))
+            if model_root_folder_path != None:
+                agent.load(model_root_folder_path)
         elif command_line_arguments['algorithm'] == "dqn_agent":
             number_of_neurons = AgentBuilder.layers_neurons_to_number_of_neurons(command_line_arguments['layers'],command_line_arguments['neurons'])
             agent = DQNAgent(state_dimension, number_of_neurons, action_space.n, epsilon=command_line_arguments['epsilon'], epsilon_dec=command_line_arguments['epsilon_dec'], epsilon_min=command_line_arguments['epsilon_min'], gamma=command_line_arguments['gamma'], learning_rate=command_line_arguments['lr'], replace=command_line_arguments['replace'], batch_size=command_line_arguments['batch_size'], replay_buffer_size=command_line_arguments['replay_buffer_size'])

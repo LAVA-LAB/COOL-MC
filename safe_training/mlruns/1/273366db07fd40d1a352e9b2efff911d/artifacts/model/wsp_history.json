@@ -1,0 +1,17 @@
+[
+ {
+  "phase": "create",
+  "round": 0,
+  "summary": "initial weights written"
+ },
+ {
+  "phase": "dataset",
+  "round": 0,
+  "summary": "train accuracy 87.50%"
+ },
+ {
+  "phase": "model checking",
+  "round": 0,
+  "summary": "Pmax=? [ F pos=15 ] = 0.822231"
+ }
+]

@@ -1,0 +1,17 @@
+[
+ {
+  "phase": "create",
+  "round": 0,
+  "summary": "initial weights written (self-check 15/15 states as intended)"
+ },
+ {
+  "phase": "dataset",
+  "round": 0,
+  "summary": "accuracy 100.00%"
+ },
+ {
+  "phase": "model checking",
+  "round": 0,
+  "summary": "Pmax=? [ F \"success\" ] = 1"
+ }
+]

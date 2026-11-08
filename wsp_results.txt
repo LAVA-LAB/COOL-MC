@@ -1,0 +1,294 @@
+[2026-11-08 09:58:18] Weight-space programming experiments (all)
+[2026-11-08 09:58:18] LLMs: deepseek-v4-pro:cloud kimi-k3.1-pro:cloud | seeds: 1 2 3 | temperature 0 | E=5 alpha=100% R=5 r=2
+[2026-11-08 09:58:18] run directories: /workspaces/coolmc/wsp_experiments/runs | summary: /workspaces/coolmc/wsp_results.txt
+[2026-11-08 09:58:18] Preflight (no LLM calls)
+[2026-11-08 09:58:18]   Frozen Lake: optimum of Pmax=? [ F pos=15 ] = 0.8222309208337081 (MDP states: 17)
+[2026-11-08 09:58:19]   Transporter: optimum of Pmax=? [ F jobs_done=2 ] = 1.0 (MDP states: 8560)
+[2026-11-08 09:58:19]   Stock Market: optimum of Pmax=? [ F "success" ] = 1.0 (MDP states: 14551)
+[2026-11-08 09:58:19]   Transporter (safety): optimum of Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ] = 1.0 (MDP states: 6880)
+[2026-11-08 09:58:19]   fuel < 4 is the largest threshold that can be met (optimum with fuel < 5: 0.0)
+[2026-11-08 09:58:19]   Ollama reachable at http://localhost:11434
+[2026-11-08 09:58:19] RQ1: 3 environments x 2 LLMs x 3 seeds
+[2026-11-08 09:58:20] start rq1_frozen_lake_deepseek-v4-pro_s1
+[2026-11-08 10:01:26] done  rq1_frozen_lake_deepseek-v4-pro_s1 (3 min)
+[2026-11-08 10:01:26] start rq1_frozen_lake_deepseek-v4-pro_s2
+[2026-11-08 10:04:58] done  rq1_frozen_lake_deepseek-v4-pro_s2 (3 min)
+[2026-11-08 10:04:58] start rq1_frozen_lake_deepseek-v4-pro_s3
+[2026-11-08 10:10:28] done  rq1_frozen_lake_deepseek-v4-pro_s3 (5 min)
+[2026-11-08 10:10:28] start rq1_frozen_lake_kimi-k3.1-pro_s1
+[2026-11-08 10:18:47] done  rq1_frozen_lake_kimi-k3.1-pro_s1 (8 min)
+[2026-11-08 10:18:47] start rq1_frozen_lake_kimi-k3.1-pro_s2
+[2026-11-08 10:27:51] done  rq1_frozen_lake_kimi-k3.1-pro_s2 (9 min)
+[2026-11-08 10:27:51] start rq1_frozen_lake_kimi-k3.1-pro_s3
+[2026-11-08 10:35:37] done  rq1_frozen_lake_kimi-k3.1-pro_s3 (7 min)
+[2026-11-08 10:35:37] start rq1_transporter_deepseek-v4-pro_s1
+[2026-11-08 11:01:43] done  rq1_transporter_deepseek-v4-pro_s1 (26 min)
+[2026-11-08 11:01:43] start rq1_transporter_deepseek-v4-pro_s2
+[2026-11-08 11:15:39] done  rq1_transporter_deepseek-v4-pro_s2 (13 min)
+[2026-11-08 11:15:39] start rq1_transporter_deepseek-v4-pro_s3
+[2026-11-08 11:45:21] done  rq1_transporter_deepseek-v4-pro_s3 (29 min)
+[2026-11-08 11:45:21] start rq1_transporter_kimi-k3.1-pro_s1
+[2026-11-08 12:12:22] done  rq1_transporter_kimi-k3.1-pro_s1 (27 min)
+[2026-11-08 12:12:22] start rq1_transporter_kimi-k3.1-pro_s2
+[2026-11-08 12:28:19] done  rq1_transporter_kimi-k3.1-pro_s2 (15 min)
+[2026-11-08 12:28:19] start rq1_transporter_kimi-k3.1-pro_s3
+[2026-11-08 13:22:25] done  rq1_transporter_kimi-k3.1-pro_s3 (54 min)
+[2026-11-08 13:22:25] start rq1_stock_market_deepseek-v4-pro_s1
+[2026-11-08 13:26:02] done  rq1_stock_market_deepseek-v4-pro_s1 (3 min)
+[2026-11-08 13:26:02] start rq1_stock_market_deepseek-v4-pro_s2
+[2026-11-08 13:28:06] done  rq1_stock_market_deepseek-v4-pro_s2 (2 min)
+[2026-11-08 13:28:06] start rq1_stock_market_deepseek-v4-pro_s3
+[2026-11-08 13:32:04] done  rq1_stock_market_deepseek-v4-pro_s3 (3 min)
+[2026-11-08 13:32:04] start rq1_stock_market_kimi-k3.1-pro_s1
+[2026-11-08 13:35:50] done  rq1_stock_market_kimi-k3.1-pro_s1 (3 min)
+[2026-11-08 13:35:50] start rq1_stock_market_kimi-k3.1-pro_s2
+[2026-11-08 13:40:11] done  rq1_stock_market_kimi-k3.1-pro_s2 (4 min)
+[2026-11-08 13:40:11] start rq1_stock_market_kimi-k3.1-pro_s3
+[2026-11-08 13:44:03] done  rq1_stock_market_kimi-k3.1-pro_s3 (3 min)
+[2026-11-08 13:44:03] RQ3: fuel-reserve requirement x 2 LLMs x 3 seeds
+[2026-11-08 13:44:03] start rq3_transporter_safety_deepseek-v4-pro_s1
+[2026-11-08 14:03:19] done  rq3_transporter_safety_deepseek-v4-pro_s1 (19 min)
+[2026-11-08 14:03:19] start rq3_transporter_safety_deepseek-v4-pro_s2
+[2026-11-08 14:59:24] done  rq3_transporter_safety_deepseek-v4-pro_s2 (56 min)
+[2026-11-08 14:59:25] start rq3_transporter_safety_deepseek-v4-pro_s3
+[2026-11-08 15:50:14] done  rq3_transporter_safety_deepseek-v4-pro_s3 (50 min)
+[2026-11-08 15:50:14] start rq3_transporter_safety_kimi-k3.1-pro_s1
+[2026-11-08 16:11:58] done  rq3_transporter_safety_kimi-k3.1-pro_s1 (21 min)
+[2026-11-08 16:11:59] start rq3_transporter_safety_kimi-k3.1-pro_s2
+[2026-11-08 16:26:53] done  rq3_transporter_safety_kimi-k3.1-pro_s2 (14 min)
+[2026-11-08 16:26:53] start rq3_transporter_safety_kimi-k3.1-pro_s3
+[2026-11-08 16:58:19] done  rq3_transporter_safety_kimi-k3.1-pro_s3 (31 min)
+[2026-11-08 16:58:19] Evaluating all finished runs with Storm (RQ1-RQ4, no LLM calls) ...
+==============================================================================
+Weight-space programming experiments: results (all numbers computed by Storm)
+==============================================================================
+Runs found: 24 | finished: 24 | LLM wrote no valid network: 0 | failed: 0 | incomplete: 0
+  evaluating 1/24: rq1_frozen_lake_deepseek-v4-pro_s1
+  evaluating 2/24: rq1_frozen_lake_deepseek-v4-pro_s2
+  evaluating 3/24: rq1_frozen_lake_deepseek-v4-pro_s3
+  evaluating 4/24: rq1_frozen_lake_kimi-k3.1-pro_s1
+  evaluating 5/24: rq1_frozen_lake_kimi-k3.1-pro_s2
+  evaluating 6/24: rq1_frozen_lake_kimi-k3.1-pro_s3
+  evaluating 7/24: rq1_transporter_deepseek-v4-pro_s1
+  evaluating 8/24: rq1_transporter_deepseek-v4-pro_s2
+  evaluating 9/24: rq1_transporter_deepseek-v4-pro_s3
+  evaluating 10/24: rq1_transporter_kimi-k3.1-pro_s1
+  evaluating 11/24: rq1_transporter_kimi-k3.1-pro_s2
+  evaluating 12/24: rq1_transporter_kimi-k3.1-pro_s3
+  evaluating 13/24: rq1_stock_market_deepseek-v4-pro_s1
+  evaluating 14/24: rq1_stock_market_deepseek-v4-pro_s2
+  evaluating 15/24: rq1_stock_market_deepseek-v4-pro_s3
+  evaluating 16/24: rq1_stock_market_kimi-k3.1-pro_s1
+  evaluating 17/24: rq1_stock_market_kimi-k3.1-pro_s2
+  evaluating 18/24: rq1_stock_market_kimi-k3.1-pro_s3
+  evaluating 19/24: rq3_transporter_safety_deepseek-v4-pro_s1
+  evaluating 20/24: rq3_transporter_safety_deepseek-v4-pro_s2
+  evaluating 21/24: rq3_transporter_safety_deepseek-v4-pro_s3
+  evaluating 22/24: rq3_transporter_safety_kimi-k3.1-pro_s1
+  evaluating 23/24: rq3_transporter_safety_kimi-k3.1-pro_s2
+  evaluating 24/24: rq3_transporter_safety_kimi-k3.1-pro_s3
+
+Table 1: Environments (optimum = best probability of any policy, Storm on the MDP)
++----------------------+----+-------+--------+---------+------------------------------------------------+----------+
+| Environment          | d  | |Act| | |S|    | Network | PCTL query                                     | Optimum  |
++----------------------+----+-------+--------+---------+------------------------------------------------+----------+
+| Frozen Lake          | 1  | 4     | 17     | 1 x 16  | Pmax=? [ F pos=15 ]                            | 0.822231 |
+| Transporter          | 10 | 6     | 8,560  | 2 x 32  | Pmax=? [ F jobs_done=2 ]                       | 1.000000 |
+| Transporter (3 jobs) | 10 | 6     | 16,496 | 2 x 32  | Pmax=? [ F jobs_done=3 ]                       | 1.000000 |
+| Stock Market         | 5  | 3     | 14,551 | 2 x 32  | Pmax=? [ F "success" ]                         | 1.000000 |
+| Transporter (safety) | 10 | 6     | 6,880  | 2 x 32  | Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ] | 1.000000 |
++----------------------+----+-------+--------+---------+------------------------------------------------+----------+
+
+All runs (Acc. in %, q = query result; S1/S2/S3 = after Step 1/2/3)
++-------------------------------------------+--------+--------+--------+--------+--------+--------+--------+---------+-----------+-----------+---------+
+| Run                                       | Status | Acc S1 | q S1   | Acc S2 | q S2   | Acc S3 | q* S3  | Optimal | MC rounds | LLM calls | Minutes |
++-------------------------------------------+--------+--------+--------+--------+--------+--------+--------+---------+-----------+-----------+---------+
+| rq1_frozen_lake_deepseek-v4-pro_s1        | ok     | 100.00 | 0.8222 | 100.00 | 0.8222 | 100.00 | 0.8222 | yes     | 1         | 1         | 3.1     |
+| rq1_frozen_lake_deepseek-v4-pro_s2        | ok     | 100.00 | 0.8222 | 100.00 | 0.8222 | 100.00 | 0.8222 | yes     | 1         | 1         | 3.5     |
+| rq1_frozen_lake_deepseek-v4-pro_s3        | ok     | 100.00 | 0.8222 | 100.00 | 0.8222 | 100.00 | 0.8222 | yes     | 1         | 1         | 5.5     |
+| rq1_frozen_lake_kimi-k3.1-pro_s1          | ok     | 93.75  | 0.8222 | 100.00 | 0.8222 | 100.00 | 0.8222 | yes     | 1         | 2         | 8.3     |
+| rq1_frozen_lake_kimi-k3.1-pro_s2          | ok     | 100.00 | 0.8222 | 100.00 | 0.8222 | 100.00 | 0.8222 | yes     | 1         | 1         | 9.1     |
+| rq1_frozen_lake_kimi-k3.1-pro_s3          | ok     | 100.00 | 0.8222 | 100.00 | 0.8222 | 100.00 | 0.8222 | yes     | 1         | 1         | 7.8     |
+| rq1_transporter_deepseek-v4-pro_s1        | ok     | 99.79  | 1.0000 | 99.99  | 1.0000 | 99.99  | 1.0000 | yes     | 1         | 10        | 26.1    |
+| rq1_transporter_deepseek-v4-pro_s2        | ok     | 39.49  | 1.0000 | 39.49  | 1.0000 | 39.49  | 1.0000 | yes     | 1         | 4         | 13.9    |
+| rq1_transporter_deepseek-v4-pro_s3        | ok     | 39.29  | 1.0000 | 99.62  | 1.0000 | 99.62  | 1.0000 | yes     | 1         | 10        | 29.7    |
+| rq1_transporter_kimi-k3.1-pro_s1          | ok     | 99.79  | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 4         | 27.0    |
+| rq1_transporter_kimi-k3.1-pro_s2          | ok     | 99.79  | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 3         | 15.9    |
+| rq1_transporter_kimi-k3.1-pro_s3          | ok     | 96.92  | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 5         | 54.1    |
+| rq1_stock_market_deepseek-v4-pro_s1       | ok     | 100.00 | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 2         | 3.6     |
+| rq1_stock_market_deepseek-v4-pro_s2       | ok     | 100.00 | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 1         | 2.1     |
+| rq1_stock_market_deepseek-v4-pro_s3       | ok     | 100.00 | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 2         | 4.0     |
+| rq1_stock_market_kimi-k3.1-pro_s1         | ok     | 100.00 | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 1         | 3.8     |
+| rq1_stock_market_kimi-k3.1-pro_s2         | ok     | 100.00 | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 1         | 4.3     |
+| rq1_stock_market_kimi-k3.1-pro_s3         | ok     | 100.00 | 1.0000 | 100.00 | 1.0000 | 100.00 | 1.0000 | yes     | 1         | 1         | 3.9     |
+| rq3_transporter_safety_deepseek-v4-pro_s1 | ok     | -      | 1.0000 | -      | 1.0000 | -      | 1.0000 | yes     | 1         | 6         | 19.3    |
+| rq3_transporter_safety_deepseek-v4-pro_s2 | ok     | -      | 1.0000 | -      | 0.0000 | -      | 1.0000 | yes     | 2         | 17        | 56.1    |
+| rq3_transporter_safety_deepseek-v4-pro_s3 | ok     | -      | 0.0000 | -      | 1.0000 | -      | 1.0000 | yes     | 1         | 12        | 50.8    |
+| rq3_transporter_safety_kimi-k3.1-pro_s1   | ok     | -      | 1.0000 | -      | 1.0000 | -      | 1.0000 | yes     | 1         | 4         | 21.7    |
+| rq3_transporter_safety_kimi-k3.1-pro_s2   | ok     | -      | 1.0000 | -      | 1.0000 | -      | 1.0000 | yes     | 1         | 2         | 14.9    |
+| rq3_transporter_safety_kimi-k3.1-pro_s3   | ok     | -      | 1.0000 | -      | 1.0000 | -      | 1.0000 | yes     | 1         | 4         | 31.4    |
++-------------------------------------------+--------+--------+--------+--------+--------+--------+--------+---------+-----------+-----------+---------+
+
+Table 2 (RQ1): accuracy and query results after each step
++------------------+-----------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+-------+
+| Environment      | LLM             | Acc S1 | q S1   | Opt S1 | Acc S2 | q S2   | Opt S2 | Acc S3 | q* S3  | Opt S3 | Calls |
++------------------+-----------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+-------+
+| Frozen Lake      | DeepSeek-V4-Pro | 100.00 | 0.8222 | 3/3    | 100.00 | 0.8222 | 3/3    | 100.00 | 0.8222 | 3/3    | 1.0   |
+| Frozen Lake      | Kimi-K3.1-Pro   | 97.92  | 0.8222 | 3/3    | 100.00 | 0.8222 | 3/3    | 100.00 | 0.8222 | 3/3    | 1.3   |
+| Transporter      | DeepSeek-V4-Pro | 59.52  | 1.0000 | 3/3    | 79.70  | 1.0000 | 3/3    | 79.70  | 1.0000 | 3/3    | 8.0   |
+| Transporter      | Kimi-K3.1-Pro   | 98.83  | 1.0000 | 3/3    | 100.00 | 1.0000 | 3/3    | 100.00 | 1.0000 | 3/3    | 4.0   |
+| Stock Market     | DeepSeek-V4-Pro | 100.00 | 1.0000 | 3/3    | 100.00 | 1.0000 | 3/3    | 100.00 | 1.0000 | 3/3    | 1.7   |
+| Stock Market     | Kimi-K3.1-Pro   | 100.00 | 1.0000 | 3/3    | 100.00 | 1.0000 | 3/3    | 100.00 | 1.0000 | 3/3    | 1.0   |
+| All environments | DeepSeek-V4-Pro | 86.51  | 0.9407 | 9/9    | 93.23  | 0.9407 | 9/9    | 93.23  | 0.9407 | 9/9    | 3.6   |
+| All environments | Kimi-K3.1-Pro   | 98.92  | 0.9407 | 9/9    | 100.00 | 0.9407 | 9/9    | 100.00 | 0.9407 | 9/9    | 2.1   |
++------------------+-----------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+-------+
+Acc: mean accuracy (%) on the all-optimal-actions dataset; q: mean query result; Opt: runs that reach the optimum
+(tolerance 0.0001); Calls: mean LLM requests per run. 'All environments' gives the numbers for the introduction;
+Opt S2 = optimal runs without model-checking feedback.
+
+Table 3 (RQ2): transporter networks for 2 jobs, model checked with 3 jobs (Pmax=? [ F jobs_done=3 ], MAX_JOBS=3,MAX_FUEL=10)
++-----------------+--------------------+--------------------+-----------------------+
+| LLM             | Optimal for 2 jobs | Optimal for 3 jobs | Mean P(F jobs_done=3) |
++-----------------+--------------------+--------------------+-----------------------+
+| DeepSeek-V4-Pro | 3/3                | 2/3                | 0.6667                |
+| Kimi-K3.1-Pro   | 3/3                | 2/3                | 0.6667                |
++-----------------+--------------------+--------------------+-----------------------+
+
+Table 4 (RQ3): fuel-reserve requirement Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ] (optimum 1)
++-----------------+----------------------------+------------------------+---------+-----------+-------+
+| LLM             | RQ1 networks satisfying it | RQ3 runs satisfying it | Mean q* | MC rounds | Calls |
++-----------------+----------------------------+------------------------+---------+-----------+-------+
+| DeepSeek-V4-Pro | 2/3                        | 3/3                    | 1.0000  | 1.3       | 11.7  |
+| Kimi-K3.1-Pro   | 2/3                        | 3/3                    | 1.0000  | 1.0       | 3.3   |
++-----------------+----------------------------+------------------------+---------+-----------+-------+
+
+Table 5 (RQ4): generation errors over all runs of RQ1 and RQ3
++-----------------+---------+--------------+-------------+-------------------+--------------------------+-----------------+
+| LLM             | Answers | Invalid JSON | Wrong shape | Failed self-check | Accepted despite failure | Failed requests |
++-----------------+---------+--------------+-------------+-------------------+--------------------------+-----------------+
+| DeepSeek-V4-Pro | 67      | 0            | 32          | 14                | 5                        | 0               |
+| Kimi-K3.1-Pro   | 28      | 0            | 8           | 1                 | 1                        | 1               |
++-----------------+---------+--------------+-------------+-------------------+--------------------------+-----------------+
+Answers: LLM answers received; Failed self-check: answers whose network did not select the intended action
+in every check state; Accepted despite failure: such networks used after all retries.
+
+Total: 24 counted runs, 96 LLM requests, 420 minutes of run time.
+Consistency checks passed: re-evaluated networks match the results logged during the runs.
+
+LaTeX tables and the results paragraph of the introduction: /workspaces/coolmc/wsp_tables.tex
+
+==============================================================================
+LaTeX (copy into the paper)
+==============================================================================
+% Generated by examples/wsp_evaluate.py. Each block replaces the table with the same \label.
+
+\begin{table}[t]
+  \centering
+  \caption{Environments, PCTL queries, and optimal probabilities computed by
+    Storm on the MDP. $d$: number of features; $|\mathit{Act}|$: number of
+    actions; $|S|$: number of MDP states; Network: hidden layers $\times$
+    neurons per layer.}
+  \label{tab:environments}
+  \resizebox{\linewidth}{!}{%
+  \begin{tabular}{lrrrcll}
+    \toprule
+    Environment & $d$ & $|\mathit{Act}|$ & $|S|$ & Network & PCTL query & Optimum \\
+    \midrule
+    Frozen Lake & 1 & 4 & 17 & $1 \times 16$ & $P(\Diamond\, \mathit{goal})$ & $0.822$ \\
+    Transporter (2 jobs) & 10 & 6 & 8{,}560 & $2 \times 32$ & $P(\Diamond\, \mathit{jobs\_done} = 2)$ & $1$ \\
+    Transporter (3 jobs) & 10 & 6 & 16{,}496 & $2 \times 32$ & $P(\Diamond\, \mathit{jobs\_done} = 3)$ & $1$ \\
+    Stock Market & 5 & 3 & 14{,}551 & $2 \times 32$ & $P(\Diamond\, \mathit{success})$ & $1$ \\
+    Transporter (safety) & 10 & 6 & 6{,}880 & $2 \times 32$ & $P(\neg(\mathit{passenger} \wedge \mathit{fuel} < 4)\ U\ \mathit{jobs\_done} = 2)$ & $1$ \\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{RQ1: Accuracy and query results after each step. Acc.: mean accuracy
+    over the three runs (in \%); $\bar{q}$: mean query result ($\bar{q}^*$:
+    best verified result after Step~3); Opt.: runs (of 3) that reach the
+    optimal probability up to $10^{-4}$; Calls: mean number of LLM calls per
+    run.}
+  \label{tab:rq1}
+  \resizebox{\linewidth}{!}{%
+  \begin{tabular}{llcccccccccc}
+    \toprule
+    & & \multicolumn{3}{c}{After Step 1} & \multicolumn{3}{c}{After Step 2}
+      & \multicolumn{3}{c}{After Step 3} & \\
+    \cmidrule(lr){3-5} \cmidrule(lr){6-8} \cmidrule(lr){9-11}
+    Environment & LLM & Acc. & $\bar{q}$ & Opt. & Acc. & $\bar{q}$ & Opt.
+      & Acc. & $\bar{q}^*$ & Opt. & Calls \\
+    \midrule
+    Frozen Lake & DeepSeek-V4-Pro & 100.00 & 0.822 & 3/3 & 100.00 & 0.822 & 3/3 & 100.00 & 0.822 & 3/3 & 1.0 \\
+     & Kimi-K3.1-Pro & 97.92 & 0.822 & 3/3 & 100.00 & 0.822 & 3/3 & 100.00 & 0.822 & 3/3 & 1.3 \\
+    Transporter & DeepSeek-V4-Pro & 59.52 & 1.000 & 3/3 & 79.70 & 1.000 & 3/3 & 79.70 & 1.000 & 3/3 & 8.0 \\
+     & Kimi-K3.1-Pro & 98.83 & 1.000 & 3/3 & 100.00 & 1.000 & 3/3 & 100.00 & 1.000 & 3/3 & 4.0 \\
+    Stock Market & DeepSeek-V4-Pro & 100.00 & 1.000 & 3/3 & 100.00 & 1.000 & 3/3 & 100.00 & 1.000 & 3/3 & 1.7 \\
+     & Kimi-K3.1-Pro & 100.00 & 1.000 & 3/3 & 100.00 & 1.000 & 3/3 & 100.00 & 1.000 & 3/3 & 1.0 \\
+    \midrule
+    All & DeepSeek-V4-Pro & 86.51 & 0.941 & 9/9 & 93.23 & 0.941 & 9/9 & 93.23 & 0.941 & 9/9 & 3.6 \\
+     & Kimi-K3.1-Pro & 98.92 & 0.941 & 9/9 & 100.00 & 0.941 & 9/9 & 100.00 & 0.941 & 9/9 & 2.1 \\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{RQ2: Transporter networks programmed for two jobs, model checked
+    with three jobs.}
+  \label{tab:rq2}
+  \begin{tabular}{lccc}
+    \toprule
+    LLM & Optimal for 2 jobs & Optimal for 3 jobs & Mean $P(\Diamond\, \mathit{jobs\_done} = 3)$ \\
+    \midrule
+    DeepSeek-V4-Pro & 3/3 & 2/3 & 0.667 \\
+    Kimi-K3.1-Pro & 3/3 & 2/3 & 0.667 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{RQ3: Fuel-reserve requirement. RQ1 networks: networks programmed only
+    for $\Diamond\, \mathit{jobs\_done} = 2$ that satisfy the requirement; RQ3
+    runs: runs (of 3) that satisfy it; $\bar{q}^*$ and Calls as in
+    Table~\ref{tab:rq1}; Rounds: mean number of model-checking rounds.}
+  \label{tab:rq3}
+  \begin{tabular}{lccccc}
+    \toprule
+    LLM & RQ1 networks & RQ3 runs & $\bar{q}^*$ & Rounds & Calls \\
+    \midrule
+    DeepSeek-V4-Pro & 2/3 & 3/3 & 1.000 & 1.3 & 11.7 \\
+    Kimi-K3.1-Pro & 2/3 & 3/3 & 1.000 & 1.0 & 3.3 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{RQ4: Generation errors over all runs of RQ1 and RQ3.}
+  \label{tab:rq4}
+  \resizebox{\linewidth}{!}{%
+  \begin{tabular}{lcccccc}
+    \toprule
+    LLM & Answers & Invalid JSON & Wrong shape & Failed self-check & Accepted despite failure & Failed requests \\
+    \midrule
+    DeepSeek-V4-Pro & 67 & 0 & 32 & 14 & 5 & 0 \\
+    Kimi-K3.1-Pro & 28 & 0 & 8 & 1 & 1 & 1 \\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+% Results paragraph of the introduction (numbers of the best LLM, i.e. the most optimal runs
+% after Step 3; RQ2 and RQ3 also for this LLM).
+Across two LLMs and three PRISM environments, the networks of the best LLM,
+Kimi-K3.1-Pro, select an optimal action in 98.9\% of the states
+after creation, 100.0\% after dataset repair, and 100.0\% after
+model-checking repair, and they reach the optimal probability in 9
+of 9 runs, compared to 9 runs without model-checking
+feedback. Policies programmed for two transporter jobs also complete three jobs
+in 2 of 3 runs, and the pipeline programs a policy that
+satisfies a fuel-reserve safety requirement in 3 of 3
+runs.
+

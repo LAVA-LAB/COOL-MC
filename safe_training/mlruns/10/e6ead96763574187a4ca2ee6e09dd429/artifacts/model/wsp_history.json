@@ -1,0 +1,22 @@
+[
+ {
+  "phase": "create",
+  "round": 0,
+  "summary": "initial weights written (self-check 16/16 states as intended)"
+ },
+ {
+  "phase": "dataset",
+  "round": 0,
+  "summary": "accuracy 90.05%"
+ },
+ {
+  "phase": "dataset",
+  "round": 1,
+  "summary": "accuracy 100.00% (weights: self-check 17/17 states as intended)"
+ },
+ {
+  "phase": "model checking",
+  "round": 0,
+  "summary": "Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ] = 1"
+ }
+]

@@ -1,0 +1,31 @@
+2026/11/08 15:50:17 INFO mlflow.projects.utils: === Created directory /tmp/tmpjc1uhpxw for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 15:50:17 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.9999 --deploy=0 --project_name=wsp_rq3_transporter_safety --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=kimi-k3.1-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/transporter_wsp.md;temperature=0;seed=1;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq3_transporter_safety_kimi-k3.1-pro_s1' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=transporter.prism --constant_definitions=MAX_JOBS=2,MAX_FUEL=10 --prop='Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ]' --reward_flag=0 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=2 --neurons=32 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 1 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/transporter.prism;Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '20d8e3313a3142ea8b7b6349d8d1b1c4' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 1
+Agent loaded.
+[WSP] initial creation: querying kimi-k3.1-pro:cloud (attempt 1, prompt 14794 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [31, 32]
+[WSP] initial creation: querying kimi-k3.1-pro:cloud (attempt 2, prompt 14963 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [31, 32]
+[WSP] initial creation: querying kimi-k3.1-pro:cloud (attempt 3, prompt 14963 chars)
+[WSP] initial creation: valid weights, self-check 18/18 states as intended. Notes: The first layer constructs integer bumps for x=0,1,2 and y=0..4, plus passenger and not-passenger indicators. The second layer forms 15 passenger-aware location ANDs. The policy first refuels via the gas station, picks up at (0,4), returns to the station while onboard (arriving with fuel 4), refuels, and drops at (0,0). It then returns via the station and repeats. Thus onboard fuel is always at le
+[WSP] dataset round 0: accuracy 94.62%
+[WSP] dataset repair 1: querying kimi-k3.1-pro:cloud (attempt 1, prompt 59448 chars)
+[WSP] dataset repair 1: valid weights, self-check 20/20 states as intended. Notes: Layer 0 constructs coordinate bumps, passenger indicators, and six low-fuel gap features. Layer 1 combines these into 15 location/passenger rules and 13 location-specific fuel corrections. The policy refuels before each job, picks up only with fuel at least 8, and returns to the gas station while onboard so that passenger fuel never falls below 4. Low-fuel off-path states are routed safely to the 
+[WSP] dataset round 1: accuracy 100.00%
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ] = 1
+[WSP] Property satisfied (1); no repair.
+Property satisfied!
+0 Episode	Reward -575.0 	Average Reward -575.0 	Last Property Result: 1.0
+Run ID: ba46f285de05495a9d9c64b9c890e78d
+2026/11/08 16:11:58 INFO mlflow.projects: === Run (ID '20d8e3313a3142ea8b7b6349d8d1b1c4') succeeded ===
+=======================
+Set Seed to 1

@@ -1,0 +1,70 @@
+2026/11/08 14:59:27 INFO mlflow.projects.utils: === Created directory /tmp/tmpa7upt841 for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 14:59:27 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.9999 --deploy=0 --project_name=wsp_rq3_transporter_safety --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=deepseek-v4-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/transporter_wsp.md;temperature=0;seed=3;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq3_transporter_safety_deepseek-v4-pro_s3' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=transporter.prism --constant_definitions=MAX_JOBS=2,MAX_FUEL=10 --prop='Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ]' --reward_flag=0 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=2 --neurons=32 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 3 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/transporter.prism;Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '592285ee0a834a79b03e2df5bb8a51e3' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 3
+Agent loaded.
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 1, prompt 14794 chars)
+[WSP] initial creation: valid weights, self-check 5/12 states as intended. Notes: The policy drives each job via the gas station when needed. With passenger=0 it goes to pickup (0,4), picking up only if fuel>4. If fuel<=4 it first drives to the gas station (1,2). With passenger=1 it drives to drop (0,0) and drops. The network encodes these rules with primitive ReLU indicators for coordinates and fuel, then builds 0/1 action-condition neurons in the second hidden layer. Layer 2 
+[WSP]   self-check mismatch: done=0, fuel=7, jobs_done=0, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=0, y=4: you intended PICK_UP, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=6, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=0, y=4: you intended SOUTH, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=4, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=0, y=1: you intended SOUTH, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=2, jobs_done=1, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=1, y=0: you intended NORTH, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=10, jobs_done=1, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=0, y=2: you intended NORTH, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=8, jobs_done=1, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=0, y=4: you intended PICK_UP, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=7, jobs_done=1, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=0, y=3: you intended SOUTH, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 2, prompt 25620 chars)
+[WSP] initial creation: valid weights, self-check 7/15 states as intended. Notes: The policy avoids the forbidden zone passenger&fuel<4 by always keeping fuel high enough before/while carrying a passenger. With no passenger and fuel<8 it drives to the gas station first; with no passenger and fuel>=8 it drives to pickup (0,4). With a passenger and fuel<8 it drives to gas; with a passenger and fuel>=8 or at gas it drives to drop (0,0). PICK_UP only at (0,4) with fuel>=8. DROP onl
+[WSP]   self-check mismatch: done=0, fuel=3, jobs_done=1, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=1, y=2: you intended WEST, the network outputs EAST (logits DROP=0, EAST=10, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=4, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=1, y=2: you intended WEST, the network outputs EAST (logits DROP=0, EAST=10, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=2, jobs_done=1, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=1, y=3: you intended SOUTH, the network outputs EAST (logits DROP=0, EAST=10, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=2, jobs_done=1, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=1, y=0: you intended NORTH, the network outputs DROP (logits DROP=10, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=2, jobs_done=0, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=3, y=2: you intended WEST, the network outputs EAST (logits DROP=0, EAST=10, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=2, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=3, y=2: you intended WEST, the network outputs EAST (logits DROP=0, EAST=10, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=10, jobs_done=0, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=3, y=3: you intended WEST, the network outputs NORTH (logits DROP=0, EAST=0, NORTH=10, PICK_UP=0, SOUTH=0, WEST=10)
+[WSP]   self-check mismatch: done=0, fuel=10, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=0, x=3, y=3: you intended WEST, the network outputs SOUTH (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=10, WEST=10)
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 3, prompt 26067 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+[WSP] Accepting the last answer despite self-check mismatches (no retries left).
+[WSP] dataset round 0: accuracy 80.65%
+[WSP] dataset repair 1: querying deepseek-v4-pro:cloud (attempt 1, prompt 62856 chars)
+[WSP] dataset repair 1: valid weights, self-check 2/5 states as intended. Notes: Redesigned network. First hidden layer computes coordinate/fuel/passenger primitives. Second hidden layer computes 25 exact grid-position indicators, fuel threshold indicators, passenger flags, and special-location flags. Final layer maps these to actions: PICK_UP only at (0,4) with passenger=0 and fuel>=8, DROP only at (0,0) with passenger=1 and fuel>0, otherwise movement toward gas if fuel<8 and
+[WSP]   self-check mismatch: done=0, fuel=10, jobs_done=0, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=0, y=4: you intended PICK_UP, the network outputs EAST (logits DROP=0, EAST=5, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=10, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=0, y=4: you intended SOUTH, the network outputs EAST (logits DROP=0, EAST=5, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=10, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=0, y=0: you intended DROP, the network outputs EAST (logits DROP=0, EAST=5, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP] dataset repair 1: querying deepseek-v4-pro:cloud (attempt 2, prompt 72727 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [33, 32]
+[WSP] dataset repair 1: querying deepseek-v4-pro:cloud (attempt 3, prompt 72896 chars)
+[WSP] dataset repair 1: valid weights, self-check 13/13 states as intended. Notes: Network implements a safe taxi policy: before pickup, if fuel<8 go to gas station; if fuel>=8 go directly to pickup (0,4). After pickup, if fuel<8 go to gas station first, then to drop (0,0); if fuel>=8 go directly to drop. This ensures passenger never has fuel<4. Hidden layer 0 computes raw coordinate/fuel/passenger primitives. Hidden layer 1 combines them into exact action-condition indicators u
+[WSP] dataset round 1: accuracy 86.56%
+[WSP] dataset repair 2: querying deepseek-v4-pro:cloud (attempt 1, prompt 59076 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+[WSP] dataset repair 2: querying deepseek-v4-pro:cloud (attempt 2, prompt 59245 chars)
+[WSP] dataset repair 2: valid weights, self-check 6/8 states as intended. Notes: Keep the existing hidden-layer feature detectors, but change the final-layer default from EAST to WEST. When no explicit action indicator fires, the network now chooses WEST instead of EAST. Explicit PICK_UP, DROP, NORTH, SOUTH, and EAST indicators still have weight 10 and will override the WEST default bias of 2. This fixes the reported states where the network previously defaulted to EAST but th
+[WSP]   self-check mismatch: done=0, fuel=1, jobs_done=0, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=1, y=3: you intended SOUTH, the network outputs WEST (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=2)
+[WSP]   self-check mismatch: done=0, fuel=5, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=1, y=1: you intended NORTH, the network outputs WEST (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=2)
+[WSP] dataset repair 2: querying deepseek-v4-pro:cloud (attempt 3, prompt 68657 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+[WSP] Accepting the last answer despite self-check mismatches (no retries left).
+[WSP] dataset round 2: accuracy 96.77%
+[WSP] dataset repair 3: querying deepseek-v4-pro:cloud (attempt 1, prompt 58429 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [34, 32]
+[WSP] dataset repair 3: querying deepseek-v4-pro:cloud (attempt 2, prompt 58598 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [31, 32]
+[WSP] dataset repair 3: querying deepseek-v4-pro:cloud (attempt 3, prompt 58598 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ] = 1
+[WSP] Property satisfied (1); no repair.
+Property satisfied!
+0 Episode	Reward -572.0 	Average Reward -572.0 	Last Property Result: 1.0
+Run ID: 342f959f12384476bcf000fee1225262
+2026/11/08 15:50:13 INFO mlflow.projects: === Run (ID '592285ee0a834a79b03e2df5bb8a51e3') succeeded ===
+=======================
+Set Seed to 3

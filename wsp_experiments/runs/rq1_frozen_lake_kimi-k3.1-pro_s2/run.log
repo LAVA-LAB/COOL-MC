@@ -1,0 +1,24 @@
+2026/11/08 10:18:49 INFO mlflow.projects.utils: === Created directory /tmp/tmpkbpe03qs for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 10:18:49 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.8221309208337081 --deploy=0 --project_name=wsp_rq1_frozen_lake --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=kimi-k3.1-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/frozen_lake_wsp.md;temperature=0;seed=2;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq1_frozen_lake_kimi-k3.1-pro_s2' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=frozen_lake.prism --constant_definitions=control=0.33,start_position=0 --prop='Pmax=? [ F pos=15 ]' --reward_flag=1 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=1 --neurons=16 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 2 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/frozen_lake.prism;Pmax=? [ F pos=15 ];control=0.33,start_position=0' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '56b3d1e8bcb0458380bc63446e767885' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 2
+Agent loaded.
+[WSP] initial creation: querying kimi-k3.1-pro:cloud (attempt 1, prompt 12035 chars)
+[WSP] initial creation: valid weights, self-check 17/17 states as intended. Notes: Each hidden ReLU pair computes a threshold indicator t_k = 1[pos >= k], for k = 1,4,6,8,9,10,13,14. The logits combine these into one-hot interval indicators with a margin of 2: left at 0, 4-5, and 10-12; up at 1-3 and 8; right at 6-7 and 13; down at 9 and 14-16. On safe tiles, this uses the safe top/left corridors, takes the equivalent best choice right at 6, and approaches the goal through 13 an
+[WSP] dataset round 0: accuracy 100.00%
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ F pos=15 ] = 0.822231
+[WSP] Property satisfied (0.822231); no repair.
+Property satisfied!
+0 Episode	Reward 0.0 	Average Reward 0.0 	Last Property Result: 0.8222313071917768
+Run ID: ee1d4c8a181349179e9df016ea1d1e4f
+2026/11/08 10:27:50 INFO mlflow.projects: === Run (ID '56b3d1e8bcb0458380bc63446e767885') succeeded ===
+=======================
+Set Seed to 2

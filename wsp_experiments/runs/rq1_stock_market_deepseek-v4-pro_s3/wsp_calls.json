@@ -1,0 +1,16 @@
+[
+ {
+  "purpose": "initial creation",
+  "attempt": 0,
+  "outcome": "wrong_shape",
+  "seconds": 101.92,
+  "detail": "layer 0: W must have shape [32][5], got [33, 5]"
+ },
+ {
+  "purpose": "initial creation",
+  "attempt": 1,
+  "outcome": "accepted",
+  "seconds": 85.01,
+  "detail": "self-check 6/6 states as intended"
+ }
+]

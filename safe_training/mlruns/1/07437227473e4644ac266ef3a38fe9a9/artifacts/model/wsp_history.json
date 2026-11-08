@@ -1,0 +1,62 @@
+[
+ {
+  "phase": "create",
+  "round": 0,
+  "summary": "failed, random init"
+ },
+ {
+  "phase": "dataset",
+  "round": 0,
+  "summary": "train accuracy 56.25%"
+ },
+ {
+  "phase": "model checking",
+  "round": 0,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 1,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 2,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 3,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 4,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 5,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 6,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 7,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 8,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ },
+ {
+  "phase": "model checking",
+  "round": 9,
+  "summary": "Pmax=? [ F pos=15 ] = 0"
+ }
+]

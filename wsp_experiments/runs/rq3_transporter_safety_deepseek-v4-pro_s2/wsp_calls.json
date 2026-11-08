@@ -1,0 +1,128 @@
+[
+ {
+  "purpose": "initial creation",
+  "attempt": 0,
+  "outcome": "wrong_shape",
+  "seconds": 306.03,
+  "detail": "layer 0: W must have shape [32][10], got [33, 10]"
+ },
+ {
+  "purpose": "initial creation",
+  "attempt": 1,
+  "outcome": "accepted",
+  "seconds": 223.94,
+  "detail": "self-check 10/10 states as intended"
+ },
+ {
+  "purpose": "dataset repair 1",
+  "attempt": 0,
+  "outcome": "self_check_failed",
+  "seconds": 395.9,
+  "detail": "self-check 10/12 states as intended"
+ },
+ {
+  "purpose": "dataset repair 1",
+  "attempt": 1,
+  "outcome": "wrong_shape",
+  "seconds": 197.48,
+  "detail": "layer 1: W must have shape [32][32], got [33, 32]"
+ },
+ {
+  "purpose": "dataset repair 1",
+  "attempt": 2,
+  "outcome": "wrong_shape",
+  "seconds": 250.09,
+  "detail": "layer 0: W must have shape [32][10], got [33, 10]"
+ },
+ {
+  "purpose": "dataset repair 1",
+  "attempt": null,
+  "outcome": "fallback_accepted",
+  "seconds": 0.0,
+  "detail": "self-check 10/12 states as intended"
+ },
+ {
+  "purpose": "dataset repair 2",
+  "attempt": 0,
+  "outcome": "self_check_failed",
+  "seconds": 105.36,
+  "detail": "self-check 2/11 states as intended"
+ },
+ {
+  "purpose": "dataset repair 2",
+  "attempt": 1,
+  "outcome": "accepted",
+  "seconds": 204.69,
+  "detail": "self-check 10/10 states as intended"
+ },
+ {
+  "purpose": "dataset repair 3",
+  "attempt": 0,
+  "outcome": "wrong_shape",
+  "seconds": 254.58,
+  "detail": "expected 3 layers, got 4"
+ },
+ {
+  "purpose": "dataset repair 3",
+  "attempt": 1,
+  "outcome": "self_check_failed",
+  "seconds": 42.66,
+  "detail": "self-check 7/10 states as intended"
+ },
+ {
+  "purpose": "dataset repair 3",
+  "attempt": 2,
+  "outcome": "accepted_despite_failure",
+  "seconds": 323.53,
+  "detail": "self-check 11/12 states as intended"
+ },
+ {
+  "purpose": "dataset repair 4",
+  "attempt": 0,
+  "outcome": "wrong_shape",
+  "seconds": 170.95,
+  "detail": "layer 1: W must have shape [32][32], got [33, 32]"
+ },
+ {
+  "purpose": "dataset repair 4",
+  "attempt": 1,
+  "outcome": "accepted",
+  "seconds": 180.48,
+  "detail": "self-check 8/8 states as intended"
+ },
+ {
+  "purpose": "dataset repair 5",
+  "attempt": 0,
+  "outcome": "self_check_failed",
+  "seconds": 59.73,
+  "detail": "self-check 9/10 states as intended"
+ },
+ {
+  "purpose": "dataset repair 5",
+  "attempt": 1,
+  "outcome": "wrong_shape",
+  "seconds": 123.5,
+  "detail": "layer 1: W must have shape [32][32], got [30, 32]"
+ },
+ {
+  "purpose": "dataset repair 5",
+  "attempt": 2,
+  "outcome": "accepted",
+  "seconds": 102.71,
+  "detail": "self-check 5/5 states as intended"
+ },
+ {
+  "purpose": "model checking repair 1",
+  "attempt": 0,
+  "outcome": "wrong_shape",
+  "seconds": 243.05,
+  "detail": "layer 0: W must have shape [32][10], got [33, 10]"
+ },
+ {
+  "purpose": "model checking repair 1",
+  "attempt": 1,
+  "outcome": "accepted",
+  "seconds": 130.83,
+  "detail": "self-check 15/15 states as intended"
+ }
+]

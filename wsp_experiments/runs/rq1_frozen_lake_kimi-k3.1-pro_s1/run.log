@@ -1,0 +1,27 @@
+2026/11/08 10:10:30 INFO mlflow.projects.utils: === Created directory /tmp/tmpx6m3ccw0 for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 10:10:30 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.8221309208337081 --deploy=0 --project_name=wsp_rq1_frozen_lake --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=kimi-k3.1-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/frozen_lake_wsp.md;temperature=0;seed=1;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq1_frozen_lake_kimi-k3.1-pro_s1' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=frozen_lake.prism --constant_definitions=control=0.33,start_position=0 --prop='Pmax=? [ F pos=15 ]' --reward_flag=1 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=1 --neurons=16 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 1 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/frozen_lake.prism;Pmax=? [ F pos=15 ];control=0.33,start_position=0' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID 'ad40a38b01254e8795d8fa8e49b9c0a8' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 1
+Agent loaded.
+[WSP] initial creation: querying kimi-k3.1-pro:cloud (attempt 1, prompt 12035 chars)
+[WSP] initial creation: valid weights, self-check 17/17 states as intended. Notes: Hidden neuron k computes relu(pos-k). The output rows are linear splines using discrete second differences, producing exact one-hot logits at integer positions: left at 4 and 10, right at 6 and 13, up at 1-3 and 8, and down elsewhere (including 0, 9, and 14). Thus the safe-progress policy is 0:down, 1-3:up, 4:left, 6:right, 8:up, 9:down, 10:left, 13:right, 14:down. Right and left are equivalent at
+[WSP] dataset round 0: accuracy 93.75%
+[WSP] dataset repair 1: querying kimi-k3.1-pro:cloud (attempt 1, prompt 13488 chars)
+[WSP] dataset repair 1: valid weights, self-check 17/17 states as intended. Notes: Hidden neuron k still computes relu(pos-k). I added 2*(1-relu(pos)+relu(pos-1)) to the left logit: this equals 2 at pos=0 and 0 at every integer pos>=1. Thus pos=0 now chooses a0_left with logit 2 versus down's 1, while every other state's logits and one-hot margins remain unchanged.
+[WSP] dataset round 1: accuracy 100.00%
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ F pos=15 ] = 0.822231
+[WSP] Property satisfied (0.822231); no repair.
+Property satisfied!
+0 Episode	Reward 0.0 	Average Reward 0.0 	Last Property Result: 0.8222313071917768
+Run ID: 8b8ea6f2bd2343efbeb9dc11bbbc49d9
+2026/11/08 10:18:46 INFO mlflow.projects: === Run (ID 'ad40a38b01254e8795d8fa8e49b9c0a8') succeeded ===
+=======================
+Set Seed to 1

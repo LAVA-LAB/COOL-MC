@@ -1,0 +1,35 @@
+2026/11/08 13:44:06 INFO mlflow.projects.utils: === Created directory /tmp/tmpbhoxhnn2 for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 13:44:06 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.9999 --deploy=0 --project_name=wsp_rq3_transporter_safety --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=deepseek-v4-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/transporter_wsp.md;temperature=0;seed=1;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq3_transporter_safety_deepseek-v4-pro_s1' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=transporter.prism --constant_definitions=MAX_JOBS=2,MAX_FUEL=10 --prop='Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ]' --reward_flag=0 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=2 --neurons=32 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 1 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/transporter.prism;Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '83289edd2eba484eb76ea4608f883ac7' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 1
+Agent loaded.
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 1, prompt 14794 chars)
+[WSP] initial creation: valid weights, self-check 10/10 states as intended. Notes: The policy follows a fixed refuelling route. With passenger=0 it first goes to the gas station, then to the pick-up point (0,4), and picks up. With passenger=1 it goes from the pick-up point to the gas station, refuels, then goes to the drop-off point (0,0) and drops. This is done twice. The hidden layers implement exact state detectors for the 26 reachable states along this deterministic route; e
+[WSP] dataset round 0: accuracy 37.62%
+[WSP] dataset repair 1: querying deepseek-v4-pro:cloud (attempt 1, prompt 70613 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [33, 32]
+[WSP] dataset repair 1: querying deepseek-v4-pro:cloud (attempt 2, prompt 70782 chars)
+[WSP] dataset repair 1: valid weights, self-check 15/15 states as intended. Notes: Deterministic refuelling policy. With passenger=0 the taxi goes to the gas station (1,2), then north to (1,3),(1,4), west to pickup (0,4), and picks up. With passenger=1 it goes east to (1,4), south to (1,3),(1,2), refuels at gas, goes west to (0,2), south to (0,1),(0,0), and drops. This is done twice. Hidden layer 1 builds exact coordinate/passenger detectors; layer 2 maps each detector to the co
+[WSP] dataset round 1: accuracy 87.90%
+[WSP] dataset repair 2: querying deepseek-v4-pro:cloud (attempt 1, prompt 68457 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+[WSP] dataset repair 2: querying deepseek-v4-pro:cloud (attempt 2, prompt 68626 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+[WSP] dataset repair 2: querying deepseek-v4-pro:cloud (attempt 3, prompt 68626 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ] = 1
+[WSP] Property satisfied (1); no repair.
+Property satisfied!
+0 Episode	Reward -571.0 	Average Reward -571.0 	Last Property Result: 1.0
+Run ID: 1f13766e87de4ebb89eb01a1336f7939
+2026/11/08 14:03:19 INFO mlflow.projects: === Run (ID '83289edd2eba484eb76ea4608f883ac7') succeeded ===
+=======================
+Set Seed to 1

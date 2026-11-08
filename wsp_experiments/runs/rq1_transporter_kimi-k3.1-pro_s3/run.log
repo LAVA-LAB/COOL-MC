@@ -1,0 +1,36 @@
+2026/11/08 12:28:21 INFO mlflow.projects.utils: === Created directory /tmp/tmppbyjxeth for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 12:28:21 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.9999 --deploy=0 --project_name=wsp_rq1_transporter --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=kimi-k3.1-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/transporter_wsp.md;temperature=0;seed=3;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq1_transporter_kimi-k3.1-pro_s3' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=transporter.prism --constant_definitions=MAX_JOBS=2,MAX_FUEL=10 --prop='Pmax=? [ F jobs_done=2 ]' --reward_flag=0 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=2 --neurons=32 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 3 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/transporter.prism;Pmax=? [ F jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '506e42d4642142729ca373842362c4da' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 3
+Agent loaded.
+[WSP] initial creation: querying kimi-k3.1-pro:cloud (attempt 1, prompt 14772 chars)
+[WSP] initial creation: valid weights, self-check 20/20 states as intended. Notes: Layer 0 computes four phase indicators for (jobs_done,passenger) and threshold encodings of x and y. Layer 1 ANDs these into directional exceptions and exact PICK_UP/DROP conditions. The induced route is start->gas->pickup->gas->drop->gas->pickup->drop, using gas exits WEST, SOUTH, and NORTH respectively. Exception logits are 5 versus the directional baseline of 2. Fuel stays positive throughout a
+[WSP] dataset round 0: accuracy 96.92%
+[WSP] dataset repair 1: querying kimi-k3.1-pro:cloud (attempt 1, prompt 58479 chars)
+[WSP] dataset repair 1: valid weights, self-check 18/19 states as intended. Notes: Added exact detectors for fuel 1..3, active jobs, and whether a final passenger has enough fuel to drive directly to (0,0) and DROP. Low-fuel recovery overrides choose EAST at x=0, SOUTH at x=1,y>=3, and NORTH at x=1,y<=1; the existing westward behavior is retained elsewhere. Direct final-leg actions and gas-station exits are preserved. Each override adds 20 to its logit, while high-fuel, terminal
+[WSP]   self-check mismatch: done=0, fuel=3, jobs_done=1, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=1, y=1: you intended WEST, the network outputs SOUTH (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=2, WEST=0)
+[WSP] dataset repair 1: querying kimi-k3.1-pro:cloud (attempt 2, prompt 67870 chars)
+[WSP] LLM request failed (will retry): ReadTimeout: timed out
+[WSP] dataset repair 1: querying kimi-k3.1-pro:cloud (attempt 3, prompt 67870 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+[WSP] Accepting the last answer despite self-check mismatches (no retries left).
+[WSP] dataset round 1: accuracy 92.15%
+[WSP] dataset repair 2: querying kimi-k3.1-pro:cloud (attempt 1, prompt 70551 chars)
+[WSP] dataset repair 2: valid weights, self-check 20/20 states as intended. Notes: Layer 0 encodes the four job/passenger phases, x/y thresholds, fuel thresholds 1..6, and x=0. Layer 1 detects shortest-path directions toward the gas station and exact route conditions with sufficient fuel. Unsafe low-fuel routes are overridden by EAST at x=0, WEST at x>=2, NORTH at (1,0/1), and SOUTH at (1,3/4). Gas exits are WEST, SOUTH, NORTH, and WEST by phase. The induced route is start->gas-
+[WSP] dataset round 2: accuracy 100.00%
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ F jobs_done=2 ] = 1
+[WSP] Property satisfied (1); no repair.
+Property satisfied!
+0 Episode	Reward -520.0 	Average Reward -520.0 	Last Property Result: 1.0
+Run ID: 1e493a75ebb94b28b3680c058fd7fb3e
+2026/11/08 13:22:24 INFO mlflow.projects: === Run (ID '506e42d4642142729ca373842362c4da') succeeded ===
+=======================
+Set Seed to 3

@@ -1,0 +1,16 @@
+[
+ {
+  "purpose": "initial creation",
+  "attempt": 0,
+  "outcome": "accepted",
+  "seconds": 284.94,
+  "detail": "self-check 16/16 states as intended"
+ },
+ {
+  "purpose": "dataset repair 1",
+  "attempt": 0,
+  "outcome": "accepted",
+  "seconds": 560.27,
+  "detail": "self-check 20/20 states as intended"
+ }
+]

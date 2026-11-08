@@ -1,0 +1,27 @@
+2026/11/08 16:12:01 INFO mlflow.projects.utils: === Created directory /tmp/tmp3q0psxn6 for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 16:12:01 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.9999 --deploy=0 --project_name=wsp_rq3_transporter_safety --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=kimi-k3.1-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/transporter_wsp.md;temperature=0;seed=2;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq3_transporter_safety_kimi-k3.1-pro_s2' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=transporter.prism --constant_definitions=MAX_JOBS=2,MAX_FUEL=10 --prop='Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ]' --reward_flag=0 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=2 --neurons=32 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 2 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/transporter.prism;Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '33e0ff5942db4058b884af649eea74f8' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 2
+Agent loaded.
+[WSP] initial creation: querying kimi-k3.1-pro:cloud (attempt 1, prompt 14794 chars)
+[WSP] initial creation: valid weights, self-check 16/16 states as intended. Notes: The first layer creates ramp features from which the second layer forms exact indicators for x=0, x=1, x>=2, y=0..4, passenger/its negation, and fuel>=8. The second layer detects the route states; the output gives the selected action logit 4. The policy first enters the gas station, leaves WEST, and goes to pickup. With a passenger it returns via the gas station before fuel can fall below 4, leave
+[WSP] dataset round 0: accuracy 41.40%
+[WSP] dataset repair 1: querying kimi-k3.1-pro:cloud (attempt 1, prompt 70429 chars)
+[WSP] dataset repair 1: valid weights, self-check 20/20 states as intended. Notes: Layer 0 constructs exact ramp/step features for the x and y regions, passenger indicators, D=[fuel>=x+y+4], and H=[fuel>=x-y+12]. Layer 1 combines these into mutually exclusive action rules. With a passenger, the policy DROPs at (0,0), follows a feasible direct route when D holds, and otherwise heads toward the gas station. Without a passenger, it PICKs_UP only when sufficient fuel remains, otherw
+[WSP] dataset round 1: accuracy 100.00%
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ] = 1
+[WSP] Property satisfied (1); no repair.
+Property satisfied!
+0 Episode	Reward -596.0 	Average Reward -596.0 	Last Property Result: 1.0
+Run ID: 79bf3786d1a246daaf9be63a7a3df37b
+2026/11/08 16:26:52 INFO mlflow.projects: === Run (ID '33e0ff5942db4058b884af649eea74f8') succeeded ===
+=======================
+Set Seed to 2

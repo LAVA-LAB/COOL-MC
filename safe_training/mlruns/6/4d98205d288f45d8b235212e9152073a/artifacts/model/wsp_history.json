@@ -1,0 +1,27 @@
+[
+ {
+  "phase": "create",
+  "round": 0,
+  "summary": "initial weights written (self-check 19/19 states as intended)"
+ },
+ {
+  "phase": "dataset",
+  "round": 0,
+  "summary": "accuracy 99.64%"
+ },
+ {
+  "phase": "dataset",
+  "round": 1,
+  "summary": "accuracy 97.75% (weights: self-check 16/16 states as intended)"
+ },
+ {
+  "phase": "dataset",
+  "round": 2,
+  "summary": "accuracy 99.64% (weights: self-check 10/10 states as intended)"
+ },
+ {
+  "phase": "model checking",
+  "round": 0,
+  "summary": "Pmax=? [ F jobs_done=2 ] = 1"
+ }
+]

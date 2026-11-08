@@ -1,0 +1,48 @@
+2026/11/08 10:35:39 INFO mlflow.projects.utils: === Created directory /tmp/tmpac9d4lgj for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 10:35:39 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.9999 --deploy=0 --project_name=wsp_rq1_transporter --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=deepseek-v4-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/transporter_wsp.md;temperature=0;seed=1;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq1_transporter_deepseek-v4-pro_s1' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=transporter.prism --constant_definitions=MAX_JOBS=2,MAX_FUEL=10 --prop='Pmax=? [ F jobs_done=2 ]' --reward_flag=0 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=2 --neurons=32 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 1 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/transporter.prism;Pmax=? [ F jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '6cc8d351769e49d78f1e44ccc5c02ac6' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 1
+Agent loaded.
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 1, prompt 14772 chars)
+[WSP] initial creation: valid weights, self-check 11/12 states as intended. Notes: Deterministic waypoint policy. With passenger=0, navigate to pickup (0,4) when y>=2, otherwise go to gas (1,2) first. With passenger=1, go to gas when y>=2, then to drop (0,0) when y<2. At gas station, leave WEST if passenger=0 and SOUTH if passenger=1. Hidden layer 0 computes raw x, y, passenger and shifted ReLUs; hidden layer 1 builds 12 mutually exclusive action-trigger conditions; output layer
+[WSP]   self-check mismatch: done=0, fuel=7, jobs_done=0, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=0, y=4: you intended PICK_UP, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 2, prompt 24118 chars)
+[WSP] initial creation: valid weights, self-check 14/17 states as intended. Notes: Deterministic policy with fuel management. At gas station always move WEST (towards both pickup and drop). If passenger=0, pick up at (0,4); otherwise if fuel>=8 go to pickup, else go to gas. If passenger=1, drop at (0,0); otherwise if fuel>=8 go to drop, else go to gas. Movement uses priority x then y. PICK_UP and DROP logits are 100 to override any conflicting movement condition at those locatio
+[WSP]   self-check mismatch: done=0, fuel=4, jobs_done=0, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=1, y=2: you intended WEST, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=4, jobs_done=1, passenger=0, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=1, y=2: you intended WEST, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP]   self-check mismatch: done=0, fuel=4, jobs_done=1, passenger=1, passenger_dest_x=0, passenger_dest_y=0, passenger_loc_x=0, passenger_loc_y=4, x=1, y=2: you intended WEST, the network outputs DROP (logits DROP=0, EAST=0, NORTH=0, PICK_UP=0, SOUTH=0, WEST=0)
+[WSP] initial creation: querying deepseek-v4-pro:cloud (attempt 3, prompt 24564 chars)
+[WSP] initial creation: valid weights, self-check 12/12 states as intended. Notes: Deterministic policy with fuel management. Hidden layer 0 builds coordinate/fuel/passenger basis indicators. Hidden layer 1 computes 16 disjoint action-selection conditions using ReLU ANDs. Final layer maps conditions to actions: special DROP/PICK_UP/gas actions have weight 200, general movement conditions weight 100. The policy drives passenger=0 to pickup if fuel>=8, otherwise to gas; passenger=
+[WSP] dataset round 0: accuracy 99.79%
+[WSP] dataset repair 1: querying deepseek-v4-pro:cloud (attempt 1, prompt 27140 chars)
+[WSP] Invalid answer: layer 0: W must have shape [32][10], got [33, 10]
+[WSP] dataset repair 1: querying deepseek-v4-pro:cloud (attempt 2, prompt 27309 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [31, 32]
+[WSP] dataset repair 1: querying deepseek-v4-pro:cloud (attempt 3, prompt 27309 chars)
+[WSP] dataset repair 1: valid weights, self-check 10/10 states as intended. Notes: Added a fuel>=4 indicator using new L0 neurons 16 and 17, then gated PICK_UP (h1_1) and DROP (h1_0) with it. Now pickup/drop are only selected when fuel>=4; at fuel=3 those states fall through to EAST, fixing the reported mistakes while preserving the rest of the policy.
+[WSP] dataset round 1: accuracy 99.62%
+[WSP] dataset repair 2: querying deepseek-v4-pro:cloud (attempt 1, prompt 38438 chars)
+[WSP] dataset repair 2: valid weights, self-check 6/6 states as intended. Notes: Removed the fuel>=4 gate from the DROP condition by zeroing the weights from h0_16 and h0_17 in layer 1 row 0 and lowering its bias from -2 to -1. Now DROP is selected whenever passenger=1 and the taxi is at (0,0), regardless of fuel. This fixes the fuel=1 and fuel=2 error states while preserving the rest of the policy.
+[WSP] dataset round 2: accuracy 99.99%
+[WSP] dataset repair 3: querying deepseek-v4-pro:cloud (attempt 1, prompt 24022 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [33, 32]
+[WSP] dataset repair 3: querying deepseek-v4-pro:cloud (attempt 2, prompt 24191 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [31, 32]
+[WSP] dataset repair 3: querying deepseek-v4-pro:cloud (attempt 3, prompt 24191 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [31, 32]
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ F jobs_done=2 ] = 1
+[WSP] Property satisfied (1); no repair.
+Property satisfied!
+0 Episode	Reward -672.0 	Average Reward -672.0 	Last Property Result: 1.0
+Run ID: 8f82169ee45d46ddb83a515c581d63ad
+2026/11/08 11:01:42 INFO mlflow.projects: === Run (ID '6cc8d351769e49d78f1e44ccc5c02ac6') succeeded ===
+=======================
+Set Seed to 1

@@ -1,0 +1,18 @@
+{
+ "rq": "rq1",
+ "order": 1,
+ "env": "transporter",
+ "label": "Transporter",
+ "prism": "/workspaces/coolmc/prism_files/transporter.prism",
+ "constants": "MAX_JOBS=2,MAX_FUEL=10",
+ "prop": "Pmax=? [ F jobs_done=2 ]",
+ "layers": 2,
+ "neurons": 32,
+ "reward_flag": 0,
+ "description": "transporter_wsp.md",
+ "model": "deepseek-v4-pro:cloud",
+ "seed": 1,
+ "optimum": 1.0,
+ "states": 8560,
+ "threshold": 0.9999
+}

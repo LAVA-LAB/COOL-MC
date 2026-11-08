@@ -1,0 +1,30 @@
+[
+ {
+  "purpose": "initial creation",
+  "attempt": 0,
+  "outcome": "accepted",
+  "seconds": 166.53,
+  "detail": "self-check 16/16 states as intended"
+ },
+ {
+  "purpose": "dataset repair 1",
+  "attempt": 0,
+  "outcome": "wrong_shape",
+  "seconds": 161.35,
+  "detail": "expected 3 layers, got 2"
+ },
+ {
+  "purpose": "dataset repair 1",
+  "attempt": 1,
+  "outcome": "wrong_shape",
+  "seconds": 242.32,
+  "detail": "layer 1: W must have shape [32][32], got [33, 32]"
+ },
+ {
+  "purpose": "dataset repair 1",
+  "attempt": 2,
+  "outcome": "wrong_shape",
+  "seconds": 188.54,
+  "detail": "layer 1: W must have shape [32][32], got [33, 32]"
+ }
+]

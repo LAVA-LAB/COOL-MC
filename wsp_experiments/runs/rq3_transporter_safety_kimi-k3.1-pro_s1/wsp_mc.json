@@ -1,0 +1,6 @@
+{
+ "prop": "Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ]",
+ "results": [
+  1.0
+ ]
+}

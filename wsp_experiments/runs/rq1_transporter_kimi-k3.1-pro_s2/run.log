@@ -1,0 +1,29 @@
+2026/11/08 12:12:24 INFO mlflow.projects.utils: === Created directory /tmp/tmph7fhfn5k for downloading remote URIs passed to arguments of type 'path' ===
+2026/11/08 12:12:24 INFO mlflow.projects.backend.local: === Running command 'python run.py --training_threshold=0.9999 --deploy=0 --project_name=wsp_rq1_transporter --parent_run_id='' --preprocessor='' --env='Taxi with Fuel' --sliding_window_size=100 --num_episodes=5 --eval_interval=1 --alpha=0.99 --algorithm='weight_space_programming_agent;model=kimi-k3.1-pro:cloud;host=http://localhost:11434;info_file=/workspaces/coolmc/prism_files/transporter_wsp.md;temperature=0;seed=2;retries=2;timeout=1200;export_dir=/workspaces/coolmc/wsp_experiments/runs/rq1_transporter_kimi-k3.1-pro_s2' --prism_dir=/workspaces/coolmc/prism_files --prism_file_path=transporter.prism --constant_definitions=MAX_JOBS=2,MAX_FUEL=10 --prop='Pmax=? [ F jobs_done=2 ]' --reward_flag=0 --max_steps=100 --disabled_features='' --wrong_action_penalty=1000 --postprocessor='' --layers=2 --neurons=32 --replay_buffer_size=300000 --epsilon=1 --epsilon_dec=0.9999 --epsilon_min=0.1 --gamma=0.99 --replace=304 --lr=0.0001 --batch_size=32 --noise_scale=0.01 --transition_updater='' --n_qubits=4 --poly_degree=2 --remove_gates='' --task safe_training --seed 2 --bc_epochs 5 --accuracy_threshold 100.0 --behavioral_cloning 'all_optimal_dataset;/workspaces/coolmc/prism_files/transporter.prism;Pmax=? [ F jobs_done=2 ];MAX_JOBS=2,MAX_FUEL=10' --interpreter '' --state_labeler '' --idtmc_out '' --range_plotting 1' in run with ID '00a935176ce54b58824f02fbbdd7a678' === 
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:231: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/opt/venv/lib/python3.13/site-packages/gymnasium/spaces/box.py:297: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+Set Seed to 2
+Agent loaded.
+[WSP] initial creation: querying kimi-k3.1-pro:cloud (attempt 1, prompt 14772 chars)
+[WSP] initial creation: valid weights, self-check 17/17 states as intended. Notes: Layer 0 computes position thresholds and the high-fuel indicator [fuel+2*passenger>=8]. Layer 1 implements a decision table: at x>=2 drive WEST; at x=1 drive WEST when high-fuel, otherwise move vertically toward the gas station; at x=0 drive NORTH/SOUTH toward the current target when high-fuel, otherwise EAST toward gas. Gas-station actions refuel and leave toward the next target. PICK_UP and DROP
+[WSP] dataset round 0: accuracy 99.79%
+[WSP] dataset repair 1: querying kimi-k3.1-pro:cloud (attempt 1, prompt 27155 chars)
+[WSP] Invalid answer: layer 1: W must have shape [32][32], got [33, 32]
+[WSP] dataset repair 1: querying kimi-k3.1-pro:cloud (attempt 2, prompt 27324 chars)
+[WSP] dataset repair 1: valid weights, self-check 20/20 states as intended. Notes: The original movement and refuelling table is unchanged. Added ReLUs encode the exact indicator [fuel=3] and the indicator [jobs_done=0]. They suppress PICK_UP only at fuel 3, and suppress DROP only at fuel 3 before the first job is completed. Thus those states take the existing low-fuel EAST branch toward the gas station, while the final DROP and every previously correct state retain their origin
+[WSP] dataset round 1: accuracy 100.00%
+Write to file test.drn.
+[WSP] model checking round 0: Pmax=? [ F jobs_done=2 ] = 1
+[WSP] Property satisfied (1); no repair.
+Property satisfied!
+0 Episode	Reward -595.0 	Average Reward -595.0 	Last Property Result: 1.0
+Run ID: a58464c587554287a76e9ebbb8a110ee
+2026/11/08 12:28:18 INFO mlflow.projects: === Run (ID '00a935176ce54b58824f02fbbdd7a678') succeeded ===
+=======================
+Set Seed to 2

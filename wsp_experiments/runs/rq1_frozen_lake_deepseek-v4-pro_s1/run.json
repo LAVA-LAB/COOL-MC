@@ -1,0 +1,18 @@
+{
+ "rq": "rq1",
+ "order": 0,
+ "env": "frozen_lake",
+ "label": "Frozen Lake",
+ "prism": "/workspaces/coolmc/prism_files/frozen_lake.prism",
+ "constants": "control=0.33,start_position=0",
+ "prop": "Pmax=? [ F pos=15 ]",
+ "layers": 1,
+ "neurons": 16,
+ "reward_flag": 1,
+ "description": "frozen_lake_wsp.md",
+ "model": "deepseek-v4-pro:cloud",
+ "seed": 1,
+ "optimum": 0.8222309208337081,
+ "states": 17,
+ "threshold": 0.8221309208337081
+}

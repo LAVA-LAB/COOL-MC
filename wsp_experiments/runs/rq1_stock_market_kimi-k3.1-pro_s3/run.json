@@ -1,0 +1,18 @@
+{
+ "rq": "rq1",
+ "order": 2,
+ "env": "stock_market",
+ "label": "Stock Market",
+ "prism": "/workspaces/coolmc/prism_files/stock_market.prism",
+ "constants": "",
+ "prop": "Pmax=? [ F \"success\" ]",
+ "layers": 2,
+ "neurons": 32,
+ "reward_flag": 1,
+ "description": "stock_market_wsp.md",
+ "model": "kimi-k3.1-pro:cloud",
+ "seed": 3,
+ "optimum": 1.0,
+ "states": 14551,
+ "threshold": 0.9999
+}

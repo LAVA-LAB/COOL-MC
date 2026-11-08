@@ -1,0 +1,18 @@
+{
+ "rq": "rq3",
+ "order": 3,
+ "env": "transporter_safety",
+ "label": "Transporter (safety)",
+ "prism": "/workspaces/coolmc/prism_files/transporter.prism",
+ "constants": "MAX_JOBS=2,MAX_FUEL=10",
+ "prop": "Pmax=? [ !(passenger & fuel<4) U jobs_done=2 ]",
+ "layers": 2,
+ "neurons": 32,
+ "reward_flag": 0,
+ "description": "transporter_wsp.md",
+ "model": "deepseek-v4-pro:cloud",
+ "seed": 3,
+ "optimum": 1.0,
+ "states": 6880,
+ "threshold": 0.9999
+}
